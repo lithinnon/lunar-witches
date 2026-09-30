@@ -23,6 +23,7 @@
         # Integrated Home Manager
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
+        home-manager.backupFileExtension = "backup";
         home-manager.extraSpecialArgs = { inherit inputs self; };
         home-manager.users.nnon = import ./home.nix;
       }
