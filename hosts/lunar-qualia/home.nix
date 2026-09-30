@@ -36,9 +36,24 @@
   programs.fish = {
     enable = true;
     shellAliases = config.home.shellAliases;
+    shellInit = ''
+      # Ensure ~/.local/bin is always in PATH
+      fish_add_path --path --prepend "$HOME/.local/bin"
+    '';
     interactiveShellInit = ''
       # Disable fish greeting
       set -g fish_greeting
+    '';
+  };
+
+  # Bash Shell Configuration
+  programs.bash = {
+    enable = true;
+    shellAliases = config.home.shellAliases;
+    initExtra = ''
+      if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+      fi
     '';
   };
 
