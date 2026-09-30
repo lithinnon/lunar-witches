@@ -43,6 +43,7 @@
       gpu-screen-recorder-gtk
       kdePackages.ksshaskpass
       kdePackages.libkscreen
+      kdePackages.sddm-kcm
       kdePackages.plasma-browser-integration
       wl-clipboard
     ];
