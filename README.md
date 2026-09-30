@@ -9,15 +9,6 @@
 
 ---
 
-```
-evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
-evaluation warning: programs.nh.clean.enable and nix.gc.automatic are both enabled. Please use one or the other to avoid conflict.
-⚠️  Mount point '/boot' which backs the random seed file is world accessible, which is a security hole!  ⚠️
-⚠️ Random seed file '/boot/loader/.#bootctlrandom-seeddf44ae48b71838fd' is world accessible, which is a security hole! ⚠️
-```
-
----
-
 ## 1. Migration Architecture & Current State Overview
 
 ```mermaid
