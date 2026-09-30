@@ -59,6 +59,7 @@
     bat
     obsidian
     mangohud
+    uv
   ];
 
   # AMD GPU Boost background service (D-Bus event-driven clock manager)
