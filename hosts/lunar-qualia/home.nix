@@ -57,8 +57,8 @@
     equibop
 
     # Antigravity Suite (Antigravity 2.0 & CLI via jacopone/antigravity-nix)
-    inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity
-    inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity-cli
+    inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity
+    inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-cli
 
     # Development & Tools
     ghq
