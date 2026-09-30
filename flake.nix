@@ -46,6 +46,7 @@
         ./modules/hardware/asus-tuf-a14-fa401ea.nix
         ./modules/desktop/plasma.nix
         ./hosts/lunar-qualia
+        ./pkgs
       ];
 
       perSystem = { config, pkgs, ... }: {

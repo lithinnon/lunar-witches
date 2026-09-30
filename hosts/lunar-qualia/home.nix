@@ -85,6 +85,9 @@
     mangohud
     uv
     libnotify
+    amd-ttm
+    amdgpu-boost
+    sync-power-state
   ];
 
   # AMD GPU Boost background service (D-Bus event-driven clock manager)
@@ -95,7 +98,7 @@
     };
     Service = {
       Type = "simple";
-      ExecStart = "%h/.local/bin/amdgpu-boost --daemon";
+      ExecStart = "${pkgs.amdgpu-boost}/bin/amdgpu-boost --daemon";
       Restart = "always";
       RestartSec = 2;
     };

@@ -19,6 +19,7 @@
 
         # Allow Unfree Packages (Brave, Zoom, Steam, etc.)
         nixpkgs.config.allowUnfree = true;
+        nixpkgs.overlays = [ self.overlays.default ];
 
         # Integrated Home Manager
         home-manager.useGlobalPkgs = true;
