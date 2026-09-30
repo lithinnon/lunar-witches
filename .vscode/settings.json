@@ -1,0 +1,24 @@
+{
+    "[nix]": {
+        "editor.defaultFormatter": "jnoortheen.nix-ide",
+        "editor.formatOnSave": true
+    },
+    "nix.enableLanguageServer": true,
+    "nix.serverPath": "${workspaceFolder}/.vscode/nixd-lsp.sh",
+    "nix.serverSettings": {
+        "nixd": {
+            "nixpkgs": {
+                "expr": "import (builtins.getFlake (builtins.toString ./.)).inputs.nixpkgs { }"
+            },
+            "formatting": {
+                "command": [
+                    "nixfmt",
+                    "-"
+                ]
+            }
+        }
+    },
+    "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
+    "nixEnvSelector.useFlakes": true,
+    "nixEnvSelector.flakeShell": "default"
+}
