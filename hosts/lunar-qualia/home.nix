@@ -96,9 +96,11 @@
   # Declarative Git Configuration
   programs.git = {
     enable = true;
-    userName = "lithinnon";
-    userEmail = "49898465+lithinnon@users.noreply.github.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "lithinnon";
+        email = "49898465+lithinnon@users.noreply.github.com";
+      };
       init.defaultBranch = "master";
       safe.directory = "*";
     };
