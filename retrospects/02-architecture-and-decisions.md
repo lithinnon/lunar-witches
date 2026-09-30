@@ -20,7 +20,7 @@ Instead of a monolithic `configuration.nix`, the repository adopts a **dendritic
   - Sysfs permissions for thermal throttling policies and AMD GPU boost controls are declaratively managed via `systemd.tmpfiles.rules`.
 - **Unified Memory & AMD TTM Allocations:**
   - AMD Strix Halo uses unified system RAM for VRAM.
-  - The standalone script `~/.local/bin/amd-ttm` monitors the TTM page limit (5,994,012 pages ~ 22.87 GB VRAM ceiling).
+  - The custom package `pkgs.amd-ttm` monitors the TTM page limit (5,994,012 pages ~ 22.87 GB VRAM ceiling).
 
 ---
 
@@ -48,3 +48,37 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 - **`sync-power-state`:** AC vs Battery display refresh and platform state switcher wrapped with `kdePackages.libkscreen`.
 - **Export Pattern:** Defined in `pkgs/default.nix` exposing `perSystem.packages` and `flake.overlays.default`, injected via `nixpkgs.overlays`.
 - **Daemon Integration:** Home Manager's `amdgpu-boost.service` directly invokes the immutable store binary `${pkgs.amdgpu-boost}/bin/amdgpu-boost --daemon` instead of relying on mutable `%h/.local/bin` paths.
+
+---
+
+## 5. Anime Game Launcher (AAGL) & Binary Cache Strategy
+- **Why AAGL (`ezKEa/aagl-gtk-on-nix`):**
+  - Upstream NixOS nixpkgs cannot package Hoyoverse/anime game launchers due to custom Wine patches, anticheat handling, and licensing constraints.
+  - The AAGL flake module integrates directly into NixOS (`inputs.aagl.nixosModules.default`), exposing packages like `programs.honkers-launcher.enable = true;`.
+- **Binary Cache Optimization:**
+  - Injecting `nix.settings = inputs.aagl.nixConfig;` ensures Cachix (`https://ezkea.cachix.org`) is recognized as a trusted substituter.
+  - This avoids building patched Wine runners (`wine-dwproton-wow64`, `dxvk`) from source, saving hours of compilation time.
+- **NTSync Integration:**
+  - Paired with the CachyOS kernel's native `/dev/ntsync` module, AAGL launchers utilize fast kernel-level synchronization primitives rather than user-space wineserver polling.
+
+---
+
+## 6. Repository Scope & Boundaries: The BullVPN Separation
+- **Package Selection Boundary:**
+  - Not all utilities belong inside `pkgs/` in the system flake.
+  - Utilities in `pkgs/` are intended for system-wide services (`amdgpu-boost`), hardware monitoring (`amd-ttm`), or desktop hooks (`sync-power-state`).
+- **The BullVPN Case:**
+  - BullVPN is an independently developed, actively versioned application with its own Git lifecycle, frequent upstream release tags, and server list changes.
+  - Keeping it as an independent repository in `~/sources/` or user space avoids polluting the OS configuration flake with external commit logs or frequent lockfile bumps.
+
+---
+
+## 7. Multi-User Git Safety Boundary (`safe.directory`)
+- **Background:**
+  - Git CVE-2022-24765 introduced strict ownership verification: Git refuses to operate on a repository if the directory owner does not match the executing user UID.
+- **NixOS Context:**
+  - Flake builds, system switches (`sudo -A nh os switch`), or systemd activation scripts often execute as `root`, while the flake repository at `/home/nnon/lunar-witches` is owned by user `nnon` (UID 1000).
+  - Without a declared exception, Git throws `fatal: detected dubious ownership in repository`.
+- **Decision:**
+  - Configured `programs.git.extraConfig.safe.directory = "*"` declaratively in `home.nix`.
+  - Ensures seamless flake evaluations, git operations, and automated rebuilds across privilege boundaries without manual permissions workarounds.
