@@ -112,6 +112,10 @@
   # Declarative Git Configuration
   programs.git = {
     enable = true;
+    signing = {
+      key = "9106CA7732D04633";
+      signByDefault = true;
+    };
     settings = {
       user = {
         name = "lithinnon";
