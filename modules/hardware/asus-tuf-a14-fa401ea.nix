@@ -2,7 +2,7 @@
 { inputs, ... }:
 
 {
-  flake.nixosModules.hardware-strix-halo = { config, pkgs, lib, ... }: {
+  flake.nixosModules.hardware-asus-tuf-a14-fa401ea = { config, pkgs, lib, ... }: {
     # Kernel Parameters matching tuned Fedora installation
     boot.kernelParams = [
       "amd_pstate=active"

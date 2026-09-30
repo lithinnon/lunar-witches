@@ -21,37 +21,37 @@
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@" "noatime" "compress=zstd:1" "space_cache=v2" ];
+    options = [ "subvol=@" "noatime" "compress=zstd:1" ];
   };
 
   fileSystems."/home" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@home" "noatime" "compress=zstd:1" "space_cache=v2" ];
+    options = [ "subvol=@home" "noatime" "compress=zstd:1" ];
   };
 
   fileSystems."/nix" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@nix" "noatime" "compress=zstd:1" "space_cache=v2" ];
+    options = [ "subvol=@nix" "noatime" "compress=zstd:1" ];
   };
 
   fileSystems."/.snapshots" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@snapshots" "noatime" "compress=zstd:1" "space_cache=v2" ];
+    options = [ "subvol=@snapshots" "noatime" "compress=zstd:1" ];
   };
 
   fileSystems."/var/log" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@log" "noatime" "compress=zstd:1" "space_cache=v2" ];
+    options = [ "subvol=@log" "noatime" "compress=zstd:1" ];
   };
 
   fileSystems."/swap" = {
     device = "/dev/disk/by-label/NIXOS";
     fsType = "btrfs";
-    options = [ "subvol=@swap" "nodatacow" "space_cache=v2" ];
+    options = [ "subvol=@swap" "nodatacow" ];
   };
 
   # SD Card Mount (automount when inserted)

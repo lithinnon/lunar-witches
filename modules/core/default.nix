@@ -40,8 +40,46 @@
       flake = "/home/nnon/lunar-witches";
     };
 
-    # nix-ld: Seamlessly run unpatched dynamic ELF binaries (VS Code extensions, agy CLI, Python wheels)
-    programs.nix-ld.enable = true;
+    # nix-ld: Seamlessly run unpatched dynamic ELF binaries (Antigravity CLI, Antigravity 2.0, VS Code extensions, Python wheels)
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        fuse3
+        icu
+        zstd
+        openssl
+        curl
+        # Electron & GUI dependencies (Antigravity 2.0 Desktop Orchestrator)
+        glib
+        gtk3
+        pango
+        cairo
+        gdk-pixbuf
+        atk
+        at-spi2-atk
+        at-spi2-core
+        dbus
+        libdrm
+        libGL
+        libxkbcommon
+        mesa
+        nspr
+        nss
+        alsa-lib
+        cups
+        expat
+        systemd
+        xorg.libX11
+        xorg.libXcomposite
+        xorg.libXdamage
+        xorg.libXext
+        xorg.libXfixes
+        xorg.libXrandr
+        xorg.libxcb
+      ];
+    };
 
     # Default Shell Environment
     programs.fish.enable = true;

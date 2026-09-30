@@ -33,7 +33,7 @@
 
       imports = [
         ./modules/core
-        ./modules/hardware/strix-halo.nix
+        ./modules/hardware/asus-tuf-a14-fa401ea.nix
         ./modules/desktop/plasma.nix
         ./hosts/lunar-qualia
       ];

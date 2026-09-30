@@ -7,7 +7,7 @@
     specialArgs = { inherit inputs self; };
     modules = [
       self.nixosModules.core
-      self.nixosModules.hardware-strix-halo
+      self.nixosModules.hardware-asus-tuf-a14-fa401ea
       self.nixosModules.desktop-plasma
       ./hardware.nix
       inputs.home-manager.nixosModules.home-manager
