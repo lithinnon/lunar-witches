@@ -38,3 +38,13 @@ Instead of a monolithic `configuration.nix`, the repository adopts a **dendritic
   - `uv`: Modern ultra-fast Python package management.
   - `libnotify`: System notifications via `notify-send`.
   - `git`: Fully declarative user credentials, default branch, safe directory flags, and automated GPG commit signing.
+
+---
+
+## 4. In-Tree Custom Packages & Flake Overlay (`pkgs/`)
+Custom scripts and hardware utilities are converted into declarative Nix derivations under `pkgs/`:
+- **`amd-ttm`:** Standalone Python derivation monitoring kernel sysfs TTM allocations with deterministic shebang patching.
+- **`amdgpu-boost`:** Dual-threshold DPM governor & auto-display daemon wrapped via `makeWrapper` with all runtime dependencies (`systemd`, `dbus`, `libnotify`, `asusctl`, `kdePackages.libkscreen`, `gawk`, `gnused`).
+- **`sync-power-state`:** AC vs Battery display refresh and platform state switcher wrapped with `kdePackages.libkscreen`.
+- **Export Pattern:** Defined in `pkgs/default.nix` exposing `perSystem.packages` and `flake.overlays.default`, injected via `nixpkgs.overlays`.
+- **Daemon Integration:** Home Manager's `amdgpu-boost.service` directly invokes the immutable store binary `${pkgs.amdgpu-boost}/bin/amdgpu-boost --daemon` instead of relying on mutable `%h/.local/bin` paths.
