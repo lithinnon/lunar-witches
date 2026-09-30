@@ -9,6 +9,15 @@
 
 ---
 
+```
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+evaluation warning: programs.nh.clean.enable and nix.gc.automatic are both enabled. Please use one or the other to avoid conflict.
+⚠️  Mount point '/boot' which backs the random seed file is world accessible, which is a security hole!  ⚠️
+⚠️ Random seed file '/boot/loader/.#bootctlrandom-seeddf44ae48b71838fd' is world accessible, which is a security hole! ⚠️
+```
+
+---
+
 ## 1. Migration Architecture & Current State Overview
 
 ```mermaid
@@ -181,8 +190,8 @@ btrfs filesystem mkswapfile --size 48g /mnt/swap/swapfile
 
 ```bash
 # 1. Mount the SD Card at an isolated mount point outside of /mnt
-mkdir -p /mnt-tera
-mount /dev/disk/by-label/Tera /mnt-tera
+#mkdir -p /mnt-tera
+#mount /dev/disk/by-label/Tera /mnt-tera
 
 # 2. Tell Git to trust repositories across different UIDs (prevents 'dubious ownership' errors)
 git config --global --add safe.directory '*'
@@ -196,7 +205,7 @@ EOF
 
 # 4. Run nixos-install using the pre-configured dendritic flake
 nixos-install \
-  --flake /mnt-tera/nixos-migration/lunar-witches#lunar-qualia \
+  --flake /run/media/nixos/Tera/nixos-migration/lunar-witches#lunar-qualia \
   --no-root-password \
   --option extra-substituters https://attic.xuyh0120.win/lantian \
   --option extra-trusted-public-keys lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=

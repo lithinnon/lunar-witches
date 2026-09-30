@@ -5,10 +5,14 @@
   home.username = "nnon";
   home.homeDirectory = "/home/nnon";
 
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
   # Shell Aliases for all shells
   home.shellAliases = {
     amdgpu-reset = "sudo -A cat /sys/kernel/debug/dri/1/amdgpu_gpu_recover";
-    mesa-vk-trace = "touch \${MESA_VK_TRACE_TRIGGER:-/tmp/mesa_vk_trace_trigger}";
+    mesa-vk-trace = "touch /tmp/mesa_vk_trace_trigger";
 
     ".." = "cd ..";
     "..." = "cd ...";
