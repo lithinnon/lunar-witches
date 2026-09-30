@@ -16,6 +16,11 @@
       };
     };
 
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Libraries / Dependencies
     flake-compat = {
       url = "github:NixOS/flake-compat";

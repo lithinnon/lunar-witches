@@ -45,11 +45,16 @@
     digital
     keepassxc
     bottles
+    protonplus
     telegram-desktop
     localsend
     zoom-us
     yubioath-flutter
     equibop
+
+    # Antigravity Suite (Antigravity 2.0 & CLI via jacopone/antigravity-nix)
+    inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity
+    inputs.antigravity-nix.packages.${pkgs.system}.google-antigravity-cli
 
     # Development & Tools
     ghq
