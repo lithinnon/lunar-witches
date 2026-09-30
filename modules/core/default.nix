@@ -135,6 +135,9 @@
     time.timeZone = "Asia/Bangkok";
     i18n.defaultLocale = "en_US.UTF-8";
 
+    # Ensure ~/.local/bin is in PATH for all users
+    environment.localBinInPath = true;
+
     # Essential System Packages
     environment.systemPackages = with pkgs; [
       curl
