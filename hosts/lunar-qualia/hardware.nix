@@ -8,7 +8,7 @@
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "amdgpu" ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-amd" "ntsync" ];
   boot.extraModulePackages = [ ];
 
   # BTRFS Subvolumes & EFI System Partition (using partition labels)
@@ -54,11 +54,11 @@
     options = [ "subvol=@swap" "nodatacow" ];
   };
 
-  # SD Card Mount (automount when inserted)
+  # SD Card Mount (automount when inserted, with execution allowed for games)
   fileSystems."/run/media/nnon/Tera" = {
     device = "/dev/disk/by-label/Tera";
     fsType = "ext4";
-    options = [ "nofail" "x-systemd.automount" "user" ];
+    options = [ "defaults" "nofail" "x-systemd.automount" "exec" ];
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

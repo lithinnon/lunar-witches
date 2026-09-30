@@ -1,5 +1,10 @@
 # User-level Home Manager profile for nnon
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   home.username = "nnon";
@@ -94,7 +99,10 @@
   systemd.user.services.amdgpu-boost = {
     Unit = {
       Description = "AMD GPU Performance Boost & DPM Manager Daemon";
-      After = [ "graphical-session.target" "asusd.service" ];
+      After = [
+        "graphical-session.target"
+        "asusd.service"
+      ];
     };
     Service = {
       Type = "simple";
@@ -154,6 +162,9 @@
       use-agent = true;
     };
   };
+
+  programs.btop.enable = true;
+  programs.mpv.enable = true;
 
   services.gpg-agent = {
     enable = true;

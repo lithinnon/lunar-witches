@@ -10,7 +10,10 @@
     # Nix Flakes & Package Manager Tuning
     nix = {
       settings = {
-        experimental-features = [ "nix-command" "flakes" ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
         auto-optimise-store = true;
         substituters = [
           "https://cache.nixos.org"
@@ -75,7 +78,7 @@
         libxcb
       ];
     };
-
+    
     # Default Shell Environment
     programs.fish.enable = true;
 
@@ -161,7 +164,14 @@
     users.users.nnon = {
       isNormalUser = true;
       description = "nnon";
-      extraGroups = [ "wheel" "networkmanager" "video" "render" "audio" "input" ];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "video"
+        "render"
+        "audio"
+        "input"
+      ];
       shell = pkgs.fish;
     };
 

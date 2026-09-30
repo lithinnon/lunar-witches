@@ -1,5 +1,9 @@
 # Dendritic host module: lunar-qualia (ASUS TUF A14 FA401EA)
-{ self, inputs, ... }:
+{
+  self,
+  inputs,
+  ...
+}:
 
 {
   flake.nixosConfigurations.lunar-qualia = inputs.nixpkgs.lib.nixosSystem {
@@ -10,12 +14,14 @@
       self.nixosModules.hardware-asus-tuf-a14-fa401ea
       self.nixosModules.desktop-plasma
       ./hardware.nix
+      inputs.aagl.nixosModules.default
       inputs.home-manager.nixosModules.home-manager
-      {
+      ({ pkgs, ... }: {
         networking.hostName = "lunar-qualia";
 
         # Optimized CachyOS BORE Kernel with Zen 4 microarchitecture tuning
-        boot.kernelPackages = inputs.nix-cachyos-kernel.legacyPackages.x86_64-linux.linuxPackages-cachyos-bore-zen4;
+        boot.kernelPackages =
+          inputs.nix-cachyos-kernel.legacyPackages.x86_64-linux.linuxPackages-cachyos-bore-zen4;
 
         # Allow Unfree Packages (Brave, Zoom, Steam, etc.)
         nixpkgs.config.allowUnfree = true;
@@ -27,7 +33,12 @@
         home-manager.backupFileExtension = "backup";
         home-manager.extraSpecialArgs = { inherit inputs self; };
         home-manager.users.nnon = import ./home.nix;
-      }
+
+        nix.settings = inputs.aagl.nixConfig;
+        programs.honkers-launcher = {
+          enable = true;
+        };
+      })
     ];
   };
 }

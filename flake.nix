@@ -20,6 +20,13 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+      };
+    };
 
     bullvpn = {
       url = "path:/home/nnon/sources/github.com/lithinnon/bullvpn";
@@ -37,7 +44,8 @@
     };
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
 
