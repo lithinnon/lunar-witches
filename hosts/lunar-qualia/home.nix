@@ -93,6 +93,17 @@
     enable = true;
   };
 
+  # Declarative Git Configuration
+  programs.git = {
+    enable = true;
+    userName = "lithinnon";
+    userEmail = "49898465+lithinnon@users.noreply.github.com";
+    extraConfig = {
+      init.defaultBranch = "master";
+      safe.directory = "*";
+    };
+  };
+
   # Let Home Manager manage its own installation
   programs.home-manager.enable = true;
 
