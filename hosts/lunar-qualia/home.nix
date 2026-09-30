@@ -70,6 +70,7 @@
     keepassxc
     bottles
     protonplus
+    sgdboop
     telegram-desktop
     localsend
     zoom-us
