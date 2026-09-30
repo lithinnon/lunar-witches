@@ -21,6 +21,23 @@
         "type": "github"
       }
     },
+    "bullvpn": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790763101,
+        "narHash": "sha256-l2O2w6suez0OSGGyG+vbH51e0jiuTQQ8KuzE1e76dS8=",
+        "path": "/home/nnon/sources/github.com/lithinnon/bullvpn",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/nnon/sources/github.com/lithinnon/bullvpn",
+        "type": "path"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -155,6 +172,7 @@
     "root": {
       "inputs": {
         "antigravity-nix": "antigravity-nix",
+        "bullvpn": "bullvpn",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",

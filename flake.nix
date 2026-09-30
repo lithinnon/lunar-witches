@@ -21,6 +21,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bullvpn = {
+      url = "path:/home/nnon/sources/github.com/lithinnon/bullvpn";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Libraries / Dependencies
     flake-compat = {
       url = "github:NixOS/flake-compat";

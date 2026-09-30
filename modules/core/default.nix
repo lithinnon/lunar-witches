@@ -154,6 +154,7 @@
       python3
       yubikey-manager
       btrfs-progs
+      inputs.bullvpn.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     # User Account Configuration
