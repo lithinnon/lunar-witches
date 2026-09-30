@@ -69,6 +69,7 @@
     obsidian
     mangohud
     uv
+    libnotify
   ];
 
   # AMD GPU Boost background service (D-Bus event-driven clock manager)
