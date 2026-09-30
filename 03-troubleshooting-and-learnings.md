@@ -72,3 +72,32 @@ During the migration and post-install configuration, several notable edge cases 
   - Deployed `services.gpg-agent` with native KDE Plasma Wayland pinentry (`pkgs.pinentry-qt`).
   - Key `9106CA7732D04633` (`lithinnon (lunar-qualia) <49898465+lithinnon@users.noreply.github.com>`) imported and set to `[ultimate]` trust.
   - Configured `programs.git.signing = { key = "9106CA7732D04633"; signByDefault = true; };` with `safe.directory = "*"`.
+
+---
+
+## 8. External Game Storage & Mount Flags (`noexec` Trap)
+- **Symptom:** Steam Proton games and anime game launchers (such as Honkai Impact 3rd) on the external SD Card (`/run/media/nnon/Tera`) failed to boot or execute binaries.
+- **Cause:** In [`hosts/lunar-qualia/hardware.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/hardware.nix), the mount entry had `options = [ "nofail" "x-systemd.automount" "user" ];`. In standard Linux `/etc/fstab` semantics, the `user` flag implicitly enforces `noexec,nosuid,nodev` as a security precaution, preventing any binaries or Proton scripts from executing directly off the filesystem.
+- **Resolution:** Replaced `user` with `[ "defaults" "nofail" "x-systemd.automount" "exec" ]`.
+
+---
+
+## 9. Electron Autostart `SIGILL` on NixOS (Equibop)
+- **Symptom:** Equibop crashed on desktop login with `Signal: 4 (ILL) si_code: ILL_ILLOPN` in `/var/lib/systemd/coredump/`.
+- **Cause:** When Equibop's built-in "Run at Startup" option is toggled, it resolves `process.execPath`. On NixOS, this pointed directly to the raw, unwrapped binary `/nix/store/...-electron-unwrapped-43.6.0/libexec/electron/electron` inside `~/.config/autostart/equibop.desktop`, bypassing the required Nix dynamic linker wrapper (`steam-run`/`wrapElectron`/`nix-ld`) and Wayland flags.
+- **Resolution:** Replaced `Exec` in `~/.config/autostart/equibop.desktop` with `equibop --start-minimized` and marked the file read-only (`chmod 444`) to prevent the app from overwriting it.
+
+---
+
+## 10. Wine Drive Letter Conflict with USB Installer Devices (`honkers-launcher`)
+- **Symptom:** `honkers-launcher` exited immediately after clicking "Play". Game logs reported:
+  ```text
+  wine: could not open working directory L"G:\\", starting in the Windows directory.
+  Failed to create process L"BH3.exe": 2
+  ```
+- **Cause:** `config.json` had `"game_folder": "G"`. However, Wine auto-scanned block devices on startup and discovered `/dev/sda2` (the SanDisk NixOS USB installer stick plugged into the system), generating a raw block device symlink `dosdevices/g:: -> /dev/sda2`. Because `g::` was bound to a block device, Wine refused to treat `G:\` as a filesystem directory, breaking `BH3.exe` execution.
+- **Resolution:**
+  1. Updated `game_folder` from `G` to `X` in [`~/.local/share/honkers-launcher/config.json`](file:///home/nnon/.local/share/honkers-launcher/config.json).
+  2. Linked `~/.local/share/honkers-launcher/prefix/dosdevices/x:` to `/run/media/nnon/Tera/Honkai Impact`.
+  3. Ensured `BH3.exe` had execute permissions (`chmod +x`).
+  4. Verified execution succeeds inside `steam-run` with NTSync.
