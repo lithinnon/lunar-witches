@@ -22,9 +22,13 @@
       options btusb enable_autosuspend=N
     '';
 
-    # Sysfs permissions for amdgpu-boost performance switcher
+    # Sysfs permissions for amdgpu-boost & sync-power-state.sh
     systemd.tmpfiles.rules = [
       "z /sys/class/drm/card1/device/power_dpm_force_performance_level 0666 root root -"
+      "z /sys/devices/platform/asus-nb-wmi/panel_od 0666 root root -"
+      "z /sys/devices/platform/asus-nb-wmi/throttle_thermal_policy 0666 root root -"
+      "z /sys/devices/system/cpu/cpufreq/boost 0666 root root -"
+      "z /sys/devices/system/cpu/cpu*/cpufreq/boost 0666 root root -"
     ];
 
     # ASUS Laptop Control Daemon (asusd & asusctl)

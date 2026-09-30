@@ -42,6 +42,7 @@
     environment.systemPackages = with pkgs; [
       gpu-screen-recorder-gtk
       kdePackages.ksshaskpass
+      kdePackages.libkscreen
       kdePackages.plasma-browser-integration
       wl-clipboard
     ];
