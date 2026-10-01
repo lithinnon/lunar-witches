@@ -10,7 +10,9 @@
     system = "x86_64-linux";
     specialArgs = { inherit inputs self; };
     modules = [
-      # 1. Physical Disks & Partitions (Unique to this NVMe and SD Card)
+      # 1. Physical Disks & Declarative Partitions (Disko & Hardware)
+      inputs.disko.nixosModules.disko
+      ./disko.nix
       ./hardware.nix
 
       # 2. Universal System Foundation

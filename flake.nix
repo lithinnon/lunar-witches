@@ -38,6 +38,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Libraries / Dependencies
     flake-compat = {
       url = "github:NixOS/flake-compat";
@@ -60,7 +65,7 @@
         ./pkgs
       ];
 
-      perSystem = { config, pkgs, ... }: {
+      perSystem = { pkgs, ... }: {
         formatter = pkgs.nixfmt;
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
