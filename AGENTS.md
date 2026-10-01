@@ -63,6 +63,7 @@ flowchart TD
         F1["feature-amdgpu-boost (GPU governor)"]
         F2["feature-syncthing (File sync)"]
         F3["feature-chulawifi (Campus 802.1x)"]
+        F4["feature-openssh (Hardened sshd)"]
     end
 
     subgraph T5["Tier 5: Software Suites"]
@@ -95,7 +96,7 @@ flowchart TD
 | **`modules/core/`** | `self.nixosModules.core` | Universal baseline for ALL machines (servers, laptops, desktops). Nix settings, `nh` helper, basic CLI utilities, locale, zsh/bash/fish basics, `nix-ld`. Zero GUI or hardware assumptions. |
 | **`modules/roles/`** | `self.nixosModules.role-*` | Machine form-factor roles: `laptop.nix` (battery management, power-profiles-daemon), `desktop.nix` (stationary, sleep policies), `server.nix` (headless), `boot-systemd.nix`. |
 | **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-integrated`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
-| **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`). |
+| **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`, `openssh.nix`). |
 | **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `development/default.nix`. |
 | **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon.nix`). |
 | **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |

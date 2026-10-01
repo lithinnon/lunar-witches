@@ -21,9 +21,12 @@
     };
     security.pam.services.login.kwallet.enable = true;
 
+    programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+
     environment.sessionVariables = {
       SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
       NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+      SSH_ASKPASS_REQUIRE = "prefer";
       NIXOS_OZONE_WL = "1";
 
       # Client-side Computer Use Agent (CUA) automation driver Wayland protocol backend

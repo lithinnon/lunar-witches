@@ -22,12 +22,22 @@
           default = "6933200721";
           description = "Chulalongkorn University student/staff ID for user nnon.";
         };
+
+        authorizedKeys = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPvk/9JeTPOjRQqe3FPz0fluRQ4OvXfCwARekR0po3QI DESKTOP-E3G9LEN"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICxI0yuzlImWA4Xza+3f6aQXT4Fdr0UgIo676hpynRG3 default@hermes"
+          ];
+          description = "SSH authorized public keys for user nnon.";
+        };
       };
 
       config = {
         users.users.nnon = {
           isNormalUser = true;
           description = "nnon";
+          openssh.authorizedKeys.keys = config.users.nnon.authorizedKeys;
           extraGroups = [
             "wheel"
             "networkmanager"
@@ -47,6 +57,7 @@
           ];
           home.sessionVariables = {
             NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+            SSH_ASKPASS_REQUIRE = "prefer";
           };
 
           home.shellAliases = {
@@ -121,6 +132,24 @@
           };
 
           programs.vscode.enable = true;
+
+          programs.ssh = {
+            enable = true;
+            enableDefaultConfig = false;
+            settings = {
+              "*" = {
+                AddKeysToAgent = "yes";
+              };
+              "white" = {
+                HostName = "10.10.0.7";
+                IdentityFile = "~/.ssh/other-keys/DESKTOP-E3G9LEN/id_ed25519";
+              };
+              "i2cedt-2" = {
+                HostName = "ec2-3-94-117-168.compute-1.amazonaws.com";
+                User = "ubuntu";
+              };
+            };
+          };
 
           programs.git = {
             enable = true;

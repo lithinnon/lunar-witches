@@ -152,3 +152,15 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 - **Wi-Fi & Bluetooth Antenna Contention:**
   - The Realtek RTL8852CE combo card shares physical radio antennas between Wi-Fi and Bluetooth. 802.11 dynamic power save causes background probe scans that lock the Packet Traffic Arbitration (PTA) engine, starving Bluetooth audio streams.
   - Disabled Wi-Fi power save declaratively in [`modules/roles/laptop.nix`](file:///home/nnon/lunar-witches/modules/roles/laptop.nix) (`networking.networkmanager.wifi.powersave = false`) complementing the low-level kernel module parameter in [`hw-network-realtek-rtw89`](file:///home/nnon/lunar-witches/modules/hardware/network/realtek-rtw89.nix) (`options rtw89_core disable_ps_mode=y`).
+
+---
+
+## 13. Hardened OpenSSH Daemon & Passphrase-Backed SSH Agent Integration
+- **Inbound SSH Server (`feature-openssh`):**
+  - Encapsulated into [`modules/features/openssh.nix`](file:///home/nnon/lunar-witches/modules/features/openssh.nix) exporting `self.nixosModules.feature-openssh`.
+  - Enforces strict key-only authentication: `PasswordAuthentication = false`, `KbdInteractiveAuthentication = false`, `PermitRootLogin = "no"`.
+  - Authorized public keys are managed declaratively in [`modules/users/nnon.nix`](file:///home/nnon/lunar-witches/modules/users/nnon.nix) under `users.users.nnon.openssh.authorizedKeys.keys`.
+- **Outbound SSH Client & Passphrase Management:**
+  - `programs.ssh.startAgent = true;` provisioned in [`modules/core/default.nix`](file:///home/nnon/lunar-witches/modules/core/default.nix) to ensure a systemd user OpenSSH agent runs on all machines and exports `SSH_AUTH_SOCK` seamlessly across shells (fish/bash).
+  - Configured graphical passphrase caching via KDE Plasma's `ksshaskpass` (`SSH_ASKPASS` and `SSH_ASKPASS_REQUIRE = "prefer"`) in [`modules/suites/desktop/plasma.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/plasma.nix) and user session variables, allowing KWallet to securely remember passphrases for encrypted Ed25519 keys.
+  - SSH client aliases (`white`, `i2cedt-2`) and `addKeysToAgent = "yes"` declared purely in Home Manager's `programs.ssh`.

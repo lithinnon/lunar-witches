@@ -59,6 +59,7 @@
         };
 
         programs.fish.enable = true;
+        programs.ssh.startAgent = true;
         environment.localBinInPath = true;
 
         # Graphical AskPass passthrough for KDE ksshaskpass

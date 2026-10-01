@@ -6,5 +6,6 @@
     ./amdgpu-boost.nix
     ./syncthing.nix
     ./chulawifi.nix
+    ./openssh.nix
   ];
 }

@@ -35,6 +35,7 @@
       self.nixosModules.feature-amdgpu-boost
       self.nixosModules.feature-syncthing
       self.nixosModules.feature-chulawifi
+      self.nixosModules.feature-openssh
 
       # 6. Workload Suites
       self.nixosModules.suite-desktop-plasma
