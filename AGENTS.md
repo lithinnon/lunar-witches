@@ -192,9 +192,6 @@ nh os build /home/nnon/lunar-witches
 # 4. Activate configuration on live system (triggers graphical ksshaskpass)
 nh os switch /home/nnon/lunar-witches
 
-# 5. Check TTM page limits
-amd-ttm
-
-# 6. Clean older generations (keeps last 3)
+# 5. Clean older generations (keeps last 3)
 nh clean all --keep 3
 ```

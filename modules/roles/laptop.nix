@@ -2,26 +2,32 @@
 { self, ... }:
 
 {
-  flake.nixosModules.role-laptop = { config, lib, pkgs, ... }: {
-    imports = [
-      self.nixosModules.boot-systemd
-    ];
+  flake.nixosModules.role-laptop =
+    {
+      lib,
+      pkgs,
+      ...
+    }:
+    {
+      imports = [
+        self.nixosModules.boot-systemd
+      ];
 
-    # Dynamic network management for roving WiFi/Ethernet
-    networking.networkmanager = {
-      enable = true;
-      wifi.powersave = false;
-      plugins = with pkgs; [
-        networkmanager-openvpn
+      # Dynamic network management for roving WiFi/Ethernet
+      networking.networkmanager = {
+        enable = true;
+        wifi.powersave = false;
+        plugins = with pkgs; [
+          networkmanager-openvpn
+        ];
+      };
+
+      # Power & battery profile management
+      services.power-profiles-daemon.enable = lib.mkDefault true;
+
+      # Dynamic refresh rate and power switching utility
+      environment.systemPackages = [
+        pkgs.sync-power-state
       ];
     };
-
-    # Power & battery profile management
-    services.power-profiles-daemon.enable = lib.mkDefault true;
-
-    # Dynamic refresh rate and power switching utility
-    environment.systemPackages = [
-      pkgs.sync-power-state
-    ];
-  };
 }

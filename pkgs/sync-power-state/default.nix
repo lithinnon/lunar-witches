@@ -1,10 +1,11 @@
-{ lib
-, stdenv
-, makeWrapper
-, bash
-, coreutils
-, gnugrep
-, kdePackages
+{
+  lib,
+  stdenv,
+  makeWrapper,
+  bash,
+  coreutils,
+  gnugrep,
+  kdePackages,
 }:
 
 stdenv.mkDerivation {
@@ -21,12 +22,14 @@ stdenv.mkDerivation {
     cp sync-power-state.sh $out/bin/sync-power-state
     chmod +x $out/bin/sync-power-state
     wrapProgram $out/bin/sync-power-state \
-      --prefix PATH : ${lib.makeBinPath [
-        bash
-        coreutils
-        gnugrep
-        kdePackages.libkscreen
-      ]}
+      --prefix PATH : ${
+        lib.makeBinPath [
+          bash
+          coreutils
+          gnugrep
+          kdePackages.libkscreen
+        ]
+      }
   '';
 
   meta = with lib; {

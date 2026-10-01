@@ -1,4 +1,8 @@
-{ lib, stdenv, python3 }:
+{
+  lib,
+  stdenv,
+  python3,
+}:
 
 stdenv.mkDerivation {
   pname = "amd-ttm";

@@ -1,16 +1,17 @@
-{ lib
-, stdenv
-, makeWrapper
-, bash
-, coreutils
-, gawk
-, gnused
-, gnugrep
-, systemd
-, dbus
-, libnotify
-, asusctl
-, kdePackages
+{
+  lib,
+  stdenv,
+  makeWrapper,
+  bash,
+  coreutils,
+  gawk,
+  gnused,
+  gnugrep,
+  systemd,
+  dbus,
+  libnotify,
+  asusctl,
+  kdePackages,
 }:
 
 stdenv.mkDerivation {
@@ -27,18 +28,20 @@ stdenv.mkDerivation {
     cp amdgpu-boost.sh $out/bin/amdgpu-boost
     chmod +x $out/bin/amdgpu-boost
     wrapProgram $out/bin/amdgpu-boost \
-      --prefix PATH : ${lib.makeBinPath [
-        bash
-        coreutils
-        gawk
-        gnused
-        gnugrep
-        systemd
-        dbus
-        libnotify
-        asusctl
-        kdePackages.libkscreen
-      ]}
+      --prefix PATH : ${
+        lib.makeBinPath [
+          bash
+          coreutils
+          gawk
+          gnused
+          gnugrep
+          systemd
+          dbus
+          libnotify
+          asusctl
+          kdePackages.libkscreen
+        ]
+      }
   '';
 
   meta = with lib; {
