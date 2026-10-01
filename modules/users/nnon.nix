@@ -45,6 +45,9 @@
           home.sessionPath = [
             "$HOME/.local/bin"
           ];
+          home.sessionVariables = {
+            NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+          };
 
           home.shellAliases = {
             amdgpu-reset = "sudo -A cat /sys/kernel/debug/dri/1/amdgpu_gpu_recover";

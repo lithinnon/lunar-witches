@@ -22,8 +22,9 @@
 3. **Declarative NixOS Only:**
    - NEVER suggest or execute imperative package managers (`apt`, `dnf`, `rpm`, `pacman`) or imperative bootloader tools (`grubby`, `update-grub`).
    - All system packages, kernel parameters, daemons, and environment variables MUST be declared in Nix files within this repository.
-4. **Privilege Escalation:**
+4. **Privilege Escalation & AskPass (`nh` & `sudo`):**
    - When suggesting commands requiring `sudo`, ALWAYS use `sudo -A` (Askpass). The system is configured with KDE Plasma's `ksshaskpass` graphical dialog so user credentials are never handled directly by the agent.
+   - For `nh os switch`, `nh`'s internal Rust elevation logic specifically requires `NH_SUDO_ASKPASS` (or `NH_SUDOOPTS="-A"`) to pass `-A` to `sudo`. `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` is declaratively provisioned in `suite-desktop-plasma` and `user-nnon.home.sessionVariables`. When executing `nh os switch` in non-login subshells or fresh scripts, explicitly prefix `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch ...` to guarantee graphical authentication.
 5. **Containerization Interface:**
    - NEVER suggest raw `podman` CLI commands. The host runs rootless Podman aliased to the `docker` CLI interface for consistent tooling and caching. Suggest `docker` commands instead.
 6. **Nix Store Secrets Boundary:**
@@ -189,8 +190,10 @@ nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-
 # 3. Build and cache candidate generation locally
 nh os build /home/nnon/lunar-witches
 
-# 4. Activate configuration on live system (triggers graphical ksshaskpass)
+# 4. Activate configuration on live system (triggers graphical ksshaskpass via NH_SUDO_ASKPASS)
 nh os switch /home/nnon/lunar-witches
+# (If executing from a non-login subshell or automated runner, explicitly prefix:
+# NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches)
 
 # 5. Clean older generations (keeps last 3)
 nh clean all --keep 3

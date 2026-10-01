@@ -23,6 +23,7 @@
 
     environment.sessionVariables = {
       SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+      NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
       NIXOS_OZONE_WL = "1";
 
       # Client-side Computer Use Agent (CUA) automation driver Wayland protocol backend
