@@ -33,6 +33,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    bedrock-on-linux = {
+      url = "github:Wyze3306/BedrockOnLinux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Libraries / Dependencies
     flake-compat = {
       url = "github:NixOS/flake-compat";

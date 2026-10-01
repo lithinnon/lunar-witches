@@ -21,6 +21,7 @@
 
     # Gaming & Compatibility Utilities
     environment.systemPackages = with pkgs; [
+      inputs.bedrock-on-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
       mangohud
       protonplus
       sgdboop
