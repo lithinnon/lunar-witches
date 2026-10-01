@@ -10,6 +10,7 @@
     # Dynamic network management for roving WiFi/Ethernet
     networking.networkmanager = {
       enable = true;
+      wifi.powersave = false;
       plugins = with pkgs; [
         networkmanager-openvpn
       ];

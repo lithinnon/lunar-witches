@@ -32,6 +32,7 @@
       # 5. Opt-in Features for this machine
       self.nixosModules.feature-amdgpu-boost
       self.nixosModules.feature-syncthing
+      self.nixosModules.feature-chulawifi
 
       # 6. Workload Suites
       self.nixosModules.suite-desktop-plasma
@@ -81,6 +82,12 @@
 
         # Machine Syncthing Enablement
         services.syncthing.enable = true;
+
+        # University WiFi profile for Chula campus
+        features.chulawifi = {
+          enable = true;
+          identity = "6933200721";
+        };
       })
     ];
   };

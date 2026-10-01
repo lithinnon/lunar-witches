@@ -59,9 +59,16 @@
             # Ensure ~/.local/bin is always in PATH
             fish_add_path --path --prepend "$HOME/.local/bin"
 
-            # Load unmanaged user secrets if present
+            # Load unmanaged user secrets if present (supports KEY=VALUE and export KEY=VALUE)
             if test -f "$HOME/.config/secrets.env"
-              source "$HOME/.config/secrets.env"
+              for line in (cat "$HOME/.config/secrets.env" | string match -r "^(export\\s+)?[^#\\s=]+=[^\\n]*")
+                set -l clean (string replace -r "^export\\s+" "" $line)
+                set -l kv (string split -m 1 = $clean)
+                if test (count $kv) -eq 2
+                  set -l val (string trim -c "\"'" "$kv[2]")
+                  set -gx $kv[1] $val
+                end
+              end
             end
           '';
           interactiveShellInit = ''
@@ -81,7 +88,9 @@
 
             # Load unmanaged user secrets if present
             if [ -f "$HOME/.config/secrets.env" ]; then
+              set -a
               source "$HOME/.config/secrets.env"
+              set +a
             fi
           '';
         };
