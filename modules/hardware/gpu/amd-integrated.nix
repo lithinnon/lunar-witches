@@ -1,8 +1,8 @@
-# Hardware trait: AMD Unified Memory Architecture (APU / Strix Halo / Phoenix)
+# Hardware trait: AMD Integrated GPU (iGPU / APU / Strix Halo / Phoenix)
 { self, ... }:
 
 {
-  flake.nixosModules.hw-gpu-amd-uma =
+  flake.nixosModules.hw-gpu-amd-integrated =
     {
       config,
       lib,
@@ -10,15 +10,15 @@
       ...
     }:
     let
-      cfg = config.hardware.amdgpu.uma;
+      cfg = config.hardware.amdgpu.integrated;
     in
     {
       imports = [
         self.nixosModules.hw-gpu-amd
       ];
 
-      options.hardware.amdgpu.uma = {
-        enable = lib.mkEnableOption "AMD Unified Memory Architecture (APU) optimizations";
+      options.hardware.amdgpu.integrated = {
+        enable = lib.mkEnableOption "AMD integrated GPU (iGPU/APU) optimizations";
 
         ttmPagesLimit = lib.mkOption {
           type = lib.types.nullOr lib.types.int;

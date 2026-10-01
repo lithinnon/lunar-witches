@@ -5,7 +5,7 @@
   imports = [
     ./cpu/amd.nix
     ./gpu/amd.nix
-    ./gpu/amd-uma.nix
+    ./gpu/amd-integrated.nix
     ./memory/zswap.nix
     ./network/realtek-rtw89.nix
     ./bluetooth.nix

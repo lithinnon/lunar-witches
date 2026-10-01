@@ -23,7 +23,7 @@
 
       # 4. Hardware Traits
       self.nixosModules.hw-cpu-amd
-      self.nixosModules.hw-gpu-amd-uma
+      self.nixosModules.hw-gpu-amd-integrated
       self.nixosModules.hw-memory-zswap
       self.nixosModules.hw-network-realtek-rtw89
       self.nixosModules.hw-bluetooth
@@ -66,7 +66,7 @@
 
         # Machine-Specific Parameters for 32GB RAM Strix Halo
         # 5,862,940 pages == 24,014,602,240 bytes (approx 22.365 GiB / 24.014 GB)
-        hardware.amdgpu.uma = {
+        hardware.amdgpu.integrated = {
           enable = true;
           ttmPagesLimit = 5862940;
           overrideGfxVersion = "11.5.1";

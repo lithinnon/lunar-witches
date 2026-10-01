@@ -52,7 +52,7 @@ flowchart TD
 
     subgraph T3["Tier 3: Hardware Traits"]
         H1["hw-cpu-amd"]
-        H2["hw-gpu-amd & hw-gpu-amd-uma"]
+        H2["hw-gpu-amd & hw-gpu-amd-integrated"]
         H3["hw-memory-zswap"]
         H4["hw-network-realtek-rtw89"]
         H5["hw-oem-asus-base & hw-oem-asus-laptop"]
@@ -94,7 +94,7 @@ flowchart TD
 | :--- | :--- | :--- |
 | **`modules/core/`** | `self.nixosModules.core` | Universal baseline for ALL machines (servers, laptops, desktops). Nix settings, `nh` helper, basic CLI utilities, locale, zsh/bash/fish basics, `nix-ld`. Zero GUI or hardware assumptions. |
 | **`modules/roles/`** | `self.nixosModules.role-*` | Machine form-factor roles: `laptop.nix` (battery management, power-profiles-daemon), `desktop.nix` (stationary, sleep policies), `server.nix` (headless), `boot-systemd.nix`. |
-| **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-uma`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
+| **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-integrated`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
 | **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`). |
 | **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `development/default.nix`. |
 | **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon.nix`). |
@@ -113,7 +113,7 @@ When adding new configurations or options, follow these boundary guidelines:
    - Gaming-specific runners (`steam`, `gamescope`, `honkers-launcher`, `bedrock-on-linux`) belong strictly in **`modules/suites/gaming/default.nix`**.
 2. **Where do hardware parameters belong?:**
    - NEVER hardcode arbitrary machine limits (such as `5862940` TTM pages or `card1` DRM devices) inside `modules/hardware/`.
-   - Expose typed options via `lib.mkOption` (e.g. `hardware.amdgpu.uma.ttmPagesLimit`, `services.amdgpu-boost.card`) and assign the exact values in the leaf manifest `hosts/<hostname>/default.nix`.
+   - Expose typed options via `lib.mkOption` (e.g. `hardware.amdgpu.integrated.ttmPagesLimit`, `services.amdgpu-boost.card`) and assign the exact values in the leaf manifest `hosts/<hostname>/default.nix`.
 3. **Upstream Mesa & Kernel Features:**
    - Do NOT introduce redundant driver environment variables if newer Mesa/Kernel versions stabilize them upstream.
    - Example: Mesa 26.2.3 enables `bfloat16` by default on RDNA 3/3.5, making `RADV_EXPERIMENTAL = "bfloat16"` obsolete.
@@ -182,7 +182,7 @@ All routine operations should be conducted through declarative tooling:
 
 ```bash
 # 1. Format and check syntax
-nix fmt
+nix fmt ./**.nix
 
 # 2. Dry-build evaluation test (no root required)
 nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run
