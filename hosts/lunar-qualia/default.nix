@@ -70,6 +70,7 @@
           ttmPagesLimit = 5862940;
           overrideGfxVersion = "11.5.1";
           rocmArch = "gfx1151";
+          disableDcIps = true; # Fix sleep/suspend issues with newer AMD CPU Display Core IPS
         };
 
         # Machine-Specific GPU Boost Device
@@ -79,7 +80,7 @@
         };
 
         # Machine Syncthing Enablement
-        services.lunar-syncthing.enable = true;
+        services.syncthing.enable = true;
       })
     ];
   };

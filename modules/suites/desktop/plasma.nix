@@ -22,10 +22,13 @@
     };
     security.pam.services.login.kwallet.enable = true;
 
-    # Universal Wayland Session Flags
+    # Universal Wayland Session Flags & Client Desktop Drivers
     environment.sessionVariables = {
       SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
       NIXOS_OZONE_WL = "1";
+
+      # Client-side Computer Use Agent (CUA) automation driver Wayland protocol backend
+      CUA_DRIVER_RS_ENABLE_WAYLAND = "1";
     };
 
     # Plasma Integration Packages
