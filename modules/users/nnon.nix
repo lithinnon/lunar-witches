@@ -27,7 +27,6 @@
           type = lib.types.listOf lib.types.str;
           default = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPvk/9JeTPOjRQqe3FPz0fluRQ4OvXfCwARekR0po3QI DESKTOP-E3G9LEN"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICxI0yuzlImWA4Xza+3f6aQXT4Fdr0UgIo676hpynRG3 default@hermes"
           ];
           description = "SSH authorized public keys for user nnon.";
         };
