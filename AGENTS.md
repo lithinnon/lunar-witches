@@ -67,7 +67,7 @@ flowchart TD
     subgraph T5["Tier 5: Software Suites"]
         S1["suite-desktop-plasma (KDE 6 Wayland)"]
         S2["suite-desktop-apps (Brave, KeePassXC, Bottles, etc.)"]
-        S3["suite-gaming (Steam, GameScope, Honkers)"]
+        S3["suite-gaming (Steam, GameScope, Honkers, Bedrock)"]
         S4["suite-ai-rocm & suite-ai-antigravity"]
         S5["suite-development (Compilers, uv, git)"]
     end
@@ -109,7 +109,7 @@ When adding new configurations or options, follow these boundary guidelines:
 
 1. **Where does a Windows utility belong? (`bottles` vs. `steam`):**
    - General-purpose Windows emulation (`bottles`) belongs in **`modules/suites/desktop/apps.nix`** because it runs academic software, VPN utilities, and productivity tools.
-   - Gaming-specific runners (`steam`, `gamescope`, `honkers-launcher`) belong strictly in **`modules/suites/gaming/default.nix`**.
+   - Gaming-specific runners (`steam`, `gamescope`, `honkers-launcher`, `bedrock-on-linux`) belong strictly in **`modules/suites/gaming/default.nix`**.
 2. **Where do hardware parameters belong?:**
    - NEVER hardcode arbitrary machine limits (such as `5862940` TTM pages or `card1` DRM devices) inside `modules/hardware/`.
    - Expose typed options via `lib.mkOption` (e.g. `hardware.amdgpu.uma.ttmPagesLimit`, `services.amdgpu-boost.card`) and assign the exact values in the leaf manifest `hosts/<hostname>/default.nix`.
