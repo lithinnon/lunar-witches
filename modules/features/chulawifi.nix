@@ -10,21 +10,42 @@
     }:
     let
       cfg = config.features.chulawifi;
+      userHome =
+        if cfg.user != null && config.users.users ? ${cfg.user} then
+          config.users.users.${cfg.user}.home
+        else
+          null;
+      resolvedIdentity =
+        if cfg.identity != null then
+          cfg.identity
+        else if
+          cfg.user != null && (config.users ? ${cfg.user} && config.users.${cfg.user} ? chulawifiIdentity)
+        then
+          config.users.${cfg.user}.chulawifiIdentity
+        else
+          null;
     in
     {
       options.features.chulawifi = {
         enable = lib.mkEnableOption "ChulaWiFi 802.1x enterprise connection profile";
 
+        user = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          example = "nnon";
+          description = "User who owns this connection profile and whose home contains secrets.env.";
+        };
+
         identity = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = null;
           example = "6933200721";
-          description = "Chula Student/Staff ID. If null, substituted via $CHULA_WIFI_IDENTITY from environmentFile.";
+          description = "Chula Student/Staff ID. If null, resolved via user profile or $CHULA_WIFI_IDENTITY from environmentFile.";
         };
 
         environmentFile = lib.mkOption {
           type = lib.types.nullOr lib.types.path;
-          default = "/home/nnon/.config/secrets.env";
+          default = if userHome != null then "${userHome}/.config/secrets.env" else null;
           description = "Path to environment file containing CHULA_WIFI_PASSWORD / CHULA_WIFI_IDENTITY for envsubst.";
         };
 
@@ -50,6 +71,9 @@
               type = "wifi";
               autoconnect = cfg.autoconnect;
               autoconnect-priority = cfg.priority;
+            }
+            // lib.optionalAttrs (cfg.user != null) {
+              permissions = "user:${cfg.user}:;";
             };
             wifi = {
               mode = "infrastructure";
@@ -61,7 +85,7 @@
             "802-1x" = {
               eap = "peap";
               phase2-auth = "mschapv2";
-              identity = if cfg.identity != null then cfg.identity else "$CHULA_WIFI_IDENTITY";
+              identity = if resolvedIdentity != null then resolvedIdentity else "$CHULA_WIFI_IDENTITY";
               password = "$CHULA_WIFI_PASSWORD";
               # Allows legacy ciphers & TLS 1.0 handshake required by Chula's RADIUS server
               openssl-ciphers = "DEFAULT@SECLEVEL=0";

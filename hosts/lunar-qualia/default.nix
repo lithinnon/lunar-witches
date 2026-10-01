@@ -88,7 +88,7 @@
         # University WiFi profile for Chula campus
         features.chulawifi = {
           enable = true;
-          identity = "6933200721";
+          user = "nnon";
         };
       })
     ];

@@ -16,6 +16,12 @@
           default = "9106CA7732D04633";
           description = "GPG signing key ID for user nnon.";
         };
+
+        chulawifiIdentity = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = "6933200721";
+          description = "Chulalongkorn University student/staff ID for user nnon.";
+        };
       };
 
       config = {
