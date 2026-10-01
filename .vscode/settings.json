@@ -10,6 +10,14 @@
             "nixpkgs": {
                 "expr": "import (builtins.getFlake (builtins.toString ./.)).inputs.nixpkgs { }"
             },
+            "options": {
+                "nixos": {
+                    "expr": "(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.lunar-qualia.options"
+                },
+                "home-manager": {
+                    "expr": "(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.lunar-qualia.options.home-manager.users.type.getSubOptions []"
+                }
+            },
             "formatting": {
                 "command": [
                     "nixfmt",
