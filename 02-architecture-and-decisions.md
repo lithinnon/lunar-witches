@@ -113,14 +113,14 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 - **Architectural Separation:**
   - **1. Universal Core (`modules/core/`):** Universal foundation (Nix flakes, `nh`, basic CLI utilities, locale, sudo) with zero GUI, gaming, or hardware assumptions.
   - **2. Form Factor Roles (`modules/roles/`):** `laptop` (power profiles, battery sync), `desktop` (stationary), and `server` (headless, no sleep targets).
-  - **3. Hardware Traits (`modules/hardware/`):** Decomposed by silicon vendor (`cpu/amd`, `gpu/amd`, `gpu/amd-uma`), memory cache (`memory/zswap`), network chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/base`, `oem/asus/laptop`), and peripherals (`yubikey`, `keychron`).
+  - **3. Hardware Traits (`modules/hardware/`):** Decomposed by silicon vendor (`cpu/amd`, `gpu/amd`, `gpu/amd-integrated`), memory cache (`memory/zswap`), network chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/base`, `oem/asus/laptop`), and peripherals (`yubikey`, `keychron`).
   - **4. Decoupled Features (`modules/features/`):** Opt-in daemons (`amdgpu-boost`, `syncthing`) defined with typed module options rather than forced on all AMD or desktop machines.
   - **5. Capability Suites (`modules/suites/`):** Segmented into `desktop/plasma`, `desktop/audio`, `desktop/fonts`, `desktop/apps`, `gaming`, `ai`, and `development`.
   - **6. Pure Composition Host Leaves (`hosts/<hostname>/default.nix`):** Composes the above traits and supplies the exact machine parameters.
 - **Bottles Classification Rationale:**
   - `bottles` was deliberately placed in `suite-desktop-apps` rather than `suite-gaming` because it serves as a general-purpose Windows application container (used for productivity, utilities, creative software), unlike Steam or gaming-specific launchers.
-- **Parametric UMA TTM Limits:**
-  - `hardware.amdgpu.uma` exposes typed options (`ttmPagesLimit`, `overrideGfxVersion`, `rocmArch`) rather than hardcoding values.
+- **Parametric Integrated GPU & TTM Limits:**
+  - `hardware.amdgpu.integrated` exposes typed options (`ttmPagesLimit`, `overrideGfxVersion`, `rocmArch`, `disableDcIps`) rather than hardcoding values.
   - On `lunar-qualia`, the leaf host configures `ttmPagesLimit = 5862940` (exactly 24,014,602,240 bytes / ~22.365 GiB for its 32GB RAM profile), allowing any future 64GB or 128GB Strix Halo machine to cleanly configure its own limit without modifying generic modules.
 
 ---
@@ -132,7 +132,7 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
   - Removed `amdgpu.gpu_recovery=1` from baseline GPU traits.
 - **AMD Display Core IPS Sleep Quirk (`amdgpu.dcdebugmask=0x800`):**
   - Newer AMD APUs exhibit sleep/suspend hangs when entering Display Core Idle Power States (IPS 1/2) with internal eDP panels.
-  - Rather than forcing this on all AMD machines, it was parameterized as `hardware.amdgpu.uma.disableDcIps = true;` and enabled specifically on `lunar-qualia`.
+  - Rather than forcing this on all AMD machines, it was parameterized as `hardware.amdgpu.integrated.disableDcIps = true;` and enabled specifically on `lunar-qualia`.
 - **Computer Use Agent (CUA) Wayland Driver Boundary:**
   - `CUA_DRIVER_RS_ENABLE_WAYLAND = "1"` was decoupled from the Antigravity AI compute suite and integrated into `suite-desktop-plasma`.
   - Rationale: Computer Use automation is a client-side capability that manipulates windows, cursor, and keyboard input, strictly requiring an active graphical desktop/window manager rather than an AI inference backend.
