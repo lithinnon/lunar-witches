@@ -101,3 +101,13 @@ During the migration and post-install configuration, several notable edge cases 
   2. Linked `~/.local/share/honkers-launcher/prefix/dosdevices/x:` to `/run/media/nnon/Tera/Honkai Impact`.
   3. Ensured `BH3.exe` had execute permissions (`chmod +x`).
   4. Verified execution succeeds inside `steam-run` with NTSync.
+
+---
+
+## 11. KDE Plasma 6 SDDM Settings Module Discovery
+- **Symptom:** The "Login Screen (SDDM)" configuration panel was not present under the "Colors & Themes" sidebar sub-menu in System Settings.
+- **Cause:** KDE Plasma 6 restructured its settings categorization. `sddm-kcm` is no longer nested under "Colors & Themes" by default; it is indexed as a top-level search result or accessible via its standalone KCM execution target.
+- **Resolution:**
+  - Search directly for `Login Screen` or `SDDM` in the System Settings search bar.
+  - Alternatively, launch the module directly via `kcmshell6 kcm_sddm` or KRunner (<kbd>Alt</kbd> + <kbd>Space</kbd>).
+  - Use the "Apply Plasma Settings..." button inside `kcm_sddm` to synchronize lock screen wallpapers, fonts, and color themes to the SDDM greeter.

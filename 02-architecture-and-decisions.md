@@ -82,3 +82,25 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 - **Decision:**
   - Configured `programs.git.extraConfig.safe.directory = "*"` declaratively in `home.nix`.
   - Ensures seamless flake evaluations, git operations, and automated rebuilds across privilege boundaries without manual permissions workarounds.
+
+---
+
+## 8. Secrets Management & The World-Readable `/nix/store` Boundary
+- **The Core Problem:**
+  - On NixOS, any string declared in `.nix` files (e.g. `environment.sessionVariables` or `home.sessionVariables`) is serialized into plain-text derivations inside `/nix/store/`.
+  - The Nix store is world-readable (`chmod -R a+r /nix/store`). Any unprivileged process or compromised script can inspect or grep keys out of the store.
+  - Hardcoding secrets also risks committing them to Git history and leaking them when pushing flake repositories.
+- **Strategy & Decision (Local Out-of-Tree Env File):**
+  - Personal API tokens (e.g. `HF_TOKEN`, LLM keys) are kept outside the Nix store in `~/.config/secrets.env` with strict permissions (`chmod 600`).
+  - Declaratively wired into shell startup in [`hosts/lunar-qualia/home.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/home.nix):
+    - Fish: `test -f "$HOME/.config/secrets.env"; and source "$HOME/.config/secrets.env"` in `programs.fish.shellInit`.
+    - Bash: `[ -f "$HOME/.config/secrets.env" ] && source "$HOME/.config/secrets.env"` in `programs.bash.initExtra`.
+  - **Future Roadmap:** For system-level daemons or CI/CD deployments, adopt `sops-nix` or `agenix` to decrypt secrets into RAM (`/run/secrets/`).
+
+---
+
+## 9. Custom Protocol Handlers & Steam Artwork (`sgdboop`)
+- **Integration:**
+  - Packaged natively via `pkgs.sgdboop` in `home.packages`.
+  - Automatically associates with the `x-scheme-handler/sgdb` MIME type (`com.steamgriddb.SGDBoop.desktop`).
+  - Enables one-click custom game art injection (grids, banners, logos, icons) directly from the SteamGridDB web interface into Steam's local `userdata/<id>/config/grid/` directory without manual asset downloads.
