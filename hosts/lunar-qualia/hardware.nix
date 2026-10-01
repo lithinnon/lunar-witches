@@ -24,10 +24,6 @@
     "kvm-amd"
     "ntsync"
   ];
-  boot.extraModulePackages = [ ];
-
-  # Note: Internal NVMe partitions and BTRFS subvolumes (@, @home, @nix, @snapshots, @log, @swap)
-  # are declaratively managed via ./disko.nix using the Disko NixOS module.
 
   # SD Card Mount (automount when inserted, with execution allowed for games)
   fileSystems."/run/media/nnon/Tera" = {

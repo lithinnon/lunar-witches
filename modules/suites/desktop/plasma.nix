@@ -8,7 +8,6 @@
       self.nixosModules.suite-desktop-fonts
     ];
 
-    # Display Manager (SDDM Wayland) & Plasma 6
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
@@ -22,7 +21,6 @@
     };
     security.pam.services.login.kwallet.enable = true;
 
-    # Universal Wayland Session Flags & Client Desktop Drivers
     environment.sessionVariables = {
       SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
       NIXOS_OZONE_WL = "1";
@@ -31,7 +29,6 @@
       CUA_DRIVER_RS_ENABLE_WAYLAND = "1";
     };
 
-    # Plasma Integration Packages
     environment.systemPackages = with pkgs; [
       kdePackages.ksshaskpass
       kdePackages.libkscreen

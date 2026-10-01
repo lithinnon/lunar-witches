@@ -29,7 +29,6 @@
       };
 
       config = {
-        # Nix Flakes & Package Manager Settings
         nix = {
           settings = {
             experimental-features = [
@@ -50,7 +49,6 @@
           };
         };
 
-        # nh (Yet Another Nix Helper) cache retention
         programs.nh = {
           enable = true;
           clean = {
@@ -60,20 +58,17 @@
           flake = config.core.flakePath;
         };
 
-        # Shell Foundation
         programs.fish.enable = true;
         environment.localBinInPath = true;
 
-        # Security & Sudo AskPass Configuration
+        # Graphical AskPass passthrough for KDE ksshaskpass
         security.sudo.extraConfig = ''
           Defaults passprompt_override,env_keep+="SUDO_ASKPASS"
         '';
 
-        # Timezone and Localization
         time.timeZone = config.core.timeZone;
         i18n.defaultLocale = config.core.defaultLocale;
 
-        # Essential System CLI Utilities
         environment.systemPackages = with pkgs; [
           curl
           wget

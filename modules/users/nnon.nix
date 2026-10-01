@@ -25,7 +25,6 @@
       };
 
       config = {
-        # NixOS user definition
         users.users.nnon = {
           isNormalUser = true;
           description = "nnon";
@@ -40,7 +39,6 @@
           shell = pkgs.fish;
         };
 
-        # Integrated Home Manager configuration for nnon
         home-manager.users.nnon = {
           home.username = "nnon";
           home.homeDirectory = "/home/nnon";
@@ -48,7 +46,6 @@
             "$HOME/.local/bin"
           ];
 
-          # Shell Aliases for all shells
           home.shellAliases = {
             amdgpu-reset = "sudo -A cat /sys/kernel/debug/dri/1/amdgpu_gpu_recover";
             mesa-vk-trace = "touch /tmp/mesa_vk_trace_trigger";
@@ -64,14 +61,9 @@
             setup-optiscaler = "chmod +x ./setup_linux.sh && ./setup_linux.sh";
           };
 
-          # Fish Shell Configuration
           programs.fish = {
             enable = true;
-            shellAliases = config.home-manager.users.nnon.home.shellAliases;
             shellInit = ''
-              # Ensure ~/.local/bin is always in PATH
-              fish_add_path --path --prepend "$HOME/.local/bin"
-
               # Load unmanaged user secrets if present (supports KEY=VALUE and export KEY=VALUE)
               if test -f "$HOME/.config/secrets.env"
                 for line in (cat "$HOME/.config/secrets.env" | string match -r "^(export\\s+)?[^#\\s=]+=[^\\n]*")
@@ -85,20 +77,13 @@
               end
             '';
             interactiveShellInit = ''
-              # Disable fish greeting
               set -g fish_greeting
             '';
           };
 
-          # Bash Shell Configuration
           programs.bash = {
             enable = true;
-            shellAliases = config.home-manager.users.nnon.home.shellAliases;
             initExtra = ''
-              if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-                export PATH="$HOME/.local/bin:$PATH"
-              fi
-
               # Load unmanaged user secrets if present
               if [ -f "$HOME/.config/secrets.env" ]; then
                 set -a
@@ -108,7 +93,6 @@
             '';
           };
 
-          # Standalone User Packages (e.g. BullVPN)
           home.packages = [
             inputs.bullvpn.packages.${pkgs.stdenv.hostPlatform.system}.default
           ];
@@ -133,10 +117,8 @@
             };
           };
 
-          # Visual Studio Code
           programs.vscode.enable = true;
 
-          # Declarative Git Configuration
           programs.git = {
             enable = true;
             signing = {
@@ -153,7 +135,6 @@
             };
           };
 
-          # GnuPG (GPG) & SmartCard / YubiKey Agent
           programs.gpg = {
             enable = true;
             mutableKeys = true;
@@ -188,7 +169,6 @@
             maxCacheTtl = 86400;
           };
 
-          # Let Home Manager manage its own installation
           programs.home-manager.enable = true;
           home.stateVersion = "26.05";
         };

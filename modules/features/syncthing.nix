@@ -3,7 +3,6 @@
 
 {
   flake.nixosModules.feature-syncthing = { config, lib, ... }: {
-    # When services.syncthing.enable is true, apply sensible system defaults
     services.syncthing = lib.mkIf config.services.syncthing.enable {
       user = lib.mkDefault "nnon";
       dataDir = lib.mkDefault "/home/nnon/Sync";

@@ -56,11 +56,9 @@
         boot.kernelPackages =
           inputs.nix-cachyos-kernel.legacyPackages.x86_64-linux.linuxPackages-cachyos-bore-zen4;
 
-        # Allow Unfree Packages & Flake Overlay
         nixpkgs.config.allowUnfree = true;
         nixpkgs.overlays = [ self.overlays.default ];
 
-        # Home Manager Integration Settings
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.backupFileExtension = "backup";
@@ -76,16 +74,13 @@
           disableDcIps = true; # Fix sleep/suspend issues with newer AMD CPU Display Core IPS
         };
 
-        # Machine-Specific GPU Boost Device
         services.amdgpu-boost = {
           enable = true;
           card = "card1";
         };
 
-        # Machine Syncthing Enablement
         services.syncthing.enable = true;
 
-        # University WiFi profile for Chula campus
         features.chulawifi = {
           enable = true;
           user = "nnon";
