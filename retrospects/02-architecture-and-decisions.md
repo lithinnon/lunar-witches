@@ -104,3 +104,21 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
   - Packaged natively via `pkgs.sgdboop` in `home.packages`.
   - Automatically associates with the `x-scheme-handler/sgdb` MIME type (`com.steamgriddb.SGDBoop.desktop`).
   - Enables one-click custom game art injection (grids, banners, logos, icons) directly from the SteamGridDB web interface into Steam's local `userdata/<id>/config/grid/` directory without manual asset downloads.
+
+---
+
+## 10. Deep Dendritic Decomposition & Parametric Hardware Traits
+- **Motivation:**
+  - Monolithic hardware or desktop modules inevitably couple machine-specific numbers (such as a 32GB RAM limit or specific DRM card paths) and user preferences with generic hardware traits, breaking portability across laptops, stationary desktops, and servers.
+- **Architectural Separation:**
+  - **1. Universal Core (`modules/core/`):** Universal foundation (Nix flakes, `nh`, basic CLI utilities, locale, sudo) with zero GUI, gaming, or hardware assumptions.
+  - **2. Form Factor Roles (`modules/roles/`):** `laptop` (power profiles, battery sync), `desktop` (stationary), and `server` (headless, no sleep targets).
+  - **3. Hardware Traits (`modules/hardware/`):** Decomposed by silicon vendor (`cpu/amd`, `gpu/amd`, `gpu/amd-uma`), memory cache (`memory/zswap`), network chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/base`, `oem/asus/laptop`), and peripherals (`yubikey`, `keychron`).
+  - **4. Decoupled Features (`modules/features/`):** Opt-in daemons (`amdgpu-boost`, `syncthing`) defined with typed module options rather than forced on all AMD or desktop machines.
+  - **5. Capability Suites (`modules/suites/`):** Segmented into `desktop/plasma`, `desktop/audio`, `desktop/fonts`, `desktop/apps`, `gaming`, `ai`, and `development`.
+  - **6. Pure Composition Host Leaves (`hosts/<hostname>/default.nix`):** Composes the above traits and supplies the exact machine parameters.
+- **Bottles Classification Rationale:**
+  - `bottles` was deliberately placed in `suite-desktop-apps` rather than `suite-gaming` because it serves as a general-purpose Windows application container (used for productivity, utilities, creative software), unlike Steam or gaming-specific launchers.
+- **Parametric UMA TTM Limits:**
+  - `hardware.amdgpu.uma` exposes typed options (`ttmPagesLimit`, `overrideGfxVersion`, `rocmArch`) rather than hardcoding values.
+  - On `lunar-qualia`, the leaf host configures `ttmPagesLimit = 5862940` (exactly 24,014,602,240 bytes / ~22.365 GiB for its 32GB RAM profile), allowing any future 64GB or 128GB Strix Halo machine to cleanly configure its own limit without modifying generic modules.
