@@ -54,6 +54,14 @@
     options = [ "subvol=@swap" "nodatacow" ];
   };
 
+  # 48 GiB Disk Swapfile on dedicated @swap BTRFS subvolume
+  swapDevices = [
+    {
+      device = "/swap/swapfile";
+      size = 48 * 1024; # 48 GiB (49,152 MiB)
+    }
+  ];
+
   # SD Card Mount (automount when inserted, with execution allowed for games)
   fileSystems."/run/media/nnon/Tera" = {
     device = "/dev/disk/by-label/Tera";

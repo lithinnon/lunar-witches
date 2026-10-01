@@ -50,9 +50,7 @@
       systems = [ "x86_64-linux" ];
 
       imports = [
-        ./modules/core
-        ./modules/hardware/asus-tuf-a14-fa401ea.nix
-        ./modules/desktop/plasma.nix
+        ./modules
         ./hosts/lunar-qualia
         ./pkgs
       ];

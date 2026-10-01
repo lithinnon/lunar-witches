@@ -1,0 +1,17 @@
+# Hardware modules aggregator
+{ ... }:
+
+{
+  imports = [
+    ./cpu/amd.nix
+    ./gpu/amd.nix
+    ./gpu/amd-uma.nix
+    ./memory/zswap.nix
+    ./network/realtek-rtw89.nix
+    ./bluetooth.nix
+    ./oem/asus/base.nix
+    ./oem/asus/laptop.nix
+    ./peripherals/yubikey.nix
+    ./peripherals/keychron.nix
+  ];
+}
