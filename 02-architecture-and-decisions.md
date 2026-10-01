@@ -138,3 +138,17 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
   - Rationale: Computer Use automation is a client-side capability that manipulates windows, cursor, and keyboard input, strictly requiring an active graphical desktop/window manager rather than an AI inference backend.
 - **Native Syncthing Option Standardization:**
   - Removed the custom `services.lunar-syncthing` option wrapper in favor of native NixOS `services.syncthing` configured via `lib.mkDefault`, maintaining idiomatic NixOS option naming.
+
+---
+
+## 12. Enterprise 802.1x Authentication & Campus Wi-Fi (`ChulaWiFi`)
+- **Problem & Root Causes:**
+  - Modern Linux distributions running OpenSSL 3 enforce `SECLEVEL=2` by default, which rejects the legacy ciphers and TLS 1.0/1.1 handshakes used by Chulalongkorn University's RADIUS authentication servers, misreporting connection aborts as generic auth failures or missing secrets.
+  - `wpa_supplicant` disables TLS 1.0 in phase 1 outer authentication by default on modern builds.
+- **Architectural Solution (`feature-chulawifi`):**
+  - Encapsulated into [`modules/features/chulawifi.nix`](file:///home/nnon/lunar-witches/modules/features/chulawifi.nix) exporting `self.nixosModules.feature-chulawifi`.
+  - Configures `openssl-ciphers = "DEFAULT@SECLEVEL=0"` and `phase1-auth-flags = 32` (`0x20` = `tls-1-0-enable`) on the 802.1x PEAP-MSCHAPv2 profile.
+  - **Secrets Boundary:** Uses NetworkManager's native `ensureProfiles` mechanism combined with `environmentFiles = [ "/home/nnon/.config/secrets.env" ]`. At boot/activation, `envsubst` generates the profile directly into `/run/NetworkManager/system-connections/ChulaWiFi.nmconnection` (RAM tmpfs with `0600` permissions), completely preserving the boundary that secrets never touch the world-readable `/nix/store`.
+- **Wi-Fi & Bluetooth Antenna Contention:**
+  - The Realtek RTL8852CE combo card shares physical radio antennas between Wi-Fi and Bluetooth. 802.11 dynamic power save causes background probe scans that lock the Packet Traffic Arbitration (PTA) engine, starving Bluetooth audio streams.
+  - Disabled Wi-Fi power save declaratively in [`modules/roles/laptop.nix`](file:///home/nnon/lunar-witches/modules/roles/laptop.nix) (`networking.networkmanager.wifi.powersave = false`) complementing the low-level kernel module parameter in [`hw-network-realtek-rtw89`](file:///home/nnon/lunar-witches/modules/hardware/network/realtek-rtw89.nix) (`options rtw89_core disable_ps_mode=y`).
