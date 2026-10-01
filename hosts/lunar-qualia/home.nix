@@ -44,6 +44,11 @@
     shellInit = ''
       # Ensure ~/.local/bin is always in PATH
       fish_add_path --path --prepend "$HOME/.local/bin"
+
+      # Load unmanaged user secrets if present
+      if test -f "$HOME/.config/secrets.env"
+        source "$HOME/.config/secrets.env"
+      end
     '';
     interactiveShellInit = ''
       # Disable fish greeting
@@ -58,6 +63,11 @@
     initExtra = ''
       if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
         export PATH="$HOME/.local/bin:$PATH"
+      fi
+
+      # Load unmanaged user secrets if present
+      if [ -f "$HOME/.config/secrets.env" ]; then
+        source "$HOME/.config/secrets.env"
       fi
     '';
   };
