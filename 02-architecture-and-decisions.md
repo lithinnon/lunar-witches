@@ -122,3 +122,19 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 - **Parametric UMA TTM Limits:**
   - `hardware.amdgpu.uma` exposes typed options (`ttmPagesLimit`, `overrideGfxVersion`, `rocmArch`) rather than hardcoding values.
   - On `lunar-qualia`, the leaf host configures `ttmPagesLimit = 5862940` (exactly 24,014,602,240 bytes / ~22.365 GiB for its 32GB RAM profile), allowing any future 64GB or 128GB Strix Halo machine to cleanly configure its own limit without modifying generic modules.
+
+---
+
+## 11. Silicon Quirks, Client Automation & Upstream Alignment
+- **Mesa Upstream Alignment (Mesa 26.2.3):**
+  - Checked the current Mesa version in nixpkgs (`26.2.3`). Because Mesa 26.1.0+ enables `bfloat16` by default for RDNA 3 and RDNA 3.5 architectures, the legacy `RADV_EXPERIMENTAL = "bfloat16"` environment variable was safely eliminated.
+- **Kernel Parameter Hygiene:**
+  - Removed `amdgpu.gpu_recovery=1` from baseline GPU traits.
+- **AMD Display Core IPS Sleep Quirk (`amdgpu.dcdebugmask=0x800`):**
+  - Newer AMD APUs exhibit sleep/suspend hangs when entering Display Core Idle Power States (IPS 1/2) with internal eDP panels.
+  - Rather than forcing this on all AMD machines, it was parameterized as `hardware.amdgpu.uma.disableDcIps = true;` and enabled specifically on `lunar-qualia`.
+- **Computer Use Agent (CUA) Wayland Driver Boundary:**
+  - `CUA_DRIVER_RS_ENABLE_WAYLAND = "1"` was decoupled from the Antigravity AI compute suite and integrated into `suite-desktop-plasma`.
+  - Rationale: Computer Use automation is a client-side capability that manipulates windows, cursor, and keyboard input, strictly requiring an active graphical desktop/window manager rather than an AI inference backend.
+- **Native Syncthing Option Standardization:**
+  - Removed the custom `services.lunar-syncthing` option wrapper in favor of native NixOS `services.syncthing` configured via `lib.mkDefault`, maintaining idiomatic NixOS option naming.
