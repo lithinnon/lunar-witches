@@ -44,3 +44,4 @@
 /.secrets/**
 /tmp/**
 .user_setup_prompt.md
+result
