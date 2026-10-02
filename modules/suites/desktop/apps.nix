@@ -25,6 +25,7 @@
       equibop
       yubioath-flutter
       obsidian
+      upscayl
       bottles # Windows compatibility & container runtime for productivity apps
     ];
   };
