@@ -10,6 +10,7 @@
     environment.systemPackages = [
       inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity
       inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-cli
+      pkgs.mcp-nixos
     ];
   };
 }
