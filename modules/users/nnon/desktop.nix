@@ -11,7 +11,6 @@
   home.packages = [
     inputs.bullvpn.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.espresso
-    pkgs.service-deck-helper
   ];
 
   # AMD GPU Boost background service (D-Bus event-driven clock manager)
@@ -25,6 +24,9 @@
     };
     Service = {
       Type = "simple";
+      Environment = [
+        "AMDGPU_BOOST_CARD=${osConfig.services.amdgpu-boost.card}"
+      ];
       ExecStart = "${pkgs.amdgpu-boost}/bin/amdgpu-boost --daemon";
       Restart = "always";
       RestartSec = 2;
@@ -75,7 +77,8 @@
     };
   };
 
-  xdg.configFile."plasma-service-deck.json".text = builtins.toJSON {
+  programs.plasma-service-deck = {
+    enable = true;
     groups = [
       {
         id = "hardware";
@@ -89,7 +92,7 @@
           }
           {
             id = "asusd.service";
-            name = "ASUS Notebook Control";
+            name = "ASUS Control";
             scope = "system";
           }
         ];

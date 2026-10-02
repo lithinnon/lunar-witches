@@ -9,8 +9,19 @@ import os
 import json
 import subprocess
 
+CONFIG_ENV = os.environ.get("PLASMA_SERVICE_DECK_CONFIG")
 CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
-CONFIG_PATH = os.path.join(CONFIG_DIR, "plasma-service-deck.json")
+USER_CONFIG_PATH = os.path.join(CONFIG_DIR, "plasma-service-deck.json")
+SYSTEM_CONFIG_PATH = "/etc/plasma-service-deck.json"
+
+def get_config_path():
+    if CONFIG_ENV and os.path.exists(CONFIG_ENV):
+        return CONFIG_ENV
+    if os.path.exists(USER_CONFIG_PATH):
+        return USER_CONFIG_PATH
+    if os.path.exists(SYSTEM_CONFIG_PATH):
+        return SYSTEM_CONFIG_PATH
+    return USER_CONFIG_PATH
 
 def load_config():
     default_config = {
@@ -21,7 +32,7 @@ def load_config():
                 "icon": "preferences-system-hardware",
                 "services": [
                     {"id": "amdgpu-boost.service", "name": "AMD GPU Boost", "scope": "user"},
-                    {"id": "asusd.service", "name": "ASUS Notebook Control", "scope": "system"}
+                    {"id": "asusd.service", "name": "ASUS Control", "scope": "system"}
                 ]
             },
             {
@@ -47,13 +58,17 @@ def load_config():
             ]
         }
     }
-    if not os.path.exists(CONFIG_PATH):
-        os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
-        with open(CONFIG_PATH, "w") as f:
-            json.dump(default_config, f, indent=2)
+    active_path = get_config_path()
+    if not os.path.exists(active_path):
+        try:
+            os.makedirs(os.path.dirname(active_path), exist_ok=True)
+            with open(active_path, "w") as f:
+                json.dump(default_config, f, indent=2)
+        except Exception:
+            pass
         return default_config
     try:
-        with open(CONFIG_PATH, "r") as f:
+        with open(active_path, "r") as f:
             return json.load(f)
     except Exception:
         return default_config
@@ -129,7 +144,7 @@ def get_all_status():
     
     def enrich_service(svc):
         s_id = svc["id"]
-        display_id = svc.get("display_id", s_id)
+        display_id = svc.get("display_id") or s_id
         scope = svc.get("scope", "user")
         s_map = system_status if scope == "system" else user_status
         raw = s_map.get(s_id, {"ActiveState": "inactive", "SubState": "dead", "UnitFileState": "not-found", "LoadState": "not-found"})

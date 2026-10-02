@@ -11,6 +11,7 @@
     imports = [
       self.nixosModules.suite-desktop-audio
       self.nixosModules.suite-desktop-fonts
+      self.nixosModules.suite-desktop-service-deck
     ];
 
     options.suites.desktop.plasma = {

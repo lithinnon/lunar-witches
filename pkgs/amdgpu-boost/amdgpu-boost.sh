@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # amdgpu-boost: Advanced AMD GPU Performance Boost, Dynamic Governor & Auto-Display Manager
 
-GPU_DPM="/sys/class/drm/card1/device/power_dpm_force_performance_level"
-CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf"
-SCLK_FILE="/sys/class/drm/card1/device/pp_dpm_sclk"
-BUSY_FILE="/sys/class/drm/card1/device/gpu_busy_percent"
-HWMON_DIR="$(ls -d /sys/class/drm/card1/device/hwmon/hwmon* 2>/dev/null | head -n 1)"
+CARD="${AMDGPU_BOOST_CARD:-card1}"
+CONF_FILE="${AMDGPU_BOOST_CONF:-${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf}"
+
+set_sysfs_paths() {
+    GPU_DPM="/sys/class/drm/$CARD/device/power_dpm_force_performance_level"
+    SCLK_FILE="/sys/class/drm/$CARD/device/pp_dpm_sclk"
+    BUSY_FILE="/sys/class/drm/$CARD/device/gpu_busy_percent"
+    HWMON_DIR="$(ls -d /sys/class/drm/$CARD/device/hwmon/hwmon* 2>/dev/null | head -n 1)"
+}
+set_sysfs_paths
 
 # Defaults
 MODE="smart"
@@ -31,8 +36,17 @@ read_config() {
     SMART_COOLDOWN_SECONDS=3.0
     AUTO_REFRESH_RATE="true"
 
-    if [ -f "$CONF_FILE" ]; then
-        local first_line="$(head -n 1 "$CONF_FILE" | tr -d '[:space:]')"
+    local active_conf=""
+    if [ -n "$AMDGPU_BOOST_CONF" ] && [ -f "$AMDGPU_BOOST_CONF" ]; then
+        active_conf="$AMDGPU_BOOST_CONF"
+    elif [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf" ]; then
+        active_conf="${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf"
+    elif [ -f "/etc/amdgpu-boost.conf" ]; then
+        active_conf="/etc/amdgpu-boost.conf"
+    fi
+
+    if [ -n "$active_conf" ]; then
+        local first_line="$(head -n 1 "$active_conf" | tr -d '[:space:]')"
         if [[ "$first_line" =~ ^(smart|force|disabled|enabled)$ ]]; then
             if [ "$first_line" == "enabled" ]; then MODE="smart"; else MODE="$first_line"; fi
         fi
@@ -41,6 +55,12 @@ read_config() {
             key="$(echo "$key" | sed 's/#.*//' | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')"
             val="$(echo "$val" | sed 's/#.*//' | tr -d '[:space:]')"
             case "$key" in
+                CARD)
+                    if [ -n "$val" ]; then
+                        CARD="$val"
+                        set_sysfs_paths
+                    fi
+                    ;;
                 MODE)
                     case "$val" in
                         smart|force|disabled) MODE="$val" ;;
@@ -69,7 +89,7 @@ read_config() {
                     esac
                     ;;
             esac
-        done < "$CONF_FILE"
+        done < "$active_conf"
     fi
 
     COOLDOWN_LIMIT=$(awk "BEGIN {limit = int(($SMART_COOLDOWN_SECONDS / 0.5) + 0.5); print (limit > 0 ? limit : 1)}")
@@ -81,9 +101,11 @@ write_config() {
         MODE="$1"
     fi
     
-    mkdir -p "$(dirname "$CONF_FILE")"
-    cat << CFG > "$CONF_FILE"
+    local target_conf="${AMDGPU_BOOST_CONF:-${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf}"
+    mkdir -p "$(dirname "$target_conf")"
+    cat << CFG > "$target_conf"
 # AMD GPU Boost Configuration
+CARD=$CARD
 MODE=$MODE
 SMART_UP_THRESHOLD=$SMART_UP_THRESHOLD
 SMART_DOWN_THRESHOLD=$SMART_DOWN_THRESHOLD
@@ -239,6 +261,7 @@ show_status() {
     echo "========================================"
     echo "  AMD GPU Boost Status"
     echo "========================================"
+    echo "  • DRM Card Device:        $CARD"
     echo "  • Operating Mode:         $MODE"
     if [ "$MODE" == "smart" ]; then
         echo "  • Smart Up Threshold:     ${SMART_UP_THRESHOLD}%"
@@ -288,6 +311,7 @@ get_json() {
 
     cat << JSON
 {
+  "card": "$CARD",
   "mode": "$MODE",
   "smart_up_threshold": $SMART_UP_THRESHOLD,
   "smart_down_threshold": $SMART_DOWN_THRESHOLD,
