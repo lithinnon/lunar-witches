@@ -2,7 +2,7 @@
 # amdgpu-boost: Advanced AMD GPU Performance Boost, Dynamic Governor & Auto-Display Manager
 
 GPU_DPM="/sys/class/drm/card1/device/power_dpm_force_performance_level"
-CONF_FILE="$HOME/.config/amdgpu-boost.conf"
+CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/amdgpu-boost.conf"
 SCLK_FILE="/sys/class/drm/card1/device/pp_dpm_sclk"
 BUSY_FILE="/sys/class/drm/card1/device/gpu_busy_percent"
 HWMON_DIR="$(ls -d /sys/class/drm/card1/device/hwmon/hwmon* 2>/dev/null | head -n 1)"

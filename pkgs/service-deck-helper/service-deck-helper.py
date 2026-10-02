@@ -9,7 +9,8 @@ import os
 import json
 import subprocess
 
-CONFIG_PATH = os.path.expanduser("~/.config/plasma-service-deck.json")
+CONFIG_DIR = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+CONFIG_PATH = os.path.join(CONFIG_DIR, "plasma-service-deck.json")
 
 def load_config():
     default_config = {

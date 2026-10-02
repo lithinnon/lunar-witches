@@ -2,12 +2,22 @@
 { ... }:
 
 {
-  flake.nixosModules.feature-syncthing = { config, lib, ... }: {
-    services.syncthing = lib.mkIf config.services.syncthing.enable {
-      user = lib.mkDefault "nnon";
-      dataDir = lib.mkDefault "/home/nnon/Sync";
-      configDir = lib.mkDefault "/home/nnon/.local/state/syncthing";
-      openDefaultPorts = lib.mkDefault true;
+  flake.nixosModules.feature-syncthing =
+    { config, lib, ... }:
+    let
+      cfg = config.services.syncthing;
+      userHome =
+        if cfg.user != null && config.users.users ? ${cfg.user} then
+          config.users.users.${cfg.user}.home
+        else
+          "/home/${cfg.user}";
+    in
+    {
+      services.syncthing = lib.mkIf cfg.enable {
+        user = lib.mkDefault "nnon";
+        dataDir = lib.mkDefault "${userHome}/Sync";
+        configDir = lib.mkDefault "${userHome}/.local/state/syncthing";
+        openDefaultPorts = lib.mkDefault true;
+      };
     };
-  };
 }
