@@ -86,6 +86,8 @@
           enable = true;
           user = "nnon";
         };
+
+        suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;
       })
     ];
   };
