@@ -46,7 +46,7 @@ During the migration and post-install configuration, several notable edge cases 
 ---
 
 ## 5. PATH Propagation & Fish Shell Architecture
-- **Symptom:** `amd-ttm` or scripts in `~/.local/bin` were not visible in newly launched Fish shells despite `home.sessionPath` being configured.
+- **Symptom:** `mem-ttm` or scripts in `~/.local/bin` were not visible in newly launched Fish shells despite `home.sessionPath` being configured.
 - **Cause:** 
   1. `home.sessionPath` generates `hm-session-vars.sh` and `hm-session-vars.fish`.
   2. In graphical Wayland sessions (SDDM/Plasma), environment variables are evaluated at login. Because the desktop session booted before the new configuration was added, the running session held stale environment tables.
