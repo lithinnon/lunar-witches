@@ -104,10 +104,7 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "Default";
-      theme_background = true;
       update_ms = 2000;
-      shown_boxes = "cpu mem net proc";
       proc_sorting = "cpu lazy";
       proc_colors = true;
       proc_gradient = true;
@@ -115,7 +112,6 @@
       proc_cpu_graphs = true;
       show_uptime = true;
       show_cpu_watts = true;
-      check_temp = true;
       show_coretemp = true;
       show_cpu_freq = true;
       show_swap = true;
@@ -124,7 +120,6 @@
       show_battery_watts = true;
       gpu_mirror_graph = true;
       rsmi_measure_pcie_speeds = true;
-      shown_gpus = "nvidia amd intel apple";
     };
   };
 }
