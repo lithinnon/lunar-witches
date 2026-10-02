@@ -66,7 +66,7 @@
 
         # Standalone TTM inspector utility
         environment.systemPackages = [
-          pkgs.amd-ttm
+          pkgs.mem-ttm
         ];
       };
     };

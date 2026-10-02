@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Lightweight standalone TTM memory inspector for AMD Strix Halo / RDNA 3.5 APUs.
+Lightweight standalone Linux DRM Translation Table Manager (TTM) memory inspector.
 Directly reads kernel sysfs parameter and meminfo with zero external dependencies.
+Works across any Linux platform using TTM (AMD amdgpu, Intel Xe/i915, NVIDIA nouveau, etc.).
 """
 import sys
 

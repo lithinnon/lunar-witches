@@ -20,7 +20,7 @@ Instead of a monolithic `configuration.nix`, the repository adopts a **dendritic
   - Sysfs permissions for thermal throttling policies and AMD GPU boost controls are declaratively managed via `systemd.tmpfiles.rules`.
 - **Unified Memory & AMD TTM Allocations:**
   - AMD Strix Halo uses unified system RAM for VRAM.
-  - The custom package `pkgs.amd-ttm` monitors the TTM page limit (5,994,012 pages ~ 22.87 GB VRAM ceiling).
+  - The custom package `pkgs.mem-ttm` monitors the TTM page limit (5,994,012 pages ~ 22.87 GB VRAM ceiling).
 
 ---
 
@@ -43,7 +43,7 @@ Instead of a monolithic `configuration.nix`, the repository adopts a **dendritic
 
 ## 4. In-Tree Custom Packages & Flake Overlay (`pkgs/`)
 Custom scripts and hardware utilities are converted into declarative Nix derivations under `pkgs/`:
-- **`amd-ttm`:** Standalone Python derivation monitoring kernel sysfs TTM allocations with deterministic shebang patching.
+- **`mem-ttm`:** Standalone Python derivation monitoring kernel sysfs TTM allocations with deterministic shebang patching.
 - **`amdgpu-boost`:** Dual-threshold DPM governor & auto-display daemon wrapped via `makeWrapper` with all runtime dependencies (`systemd`, `dbus`, `libnotify`, `asusctl`, `kdePackages.libkscreen`, `gawk`, `gnused`).
 - **`sync-power-state`:** AC vs Battery display refresh and platform state switcher wrapped with `kdePackages.libkscreen`.
 - **Export Pattern:** Defined in `pkgs/default.nix` exposing `perSystem.packages` and `flake.overlays.default`, injected via `nixpkgs.overlays`.
@@ -66,7 +66,7 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
 ## 6. Repository Scope & Boundaries: The BullVPN Separation
 - **Package Selection Boundary:**
   - Not all utilities belong inside `pkgs/` in the system flake.
-  - Utilities in `pkgs/` are intended for system-wide services (`amdgpu-boost`), hardware monitoring (`amd-ttm`), or desktop hooks (`sync-power-state`).
+  - Utilities in `pkgs/` are intended for system-wide services (`amdgpu-boost`), hardware monitoring (`mem-ttm`), or desktop hooks (`sync-power-state`).
 - **The BullVPN Case:**
   - BullVPN is an independently developed, actively versioned application with its own Git lifecycle, frequent upstream release tags, and server list changes.
   - Keeping it as an independent repository in `~/sources/` or user space avoids polluting the OS configuration flake with external commit logs or frequent lockfile bumps.

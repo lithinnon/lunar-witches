@@ -18,7 +18,7 @@
    - ALWAYS verify the target hostname (e.g. `hostname`).
    - Read the corresponding hardware and swap profile at `~/.gemini/devices/<hostname>.md` before making host-specific hardware or memory recommendations.
 2. **TTM Allocation & VRAM Limits:**
-   - ALWAYS check the active TTM memory limit using `amd-ttm` before recommending local model loading or heavy graphics/compute allocations.
+   - ALWAYS check the active TTM memory limit using `mem-ttm` before recommending local model loading or heavy graphics/compute allocations.
 3. **Declarative NixOS Only:**
    - NEVER suggest or execute imperative package managers (`apt`, `dnf`, `rpm`, `pacman`) or imperative bootloader tools (`grubby`, `update-grub`).
    - All system packages, kernel parameters, daemons, and environment variables MUST be declared in Nix files within this repository.
@@ -100,7 +100,7 @@ flowchart TD
 | **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `development/default.nix`. |
 | **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon/default.nix`, `shell.nix`, `development.nix`, `desktop.nix`, `plasma.nix`). |
 | **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |
-| **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`amd-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`). Built and exported to system overlays. |
+| **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`mem-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`). Built and exported to system overlays. |
 | **`retrospects/`** | Markdown docs | Architectural decision records (ADRs), post-mortems, and migration logs. |
 
 ---
