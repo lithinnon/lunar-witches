@@ -249,7 +249,7 @@
             templates = "$HOME/Templates";
             publicShare = null;
             extraConfig = {
-              XDG_PROJECTS_DIR = "$HOME/Projects";
+              PROJECTS = "$HOME/Projects";
             };
           };
 
