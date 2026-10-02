@@ -164,3 +164,23 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
   - `programs.ssh.startAgent = true;` provisioned in [`modules/core/default.nix`](file:///home/nnon/lunar-witches/modules/core/default.nix) to ensure a systemd user OpenSSH agent runs on all machines and exports `SSH_AUTH_SOCK` seamlessly across shells (fish/bash).
   - Configured graphical passphrase caching via KDE Plasma's `ksshaskpass` (`SSH_ASKPASS` and `SSH_ASKPASS_REQUIRE = "prefer"`) in [`modules/suites/desktop/plasma.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/plasma.nix) and user session variables, allowing KWallet to securely remember passphrases for encrypted Ed25519 keys.
   - SSH client aliases (`white`, `i2cedt-2`) and `addKeysToAgent = "yes"` declared purely in Home Manager's `programs.ssh`.
+
+---
+
+## 14. Declarative Home Manager Configuration & Custom In-Tree Script Packaging
+- **Declarative User Applications (Tier 1):**
+  - Migrated VS Code settings and extensions to `programs.vscode.profiles.default` in [`modules/users/nnon.nix`](file:///home/nnon/lunar-witches/modules/users/nnon.nix).
+  - Integrated Fastfetch (`programs.fastfetch`) with custom Marie-Eve asset logo and modules.
+  - Standardized XDG base directories via `xdg.userDirs` with `Projects` and `Templates`, while suppressing unused `publicShare`.
+  - Declared default application handlers via `xdg.mimeApps.defaultApplications`.
+  - Configured Btop system monitoring via `programs.btop.settings`.
+- **Custom Desktop Platform Traits & Script Packaging (Tier 2):**
+  - Adopted native Berkeley Espresso (`pkgs.espresso`) from nixpkgs for Digital PLA minimization, obviating Wine/Bottles emulation.
+  - Packaged [`pkgs/service-deck-helper`](file:///home/nnon/lunar-witches/pkgs/service-deck-helper) (KDE Service Deck D-Bus helper) as a declarative Nix derivation.
+  - Declaratively managed Service Deck menu structure (`plasma-service-deck.json`) and Digital circuit simulator options (`.digital.cfg`).
+- **Declarative KDE Plasma Management (Tier 3 via `plasma-manager`):**
+  - Integrated `github:nix-community/plasma-manager` into flake inputs and user module (`home-manager.sharedModules`).
+  - Declaratively managed keyboard repeat delay/rate (`input.keyboard`), virtual desktops (`kwin.virtualDesktops`), and global desktop/media/window shortcuts (`programs.plasma.shortcuts`).
+  - Configured hardware input profiles in `configFile.kcminputrc` (Keychron M6, Razer DeathAdder Essential, Asus Touchpad).
+  - Migrated PowerDevil AC/battery power state synchronization scripts from static symlinks to `configFile."powerdevilrc"` so PowerDevil retains runtime state without file permission collisions.
+  - Configured Wayland virtual keyboard, Xwayland scaling, and `kdeglobals` accent colors declaratively.
