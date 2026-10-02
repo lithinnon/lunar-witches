@@ -23,6 +23,10 @@
 
       services.power-profiles-daemon.enable = lib.mkDefault true;
 
+      systemd.tmpfiles.rules = [
+        "z /sys/firmware/acpi/platform_profile 0666 root root -"
+      ];
+
       environment.systemPackages = [
         pkgs.sync-power-state
       ];
