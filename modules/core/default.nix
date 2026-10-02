@@ -75,7 +75,6 @@
           wget
           git
           neovim
-          htop
           fastfetch
           pciutils
           usbutils

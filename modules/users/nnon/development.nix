@@ -27,6 +27,7 @@
         divyanshuagrawal.competitive-programming-helper
         jnoortheen.nix-ide
         vscode-icons-team.vscode-icons
+        usernamehw.errorlens
       ];
     };
   };

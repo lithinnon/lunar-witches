@@ -52,9 +52,59 @@
     };
   };
 
+  xdg.mime.enable = true;
+
+  home.activation.updateMimeDatabase = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD ${pkgs.shared-mime-info}/bin/update-mime-database $VERBOSE_ARG "''${XDG_DATA_HOME:-$HOME/.local/share}/mime"
+  '';
+
+  xdg.dataFile."mime/packages/digital.xml".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+      <mime-type type="application/x-digital">
+        <comment>Digital Logic Circuit</comment>
+        <icon name="digital"/>
+        <glob pattern="*.dig" weight="80"/>
+        <root-XML namespaceURI="" localName="circuit"/>
+        <sub-class-of type="application/xml"/>
+      </mime-type>
+      <mime-type type="text/x-digital">
+        <comment>Digital Logic Circuit</comment>
+        <icon name="digital"/>
+        <glob pattern="*.dig" weight="80"/>
+        <root-XML namespaceURI="" localName="circuit"/>
+        <sub-class-of type="application/xml"/>
+      </mime-type>
+    </mime-info>
+  '';
+
+  xdg.desktopEntries.digital = {
+    name = "Digital";
+    genericName = "Digital Logic Simulator";
+    comment = "Easy-to-use digital logic designer and circuit simulator";
+    exec = "digital %F";
+    icon = "digital";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "Education"
+      "Electronics"
+    ];
+    mimeType = [
+      "application/x-digital"
+      "text/x-digital"
+    ];
+  };
+
   xdg.mimeApps = {
     enable = true;
+    associations.added = {
+      "application/x-digital" = [ "digital.desktop" ];
+      "text/x-digital" = [ "digital.desktop" ];
+    };
     defaultApplications = {
+      "application/x-digital" = "digital.desktop";
+      "text/x-digital" = "digital.desktop";
       "text/html" = "brave-browser.desktop";
       "x-scheme-handler/http" = "brave-browser.desktop";
       "x-scheme-handler/https" = "brave-browser.desktop";
