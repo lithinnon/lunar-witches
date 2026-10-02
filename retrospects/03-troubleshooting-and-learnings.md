@@ -104,10 +104,14 @@ During the migration and post-install configuration, several notable edge cases 
 
 ---
 
-## 11. KDE Plasma 6 SDDM Settings Module Discovery
-- **Symptom:** The "Login Screen (SDDM)" configuration panel was not present under the "Colors & Themes" sidebar sub-menu in System Settings.
-- **Cause:** KDE Plasma 6 restructured its settings categorization. `sddm-kcm` is no longer nested under "Colors & Themes" by default; it is indexed as a top-level search result or accessible via its standalone KCM execution target.
+## 11. KDE Plasma 6 SDDM Settings Module & Wallpaper Persistence
+- **Symptom:** Setting a custom background or clicking "Apply Plasma Settings..." in the SDDM KCM (`Login Screen (SDDM)`) does not persist after reboot or switch.
+- **Cause:**
+  1. On NixOS, the Breeze SDDM theme is located in the read-only `/nix/store`. The KCM helper attempts to write `theme.conf.user` into `/usr/share/sddm/themes/breeze/` or `/nix/store`, which fails or is silently ignored.
+  2. The `sddm` system user cannot traverse `/home/nnon/` (permission 0700) to read user wallpapers.
+  3. SDDM's Qt6 runtime lacks `qtimageformats` by default, preventing rendering of modern image formats like WebP.
 - **Resolution:**
-  - Search directly for `Login Screen` or `SDDM` in the System Settings search bar.
-  - Alternatively, launch the module directly via `kcmshell6 kcm_sddm` or KRunner (<kbd>Alt</kbd> + <kbd>Space</kbd>).
-  - Use the "Apply Plasma Settings..." button inside `kcm_sddm` to synchronize lock screen wallpapers, fonts, and color themes to the SDDM greeter.
+  - Expose `suites.desktop.plasma.sddm.background` in `modules/suites/desktop/plasma.nix`.
+  - Inject `theme.conf.user` into `share/sddm/themes/breeze/` via `pkgs.writeTextDir`, which `buildEnv` automatically merges into the system environment.
+  - Add `pkgs.kdePackages.qtimageformats` to `services.displayManager.sddm.extraPackages`.
+  - Store the wallpaper in `hosts/<hostname>/assets/` and assign it in `hosts/<hostname>/default.nix`.

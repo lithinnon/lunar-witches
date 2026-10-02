@@ -265,8 +265,7 @@ chmod 644 /home/nnon/.ssh/*.pub 2>/dev/null || true
    - Launch `bottles`. Verify bottles (`Apps`, `I2CEDT`) appear and launch.
    - Run `bullvpn status`. Verify Windows token is read from native Bottles path and NetworkManager imports WireGuard/OpenVPN profiles.
 9. **AMD GPU Boost:** Run `systemctl --user status amdgpu-boost` and `gpu-boost --status`. Verify dynamic switching works as expected.
-10. **Antigravity CLI:** Run `agy whoami` or `agy --version`. Verify state is retained under `~/.gemini/`.
-11. **SDDM Wallpaper & Settings Sync:** Open **System Settings** → **Colors & Themes** → **Login Screen (SDDM)** and click **Apply Plasma Settings...** at the bottom right to sync your desktop wallpaper to the login screen.
+11. **SDDM Wallpaper & Settings Sync:** SDDM configuration is managed declaratively in the Nix Flake via `suites.desktop.plasma.sddm.background`. The GUI button in System Settings cannot persist changes because `/nix/store` is read-only. Provide your wallpaper in `hosts/<hostname>/assets/` and assign it in `hosts/<hostname>/default.nix`.
 
 ---
 
