@@ -187,7 +187,6 @@
           ClickMethod = 2;
           DisableEventsOnExternalMouse = false;
           DisableWhileTyping = false;
-          Enabled = false;
           LmrTapButtonMap = false;
           NaturalScroll = true;
           PointerAcceleration = "0.400";
@@ -226,7 +225,6 @@
         "AC/SuspendAndShutdown".LidAction = 0;
         "Battery/Performance".PowerProfile = "balanced";
         "Battery/RunScript".ProfileLoadCommand = "/run/current-system/sw/bin/sync-power-state battery";
-        "Inhibitions".BlockedInhibitions = "/opt/brave.com/brave/brave:Video Wake Lock";
         "LowBattery/Performance".PowerProfile = "power-saver";
         "LowBattery/SuspendAndShutdown".InhibitLidActionWhenExternalMonitorPresent = false;
       };
