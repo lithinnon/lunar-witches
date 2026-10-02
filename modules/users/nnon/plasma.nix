@@ -15,7 +15,6 @@
     kwin = {
       virtualDesktops = {
         number = 2;
-        rows = 1;
       };
     };
 
@@ -25,21 +24,6 @@
         "gpu_screen_recorder_pause_unpause_recording" = "Alt+2";
         "gpu_screen_recorder_save_replay" = "Alt+3";
         "gpu_screen_recorder_start_stop_recording" = "Alt+1";
-      };
-      kwin = {
-        "Window Maximize" = "Meta+PgUp";
-        "Window Minimize" = "Meta+PgDown";
-        "Window Restore" = "Meta+Backspace";
-        "Window Quick Tile Bottom" = "Meta+Down";
-        "Window Quick Tile Left" = "Meta+Left";
-        "Window Quick Tile Right" = "Meta+Right";
-        "Window Quick Tile Top" = "Meta+Up";
-        "Window to Next Screen" = "Meta+Shift+Right";
-        "Window to Previous Screen" = "Meta+Shift+Left";
-        "Window One Desktop Down" = "Meta+Ctrl+Shift+Down";
-        "Window One Desktop Up" = "Meta+Ctrl+Shift+Up";
-        "Window One Desktop to the Left" = "Meta+Ctrl+Shift+Left";
-        "Window One Desktop to the Right" = "Meta+Ctrl+Shift+Right";
       };
       "services/org.kde.kate.desktop"._launch = "Meta+Shift+Q";
       "services/org.localsend.localsend_app.desktop"._launch = "Meta+Shift+L";
@@ -73,8 +57,6 @@
       "kdeglobals" = {
         General = {
           AccentColor = "132,250,216";
-          BrowserApplication = "brave-browser.desktop";
-          LastUsedCustomAccentColor = "132,250,216";
         };
       };
       "powerdevilrc" = {

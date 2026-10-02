@@ -66,10 +66,7 @@
       "x-scheme-handler/antigravity" = "antigravity-app.desktop";
       "x-scheme-handler/curseforge" = "org.prismlauncher.PrismLauncher.desktop";
       "x-scheme-handler/discord" = "vesktop.desktop";
-      "x-scheme-handler/discord-562286213059444737" = "lunarclient.desktop";
-      "x-scheme-handler/hermes" = "Hermes.desktop";
       "x-scheme-handler/lemonade" = "lemonade-app-handler.desktop";
-      "x-scheme-handler/lunarclient" = "lunarclient.desktop";
       "x-scheme-handler/mongodb" = "mongodb-compass.desktop";
       "x-scheme-handler/mongodb+srv" = "mongodb-compass.desktop";
       "x-scheme-handler/sgdb" = "com.steamgriddb.SGDBoop.desktop";
@@ -78,58 +75,56 @@
     };
   };
 
-  xdg.configFile."plasma-service-deck.json".text = ''
-    {
-      "groups": [
-        {
-          "id": "hardware",
-          "name": "Hardware",
-          "icon": "preferences-system-hardware",
-          "services": [
-            {
-              "id": "amdgpu-boost.service",
-              "name": "AMD GPU Boost",
-              "scope": "user"
-            },
-            {
-              "id": "asusd.service",
-              "name": "ASUS Notebook Control",
-              "scope": "system"
-            }
-          ]
-        },
-        {
-          "id": "network",
-          "name": "Network",
-          "icon": "network-workgroup",
-          "services": [
-            {
-              "id": "app-org.kde.kdeconnect.daemon@autostart.service",
-              "display_id": "kdeconnect.service",
-              "name": "KDE Connect",
-              "scope": "user"
-            },
-            {
-              "id": "syncthing.service",
-              "name": "Syncthing File Sync",
-              "scope": "system"
-            }
-          ]
-        }
-      ],
-      "ungrouped": {
-        "name": "Ungrouped",
-        "icon": "package-x-generic",
-        "services": [
+  xdg.configFile."plasma-service-deck.json".text = builtins.toJSON {
+    groups = [
+      {
+        id = "hardware";
+        name = "Hardware";
+        icon = "preferences-system-hardware";
+        services = [
           {
-            "id": "kde-baloo.service",
-            "name": "Baloo File Indexer",
-            "scope": "user"
+            id = "amdgpu-boost.service";
+            name = "AMD GPU Boost";
+            scope = "user";
           }
-        ]
+          {
+            id = "asusd.service";
+            name = "ASUS Notebook Control";
+            scope = "system";
+          }
+        ];
       }
-    }
-  '';
+      {
+        id = "network";
+        name = "Network";
+        icon = "network-workgroup";
+        services = [
+          {
+            id = "app-org.kde.kdeconnect.daemon@autostart.service";
+            display_id = "kdeconnect.service";
+            name = "KDE Connect";
+            scope = "user";
+          }
+          {
+            id = "syncthing.service";
+            name = "Syncthing File Sync";
+            scope = "system";
+          }
+        ];
+      }
+    ];
+    ungrouped = {
+      name = "Ungrouped";
+      icon = "package-x-generic";
+      services = [
+        {
+          id = "kde-baloo.service";
+          name = "Baloo File Indexer";
+          scope = "user";
+        }
+      ];
+    };
+  };
 
   home.file.".digital.cfg".text = ''
     <?xml version="1.0" encoding="utf-8"?>
