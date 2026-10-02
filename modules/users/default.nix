@@ -3,6 +3,6 @@
 
 {
   imports = [
-    ./nnon.nix
+    ./nnon
   ];
 }

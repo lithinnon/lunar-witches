@@ -98,7 +98,7 @@ flowchart TD
 | **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-integrated`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
 | **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`, `openssh.nix`). |
 | **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `development/default.nix`. |
-| **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon.nix`). |
+| **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon/default.nix`, `shell.nix`, `development.nix`, `desktop.nix`, `plasma.nix`). |
 | **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |
 | **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`amd-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`). Built and exported to system overlays. |
 | **`retrospects/`** | Markdown docs | Architectural decision records (ADRs), post-mortems, and migration logs. |

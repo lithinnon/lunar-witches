@@ -184,3 +184,10 @@ Custom scripts and hardware utilities are converted into declarative Nix derivat
   - Configured hardware input profiles in `configFile.kcminputrc` (Keychron M6, Razer DeathAdder Essential, Asus Touchpad).
   - Migrated PowerDevil AC/battery power state synchronization scripts from static symlinks to `configFile."powerdevilrc"` so PowerDevil retains runtime state without file permission collisions.
   - Configured Wayland virtual keyboard, Xwayland scaling, and `kdeglobals` accent colors declaratively.
+- **Modularization of User Profile (`modules/users/nnon/`):**
+  - Partitioned the monolithic user manifest into decoupled domain modules under [`modules/users/nnon/`](file:///home/nnon/lunar-witches/modules/users/nnon):
+    - [`default.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/default.nix): System user account, typed options, and Home Manager module composition.
+    - [`shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix): Fish, Bash, shell aliases, session variables, Btop, and Fastfetch.
+    - [`development.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/development.nix): VS Code profiles/settings/extensions, Git signing, GPG/agent, and SSH client config.
+    - [`desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix): XDG user dirs, MIME applications, user packages, Service Deck, and Digital simulator settings.
+    - [`plasma.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/plasma.nix): KDE Plasma shortcuts, KWin virtual desktops, input device profiles, and PowerDevil hooks.
