@@ -29,7 +29,7 @@
     };
 
     bullvpn = {
-      url = "path:/home/nnon/sources/github.com/lithinnon/bullvpn";
+      url = "path:/home/nnon/Projects/github.com/lithinnon/bullvpn";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
