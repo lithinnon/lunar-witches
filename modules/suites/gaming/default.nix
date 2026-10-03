@@ -20,6 +20,14 @@
 
     environment.systemPackages = with pkgs; [
       inputs.bedrock-on-linux.packages.${pkgs.stdenv.hostPlatform.system}.default
+      (prismlauncher.override {
+        jdks = with pkgs; [
+          temurin-bin-25
+          temurin-bin-21
+          temurin-bin-17
+          temurin-bin-8
+        ];
+      })
       mangohud
       protonplus
       sgdboop
