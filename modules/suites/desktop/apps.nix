@@ -67,6 +67,7 @@
       })
       vulkan-tools
       unrar
+      kdePackages.kcalc
     ];
 
     xdg.mime = {
