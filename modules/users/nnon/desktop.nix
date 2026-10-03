@@ -96,6 +96,20 @@
     ];
   };
 
+  xdg.desktopEntries.google-calendar = {
+    name = "Google Calendar";
+    genericName = "Calendar";
+    comment = "Open Google Calendar in default browser";
+    exec = "xdg-open https://calendar.google.com";
+    icon = "office-calendar";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "Office"
+      "Calendar"
+    ];
+  };
+
   xdg.mimeApps = {
     enable = true;
     associations.added = {

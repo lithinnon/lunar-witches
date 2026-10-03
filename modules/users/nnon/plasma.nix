@@ -26,6 +26,7 @@
         "gpu_screen_recorder_start_stop_recording" = "Alt+1";
       };
       "services/LocalSend.desktop"._launch = "Meta+Shift+L";
+      "services/google-calendar.desktop"._launch = "Meta+Shift+C";
       "services/org.kde.kate.desktop"._launch = "Meta+Shift+Q";
       "services/org.kde.kcalc.desktop"._launch = "Meta+Shift+D";
       "services/rog-control-center.desktop"._launch = "Launch (3)";
