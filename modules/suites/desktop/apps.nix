@@ -66,6 +66,7 @@
         extraPkgs = pkgs: [ pkgs.vulkan-tools ];
       })
       vulkan-tools
+      unrar
     ];
 
     xdg.mime = {
