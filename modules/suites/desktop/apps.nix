@@ -61,7 +61,11 @@
       yubioath-flutter
       obsidian
       upscayl
-      bottles # Windows compatibility & container runtime for productivity apps
+      (bottles.override {
+        removeWarningPopup = true;
+        extraPkgs = pkgs: [ pkgs.vulkan-tools ];
+      })
+      vulkan-tools
     ];
 
     xdg.mime = {
