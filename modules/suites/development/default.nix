@@ -47,7 +47,7 @@
       MESA_VK_TRACE_TRIGGER = "/tmp/mesa_vk_trace_trigger";
     };
 
-    # Core CLI developer utilities
+    # Core CLI developer utilities & coding agents
     environment.systemPackages = with pkgs; [
       uv
       ghq
@@ -55,6 +55,7 @@
       fd
       eza
       bat
+      codex # OpenAI Codex terminal coding agent
     ];
   };
 }
