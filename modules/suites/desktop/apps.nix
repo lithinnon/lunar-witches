@@ -37,6 +37,12 @@
               <root-XML namespaceURI="" localName="circuit"/>
               <sub-class-of type="application/xml"/>
             </mime-type>
+            <mime-type type="application/x-digital-testcase">
+              <comment>Digital Test Case</comment>
+              <icon name="digital"/>
+              <glob pattern="*.tru" weight="80"/>
+              <sub-class-of type="text/plain"/>
+            </mime-type>
           </mime-info>
         ''} $out/share/mime/packages/digital.xml
 
@@ -47,7 +53,7 @@
           Exec=digital %F
           Icon=digital
           Keywords=simulator;digital;circuits;
-          MimeType=application/x-digital;text/x-digital;
+          MimeType=application/x-digital;text/x-digital;application/x-digital-testcase;
           Name=Digital
           Terminal=false
           Type=Application

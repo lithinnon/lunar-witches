@@ -75,6 +75,12 @@
         <root-XML namespaceURI="" localName="circuit"/>
         <sub-class-of type="application/xml"/>
       </mime-type>
+      <mime-type type="application/x-digital-testcase">
+        <comment>Digital Test Case</comment>
+        <icon name="digital"/>
+        <glob pattern="*.tru" weight="80"/>
+        <sub-class-of type="text/plain"/>
+      </mime-type>
     </mime-info>
   '';
 
@@ -93,6 +99,7 @@
     mimeType = [
       "application/x-digital"
       "text/x-digital"
+      "application/x-digital-testcase"
     ];
   };
 
@@ -115,10 +122,12 @@
     associations.added = {
       "application/x-digital" = [ "digital.desktop" ];
       "text/x-digital" = [ "digital.desktop" ];
+      "application/x-digital-testcase" = [ "digital.desktop" ];
     };
     defaultApplications = {
       "application/x-digital" = "digital.desktop";
       "text/x-digital" = "digital.desktop";
+      "application/x-digital-testcase" = "digital.desktop";
       "text/html" = "brave-browser.desktop";
       "x-scheme-handler/http" = "brave-browser.desktop";
       "x-scheme-handler/https" = "brave-browser.desktop";
