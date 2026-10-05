@@ -99,4 +99,10 @@
     defaultCacheTtl = 3600;
     maxCacheTtl = 86400;
   };
+
+  programs.pi-coding-agent.enable = true;
+  programs.pi-coding-agent.extraPackages = [
+    pkgs.nodejs
+    pkgs.bun
+  ];
 }
