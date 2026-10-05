@@ -1,5 +1,5 @@
 # User developer tools: VS Code, Git, GPG, SSH
-{ pkgs, osConfig, ... }:
+{ pkgs, config, osConfig, ... }:
 
 {
   programs.vscode = {
@@ -100,9 +100,18 @@
     maxCacheTtl = 86400;
   };
 
-  programs.pi-coding-agent.enable = true;
-  programs.pi-coding-agent.extraPackages = [
-    pkgs.nodejs
-    pkgs.bun
-  ];
+  programs.pi-coding-agent = {
+    enable = true;
+    configDir = "${config.xdg.configHome}/pi/agent";
+    extraPackages = [
+      pkgs.nodejs
+      pkgs.bun
+    ];
+    settings = {
+      defaultProvider = "xiaomi-token-plan-sgp";
+      defaultModel = "mimo-v2.6-flash";
+      showCacheMissNotices = true;
+      packages = [ "npm:pi-xiaomi-mimo-provider" ];
+    };
+  };
 }
