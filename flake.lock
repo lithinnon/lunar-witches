@@ -82,6 +82,26 @@
         "type": "path"
       }
     },
+    "chula": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791176703,
+        "narHash": "sha256-aEn2/R0FmAV5nhRnlfQCBL+7nLS3vydJ0tINgzt4qZM=",
+        "owner": "MiniHarinn",
+        "repo": "chula-flake",
+        "rev": "fa1c7d684ee6e605c1d30c1956d071a7fc229977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "MiniHarinn",
+        "repo": "chula-flake",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -262,6 +282,7 @@
         "antigravity-nix": "antigravity-nix",
         "bedrock-on-linux": "bedrock-on-linux",
         "bullvpn": "bullvpn",
+        "chula": "chula",
         "disko": "disko",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",

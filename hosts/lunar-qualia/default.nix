@@ -50,7 +50,7 @@
       self.nixosModules.user-nnon
 
       # 8. Host-Specific Overrides & Arbitrary Parameters
-      ({ pkgs, ... }: {
+      ({ ... }: {
         networking.hostName = "lunar-qualia";
 
         # Optimized CachyOS BORE Kernel with Zen 4 microarchitecture tuning
@@ -82,10 +82,7 @@
 
         services.syncthing.enable = true;
 
-        features.chulawifi = {
-          enable = true;
-          user = "nnon";
-        };
+        chula.wifi.environmentFile = "/home/nnon/.config/chula/environment";
 
         suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;
       })

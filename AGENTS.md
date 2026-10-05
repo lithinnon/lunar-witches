@@ -29,7 +29,7 @@
    - NEVER suggest raw `podman` CLI commands. The host runs rootless Podman aliased to the `docker` CLI interface for consistent tooling and caching. Suggest `docker` commands instead.
 6. **Nix Store Secrets Boundary:**
    - NEVER commit API tokens, passwords, or private keys to `.nix` files or Git history.
-   - The `/nix/store` is world-readable (`chmod -R a+r`). Secrets belong strictly in `~/.config/secrets.env` (`chmod 600`), sourced declaratively in shell init scripts (`fish.shellInit` / `bash.initExtra`).
+   - The `/nix/store` is world-readable (`chmod -R a+r`). Secrets live in `chmod 600` environment files under `~/.config/` — `~/.config/secrets.env` for shell-sourced tokens (e.g. `HF_TOKEN`), `~/.config/chula/environment` for campus Wi-Fi credentials — with plain `KEY=VALUE` lines (no `export ` prefixes — systemd's `EnvironmentFile=` silently ignores them), sourced declaratively in shell init scripts (`fish.shellInit` / `bash.initExtra`).
 
 ---
 
@@ -123,9 +123,9 @@ When adding new configurations or options, follow these boundary guidelines:
 5. **Native Module Wrapping:**
    - Avoid creating custom wrapper options (e.g. `services.lunar-syncthing`) around native NixOS services. Configure upstream services directly using `lib.mkDefault` so downstream hosts can override properties effortlessly.
 6. **Enterprise Network Profiles & Secrets Boundary:**
-   - Network profiles requiring proprietary or campus 802.1x enterprise authentication (`ChulaWiFi`) belong in `modules/features/chulawifi.nix`.
-   - Invariants: Never embed passwords into Nix store files. Use NetworkManager's `ensureProfiles.environmentFiles` to substitute `$CHULA_WIFI_PASSWORD` into `/run/NetworkManager/system-connections/` at runtime (in RAM with 0600 permissions).
-   - RADIUS Quirks: Enterprise networks relying on legacy RADIUS TLS 1.0 handshakes require `phase1-auth-flags = 32` (0x20) and `openssl-ciphers = "DEFAULT@SECLEVEL=0"`.
+   - Network profiles requiring proprietary or campus 802.1x enterprise authentication (`ChulaWiFi`, `eduroam`) come from the [`chula`](https://github.com/MiniHarinn/chula-flake) flake input (`chula.nixosModules.wifi`). `modules/features/chulawifi.nix` is a bare import-time trait: importing it is the opt-in, and the host leaf sets `chula.wifi.environmentFile` directly (per rule 5 — no wrapper options around upstream).
+   - Invariants: Never embed passwords into Nix store files. Use NetworkManager's `ensureProfiles.environmentFiles` to substitute `$CHULA_WIFI_PASSWORD` / `$CHULA_WIFI_IDENTITY` into `/run/NetworkManager/system-connections/` at runtime (in RAM with 0600 permissions).
+   - RADIUS Quirks: Enterprise networks relying on legacy RADIUS TLS 1.0 handshakes require `phase1-auth-flags = 32` (0x20) and `openssl-ciphers = "DEFAULT@SECLEVEL=0"`. chula-flake provides the latter (plus a pinned RADIUS CA); `feature-chulawifi` layers the former on both profiles — keep that quirk until upstream adds it.
 
 ---
 
