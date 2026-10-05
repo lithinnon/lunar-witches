@@ -43,6 +43,7 @@
       self.nixosModules.suite-gaming
       self.nixosModules.suite-ai-rocm
       self.nixosModules.suite-ai-antigravity
+      self.nixosModules.suite-ai-pi-coding-agent
       self.nixosModules.suite-development
 
       # 7. User Profile

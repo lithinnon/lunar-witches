@@ -11,6 +11,7 @@
     ./gaming/default.nix
     ./ai/rocm.nix
     ./ai/antigravity.nix
+    ./ai/pi-coding-agent.nix
     ./development/default.nix
   ];
 }
