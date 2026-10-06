@@ -61,35 +61,6 @@
           Version=1.5
         ''} $out/share/applications/digital.desktop
       '')
-      # AppImage double-click support: shared-mime-info has no AppImage type,
-      # so register *.AppImage by glob (weight 90 beats the generic ELF magic)
-      # and ship a handler desktop entry — the one bundled with appimage-run
-      # declares no %F, so it cannot receive the clicked file.
-      (pkgs.runCommand "appimage-mime" { } ''
-        install -Dm644 ${pkgs.writeText "appimage.xml" ''
-          <?xml version="1.0" encoding="UTF-8"?>
-          <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-            <mime-type type="application/vnd.appimage">
-              <comment>AppImage application</comment>
-              <glob pattern="*.AppImage" weight="90"/>
-              <glob pattern="*.appimage" weight="90"/>
-            </mime-type>
-          </mime-info>
-        ''} $out/share/mime/packages/appimage.xml
-
-        install -Dm644 ${pkgs.writeText "appimage-handler.desktop" ''
-          [Desktop Entry]
-          Categories=Utility;
-          Comment=Run an AppImage with appimage-run
-          Exec=appimage-run %F
-          Icon=application-x-executable
-          MimeType=application/vnd.appimage;
-          Name=AppImage
-          Terminal=false
-          Type=Application
-          Version=1.5
-        ''} $out/share/applications/appimage-handler.desktop
-      '')
       keepassxc
       telegram-desktop
       zoom-us
@@ -103,54 +74,6 @@
       })
       vulkan-tools
       unrar
-      # FHS env for AppImages: webkit2gtk plus its full runtime chain —
-      # appimage loads libwebkit2gtk-4.1 (→ libsoup-3, icu, gstreamer,
-      # flite, enchant, …) and dies without every one of these in the env.
-      (appimage-run.override {
-        extraPkgs =
-          p: with p; [
-            webkitgtk_4_1
-            gtk3
-            libsoup_3
-            icu
-            enchant
-            flite
-            libavif
-            mesa
-            gst_all_1.gstreamer
-            gst_all_1.gst-plugins-base
-            libgcrypt
-            libdrm
-            libepoxy
-            expat
-            libbacktrace
-            fontconfig
-            freetype
-            cairo
-            pango
-            atk
-            glib
-            wayland
-            libxkbcommon
-            hyphen
-            libmanette
-            libjxl
-            libwebp
-            libjpeg_turbo
-            libpng
-            lcms2
-            libsecret
-            libtasn1
-            libseccomp
-            libgpg-error
-            sqlite
-            libxml2
-            libxslt
-            harfbuzz
-            gdk-pixbuf
-            zlib
-          ];
-      })
       kdePackages.kcalc
     ];
 
@@ -159,12 +82,10 @@
       defaultApplications = {
         "application/x-digital" = "digital.desktop";
         "text/x-digital" = "digital.desktop";
-        "application/vnd.appimage" = "appimage-handler.desktop";
       };
       addedAssociations = {
         "application/x-digital" = "digital.desktop";
         "text/x-digital" = "digital.desktop";
-        "application/vnd.appimage" = "appimage-handler.desktop";
       };
     };
   };
