@@ -126,6 +126,7 @@ When adding new configurations or options, follow these boundary guidelines:
    - Network profiles requiring proprietary or campus 802.1x enterprise authentication (`ChulaWiFi`, `eduroam`) come from the [`chula`](https://github.com/MiniHarinn/chula-flake) flake input (`chula.nixosModules.wifi`). `modules/features/chulawifi.nix` is a bare import-time trait: importing it is the opt-in, and the host leaf sets `chula.wifi.environmentFile` directly (per rule 5 — no wrapper options around upstream).
    - Invariants: Never embed passwords into Nix store files. Use NetworkManager's `ensureProfiles.environmentFiles` to substitute `$CHULA_WIFI_PASSWORD` / `$CHULA_WIFI_IDENTITY` into `/run/NetworkManager/system-connections/` at runtime (in RAM with 0600 permissions).
    - RADIUS Quirks: Enterprise networks relying on legacy RADIUS TLS 1.0 handshakes require `phase1-auth-flags = 32` (0x20) and `openssl-ciphers = "DEFAULT@SECLEVEL=0"`. chula-flake provides the latter (plus a pinned RADIUS CA); `feature-chulawifi` layers the former on both profiles — keep that quirk until upstream adds it.
+   - Keyfile Quirk: NM keyfiles require `\` in values to be escaped as `\\`, but `envsubst` writes the password raw (and systemd's `EnvironmentFile=` collapses `\\`→`\`, so the env file can't carry the escaped form either). NM then rejects the value ("cannot be interpreted") and 802-1x auth fails every boot. `feature-chulawifi` re-escapes `password=` lines after profile generation and re-runs `nmcli connection reload`.
 
 ---
 
