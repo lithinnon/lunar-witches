@@ -34,7 +34,15 @@
                 defaultProvider = lib.mkDefault "xiaomi-token-plan-sgp";
                 defaultModel = lib.mkDefault "mimo-v2.6-flash";
                 showCacheMissNotices = lib.mkDefault true;
-                packages = [ "npm:pi-xiaomi-mimo-provider" ];
+                packages = [
+                  "npm:pi-xiaomi-mimo-provider"
+                  "npm:pi-mcp-adapter"
+                  "npm:pi-web-access"
+                ];
+                extensions = [
+                  "-builtin:mcp"
+                  "-builtin:llama.cpp"
+                ];
               };
             };
           }
