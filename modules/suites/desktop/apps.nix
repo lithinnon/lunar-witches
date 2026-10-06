@@ -103,13 +103,53 @@
       })
       vulkan-tools
       unrar
-      # FHS env gets gtk3 + webkit2gtk-4.1: appimage fails at runtime
-      # without libwebkit2gtk-4.1.so.0 (same deps pkgs/app links against).
+      # FHS env for AppImages: webkit2gtk plus its full runtime chain —
+      # appimage loads libwebkit2gtk-4.1 (→ libsoup-3, icu, gstreamer,
+      # flite, enchant, …) and dies without every one of these in the env.
       (appimage-run.override {
-        extraPkgs = p: [
-          p.gtk3
-          p.webkitgtk_4_1
-        ];
+        extraPkgs =
+          p: with p; [
+            webkitgtk_4_1
+            gtk3
+            libsoup_3
+            icu
+            enchant
+            flite
+            libavif
+            mesa
+            gst_all_1.gstreamer
+            gst_all_1.gst-plugins-base
+            libgcrypt
+            libdrm
+            libepoxy
+            expat
+            libbacktrace
+            fontconfig
+            freetype
+            cairo
+            pango
+            atk
+            glib
+            wayland
+            libxkbcommon
+            hyphen
+            libmanette
+            libjxl
+            libwebp
+            libjpeg_turbo
+            libpng
+            lcms2
+            libsecret
+            libtasn1
+            libseccomp
+            libgpg-error
+            sqlite
+            libxml2
+            libxslt
+            harfbuzz
+            gdk-pixbuf
+            zlib
+          ];
       })
       kdePackages.kcalc
     ];
