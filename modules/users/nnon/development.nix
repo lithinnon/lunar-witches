@@ -1,4 +1,4 @@
-# User developer tools: VS Code, Git, GPG, SSH
+# User developer tools: VS Code, Git, GPG, SSH, MCP servers
 { pkgs, osConfig, ... }:
 
 {
@@ -98,5 +98,16 @@
     pinentry.package = pkgs.pinentry-qt;
     defaultCacheTtl = 3600;
     maxCacheTtl = 86400;
+  };
+
+  # MCP server registry at ~/.config/mcp/mcp.json — the "generic global"
+  # source read by pi's mcp-adapter (and other MCP-aware clients). The
+  # `mcp-nixos` binary itself ships via suite-ai-antigravity (pkgs.mcp-nixos).
+  # Declarative on purpose: the adapter's interactive setup panel resolves
+  # symlinks before writing, so it cannot mutate this file — add servers here.
+  home.file.".config/mcp/mcp.json".text = builtins.toJSON {
+    mcpServers = {
+      nixos.command = "mcp-nixos";
+    };
   };
 }
