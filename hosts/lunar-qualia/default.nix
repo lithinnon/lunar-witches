@@ -36,6 +36,7 @@
       self.nixosModules.feature-syncthing
       self.nixosModules.feature-chulawifi
       self.nixosModules.feature-openssh
+      self.nixosModules.feature-containers
 
       # 6. Workload Suites
       self.nixosModules.suite-desktop-plasma

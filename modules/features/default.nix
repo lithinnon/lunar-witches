@@ -7,5 +7,6 @@
     ./syncthing.nix
     ./chulawifi.nix
     ./openssh.nix
+    ./containers.nix
   ];
 }
