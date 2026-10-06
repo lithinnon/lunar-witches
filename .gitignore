@@ -45,3 +45,5 @@
 /tmp/**
 .user_setup_prompt.md
 result
+
+# Upstream reference checkouts kept for reading only (never packaged)

@@ -7,6 +7,7 @@
       amdgpu-boost = pkgs.callPackage ./amdgpu-boost { };
       sync-power-state = pkgs.callPackage ./sync-power-state { };
       service-deck-helper = pkgs.callPackage ./service-deck-helper { };
+      app = pkgs.callPackage ./app { };
     };
   };
 
@@ -16,5 +17,6 @@
     amdgpu-boost = final.callPackage ./amdgpu-boost { };
     sync-power-state = final.callPackage ./sync-power-state { };
     service-deck-helper = final.callPackage ./service-deck-helper { };
+    app = final.callPackage ./app { };
   };
 }
