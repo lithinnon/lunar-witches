@@ -25,9 +25,9 @@
 4. **Privilege Escalation & AskPass (`nh` & `sudo`):**
    - When suggesting commands requiring `sudo`, ALWAYS use `sudo -A` (Askpass). The system is configured with KDE Plasma's `ksshaskpass` graphical dialog so user credentials are never handled directly by the agent.
    - For `nh os switch`, `nh`'s internal Rust elevation logic specifically requires `NH_SUDO_ASKPASS` (or `NH_SUDOOPTS="-A"`) to pass `-A` to `sudo`. `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` is declaratively provisioned in `suite-desktop-plasma` and `user-nnon.home.sessionVariables`. When executing `nh os switch` in non-login subshells or fresh scripts, explicitly prefix `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch ...` to guarantee graphical authentication.
-5. **Third-Party Binaries: In-Tree Packages Only:**
-   - There is **no container tooling** on this machine — the Fedora-era Podman setup, the short-lived `feature-containers` experiment and the AppImage handler are all gone. Never suggest `podman`/`docker`/`distrobox`, and do not rely on `appimage-run` being installed.
-   - Third-party desktop binaries are packaged in-tree instead: derivation under `pkgs/` (e.g. `pkgs/app`), exported via `flake.overlays.default`, consumed through `home.packages`/`environment.systemPackages`.
+5. **Third-Party Binaries: In-Tree Packages & Plain AppImages:**
+   - There is **no container tooling** on this machine — the Fedora-era Podman setup and the short-lived `feature-containers` experiment are both gone. Never suggest `podman`/`docker`/`distrobox`.
+   - Packaged binaries come from `pkgs/` (e.g. `pkgs/app` via the overlay + `home.packages`). A **plain** `appimage-run` with an `application/vnd.appimage` double-click handler ships in `suite-desktop-apps` — deliberately without extra FHS packages (no webkit chain), so only AppImages whose libraries the base env provides will run. app runs via `pkgs.app`, not its AppImage.
 6. **Nix Store Secrets Boundary:**
    - NEVER commit API tokens, passwords, or private keys to `.nix` files or Git history.
    - The `/nix/store` is world-readable (`chmod -R a+r`). Secrets live in `chmod 600` environment files under `~/.config/` — `~/.config/secrets.env` for shell-sourced tokens (e.g. `HF_TOKEN`), `~/.config/chula/environment` for campus Wi-Fi credentials — with plain `KEY=VALUE` lines (no `export ` prefixes — systemd's `EnvironmentFile=` silently ignores them), sourced declaratively in shell init scripts (`fish.shellInit` / `bash.initExtra`).
