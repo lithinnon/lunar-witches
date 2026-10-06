@@ -16,6 +16,13 @@
         dockerCompat = lib.mkDefault true;
       };
 
+      # Unqualified short image names (distrobox -i ubuntu:26.04) need a
+      # search registry — NixOS writes an empty registries.conf otherwise.
+      # TOML shape per containers-registries.conf(5): [registries.search].
+      virtualisation.containers.registries.settings = {
+        registries.search.registries = [ "docker.io" ];
+      };
+
       # Distrobox: ephemeral distro environments sharing $HOME, backed by the
       # rootless runtime above. The nixpkgs package pre-configures
       # container_additional_volumes=/nix:/nix so host Nix paths stay visible
