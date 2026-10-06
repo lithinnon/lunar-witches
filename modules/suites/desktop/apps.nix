@@ -103,7 +103,14 @@
       })
       vulkan-tools
       unrar
-      appimage-run
+      # FHS env gets gtk3 + webkit2gtk-4.1: appimage fails at runtime
+      # without libwebkit2gtk-4.1.so.0 (same deps pkgs/app links against).
+      (appimage-run.override {
+        extraPkgs = p: [
+          p.gtk3
+          p.webkitgtk_4_1
+        ];
+      })
       kdePackages.kcalc
     ];
 
