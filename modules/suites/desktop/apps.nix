@@ -61,6 +61,21 @@
           Version=1.5
         ''} $out/share/applications/digital.desktop
       '')
+      # Digital++ — digital-egro via `nix run`, sharing Digital's icon
+      (pkgs.runCommand "digital-egro-desktop" { } ''
+        install -Dm644 ${pkgs.writeText "digital-egro.desktop" ''
+          [Desktop Entry]
+          Categories=Education;Electronics;
+          Comment=Digital logic circuits (digital-egro)
+          Exec=nix run github:MiniHarinn/digital-egro
+          Icon=digital
+          Keywords=digital;egro;circuit;
+          Name=Digital++
+          Terminal=false
+          Type=Application
+          Version=1.5
+        ''} $out/share/applications/digital-egro.desktop
+      '')
       # AppImage double-click support: shared-mime-info has no AppImage type,
       # so register *.AppImage by glob (weight 90 beats the generic ELF magic)
       # and ship a handler desktop entry — the one bundled with appimage-run
