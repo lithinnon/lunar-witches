@@ -3,8 +3,12 @@
 
 {
   flake.nixosModules.suite-desktop-service-deck =
-    { ... }:
+    { pkgs, ... }:
     {
+      # The plasmoid itself (in-tree); the helper CLI and deck config ship
+      # through the HM module below.
+      environment.systemPackages = [ pkgs.plasma-widget-servicedeck ];
+
       home-manager.sharedModules = [
         (
           {
@@ -142,11 +146,6 @@
             config = lib.mkIf cfg.enable {
               home.packages = [ cfg.package ];
               xdg.configFile."plasma-service-deck.json".text = builtins.toJSON deckJson;
-
-              # The widget's QML execs the helper by absolute path
-              # (/home/nnon/.local/bin/service-deck-helper), not via PATH —
-              # provide the legacy location next to the profile copy.
-              home.file.".local/bin/service-deck-helper".source = "${cfg.package}/bin/service-deck-helper";
             };
           }
         )

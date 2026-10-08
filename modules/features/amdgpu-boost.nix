@@ -69,6 +69,7 @@
 
         environment.systemPackages = [
           pkgs.amdgpu-boost
+          pkgs.plasma-widget-amdgpuboost
         ];
 
         environment.etc."amdgpu-boost.conf".text = ''
