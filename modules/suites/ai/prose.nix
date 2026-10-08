@@ -1,14 +1,14 @@
 # Capability suite: Local LLM prose stack — SillyTavern + llama.cpp (Vulkan)
 #
-# SillyTavern is the frontend; llama-cpp-vulkan serves GGUF models over an
-# OpenAI-compatible API on the Strix Halo iGPU (RADV already provided by
-# hw-gpu-amd — no extra driver wiring). Packages only: nothing runs in the
-# background, start both on demand.
+# SillyTavern runs as the native `services.sillytavern` system unit
+# (sillytavern.service — hardened sandbox, state in /var/lib/SillyTavern,
+# boot autostart, localhost:8080), toggled from the "AI" service-deck group.
+# llama-cpp-vulkan serves GGUF models over an OpenAI-compatible API on the
+# Strix Halo iGPU (RADV via hw-gpu-amd — no extra driver wiring). Start it
+# on demand:
 #
-# Typical session:
 #   llama-server -m <model.gguf> -ngl 99 --port 8081   # Vulkan offload
-#   sillytavern                                          # point it at :8081
-# (both default to port 8080, hence the explicit --port above)
+#   (SillyTavern takes :8080, hence llama-server on 8081)
 { ... }:
 
 {
@@ -17,5 +17,9 @@
       pkgs.sillytavern
       pkgs.llama-cpp-vulkan
     ];
+
+    # Native module configured directly (AGENTS rule 5) — defaults keep the
+    # dedicated "sillytavern" service user and state in /var/lib/SillyTavern.
+    services.sillytavern.enable = true;
   };
 }

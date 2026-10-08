@@ -188,6 +188,18 @@
           }
         ];
       }
+      {
+        id = "ai";
+        name = "AI";
+        icon = "applications-science";
+        services = [
+          {
+            id = "sillytavern.service";
+            name = "SillyTavern";
+            scope = "system";
+          }
+        ];
+      }
     ];
     ungrouped = {
       name = "Ungrouped";
