@@ -2,13 +2,14 @@
 #
 # SillyTavern runs as the native `services.sillytavern` system unit
 # (sillytavern.service — hardened sandbox, state in /var/lib/SillyTavern,
-# boot autostart, localhost:8080), toggled from the "AI" service-deck group.
+# boot autostart, 127.0.0.1:8000), toggled from the "AI" service-deck group.
 # llama-cpp-vulkan serves GGUF models over an OpenAI-compatible API on the
 # Strix Halo iGPU (RADV via hw-gpu-amd — no extra driver wiring). Start it
 # on demand:
 #
-#   llama-server -m <model.gguf> -ngl 99 --port 8081   # Vulkan offload
-#   (SillyTavern takes :8080, hence llama-server on 8081)
+#   llama-server -m <model.gguf> -ngl 99    # Vulkan offload, default :8080
+#   SillyTavern (ST 1.19 default config) listens on 127.0.0.1:8000 —
+#   the two default ports coexist, no overrides needed.
 { ... }:
 
 {
