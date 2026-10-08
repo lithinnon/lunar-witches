@@ -12,6 +12,7 @@
     ./ai/rocm.nix
     ./ai/antigravity.nix
     ./ai/pi-coding-agent.nix
+    ./ai/prose.nix
     ./development/default.nix
   ];
 }
