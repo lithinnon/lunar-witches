@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Antigravity & lunar-qualia"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Manage systemd service groups, power state, and autostart",
+        "Icon": "preferences-system-services",
+        "Id": "org.kde.servicedeck",
+        "License": "GPL-3.0+",
+        "Name": "Service Deck",
+        "Version": "1.0.0",
+        "Website": "https://github.com"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.systeminformation"
+    ]
+}
