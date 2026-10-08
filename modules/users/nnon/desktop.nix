@@ -36,6 +36,13 @@
     };
   };
 
+  # The amdgpu-boost widget's QML execs the helper by absolute path
+  # (/home/nnon/.local/bin/amdgpu-boost), not via PATH — provide the legacy
+  # location next to the system-profile copy.
+  home.file.".local/bin/amdgpu-boost" = lib.mkIf osConfig.services.amdgpu-boost.enable {
+    source = "${pkgs.amdgpu-boost}/bin/amdgpu-boost";
+  };
+
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
