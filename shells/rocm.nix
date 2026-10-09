@@ -133,6 +133,8 @@ let
           pkgs.git
           pkgs.gcc
           pkgs.gnumake
+          pkgs.ccache
+          pkgs.sccache
         ];
         env = {
           ROCM_PATH = "${rocmPkg}";
@@ -141,6 +143,12 @@ let
           HIP_COMPILER = "clang";
           HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
           CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
+
+          # Compiler caching integration
+          CMAKE_C_COMPILER_LAUNCHER = "ccache";
+          CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
+
+          # ROCm hardware / driver shader caches
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
           HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
@@ -152,8 +160,10 @@ let
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
           echo "=========================================================="
           echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Development (${gfx})"
-          echo "  Compiler: $(${rocmPkg}/bin/hipcc --version | head -n 1)"
-          echo "  ROCM_PATH: ${rocmPkg}"
+          echo "  Compiler:       $(${rocmPkg}/bin/hipcc --version | head -n 1)"
+          echo "  ROCM_PATH:      ${rocmPkg}"
+          echo "  Build Cache:    ccache & sccache (CMake launcher: ccache)"
+          echo "  Shader Cache:   AMD COMGR & rocFFT kernel caches enabled"
           echo "=========================================================="
         '';
       };
@@ -173,6 +183,8 @@ let
           pkgs.git
           pkgs.gcc
           pkgs.gnumake
+          pkgs.ccache
+          pkgs.sccache
           pkgs.zlib
           pkgs.libdrm
           pkgs.numactl
@@ -186,6 +198,11 @@ let
           HIP_COMPILER = "clang";
           HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
           CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
+
+          # Compiler caching integration
+          CMAKE_C_COMPILER_LAUNCHER = "ccache";
+          CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
+
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
           HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
@@ -228,6 +245,7 @@ let
           echo "  ROCM_PATH:        ${rocmPkg}"
           echo "  Locked Index:     https://stable.repo.amd.com/rocm/whl-next"
           echo "  Locked PyTorch:   ${torchVersion}"
+          echo "  Build Cache:      ccache & sccache (CMake launcher: ccache)"
           echo "  Active Venv:      ''${VIRTUAL_ENV:-None}"
           echo "  Commands:         build-flash-attention   (compile Flash Attention 2)"
           echo "                    init-rocm-venv [dir] [--flash-attn]"
