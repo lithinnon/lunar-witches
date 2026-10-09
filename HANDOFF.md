@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 17:24 +07:00
+- **Timestamp:** 2026-10-09 17:43 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `e8a2f0c` (`docs(retrospects): document AMD XDNA NPU and ROCm Loom (HRX) architecture`)
+- **Active Git Commit:** `c434a56` (`feat(ai): refactor devshells into amd-ai-dev and loom-dev, fix patchelf corruption in rocm-therock`)
 - **Working Tree:** Clean (all changes committed)
-- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/n9l756pv691qkzizvjcfmdl4ifkphqk7-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
+- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
 ---
 
@@ -52,14 +52,12 @@
    - Replaced full compiler package on global `$PATH` with lightweight `rocm-diagnostics` wrapper exposing only `rocminfo`, `amd-smi`, and `rocm_agent_enumerator`.
    - Stripped global `ROCM_PATH`, `HIP_PATH`, and `CMAKE_PREFIX_PATH` session variables to eliminate pollution of unrelated CMake/host builds.
    - Retained dynamic library resolution in `programs.nix-ld.libraries` for standalone binaries.
-   - Kept full compiler suite, include paths, and Python AI venv automation strictly within `devShells` (`torch-dev`, `hip-dev`, `hip-runtime`).
+   - Kept full compiler suite, include paths, and Python AI venv automation strictly within `devShells` (`amd-ai-dev`).
    - Added typed `suites.ai.rocm.exposeCompilers = false` toggle.
-9. **Decoupled Flake DevShells to `shells/` Aggregator (`shells/rocm.nix`, `flake.nix`):**
-   - Sliced `modules/suites/ai/rocm.nix` from 330 lines to 72 lines of pure NixOS module.
-   - Relocated developer shells (`torch-dev`, `hip-dev`, `hip-runtime`), `mkRocmDevShells`, and bootstrap scripts to `shells/rocm.nix`.
+9. **Decoupled Flake DevShells to `shells/` Aggregator (`shells/rocm.nix`, `shells/loom.nix`, `flake.nix`):**
    - Created top-level `shells/default.nix` aggregator imported directly into `flake.nix`, maintaining clear domain boundaries.
 10. **Integrated Build Caching (`shells/rocm.nix`):**
-    - Packaged `ccache` and `sccache` into `hip-dev` and `torch-dev` developer shells.
+    - Packaged `ccache` and `sccache` into `amd-ai-dev` developer shell.
     - Configured `CMAKE_C_COMPILER_LAUNCHER = "ccache"` and `CMAKE_CXX_COMPILER_LAUNCHER = "ccache"` for zero-configuration build acceleration.
 11. **AMD XDNA & ROCm Loom Architecture Research (`retrospects/05-*`, `retrospects/06-*`):**
     - Proved in-tree `amdxdna` kernel driver is loaded and initialized on Linux 7.2.8 (`/dev/accel/accel0`, FW `1.1.2.65`, `NPU Strix Halo`, PCI `17f0:11`). No DKMS driver required.
@@ -67,15 +65,22 @@
     - Investigated `mlir-aie` latest updates and official AMD Agent Skills (`aie-model-baseline`, `aie-dataflow-presim`, `aie-hw-bringup`, `aie-kernel-opt`, `aie-dataflow-opt`).
     - Discovered ROCm Loom (`ROCm/hrx-system`) compiler targeting both AMDGPU (`gfx1151`) and AMD XDNA (`strix_halo.17f0_11`).
     - Documented how Loom executes `.xdna` ELFs via `libamdf` over native Linux DRM, completely bypassing XRT on Linux.
+12. **Fixed `libhipblaslt` & Math Libraries ELF Header Corruption (`pkgs/rocm-therock/default.nix`):**
+    - Root-cause: `autoPatchelfHook` forcibly moved tail `PT_PHDR` segments to offset 0x40 and underflowed `VirtAddr` to negative values (`0xffffffffffd9d040`), crashing dynamic linker `_dl_map_new_object` with SIGSEGV in `llama-cli` and `rocblas`.
+    - Fix: Removed `autoPatchelfHook`. Kept 100% of `.so` files pristine and unpatched (they already use `$ORIGIN/rocm_sysdeps/lib` relative rpaths). Selectively patched only executable binaries in `bin/` and `lib/llvm/bin/` with interpreter and RPATH.
+    - Verified `libhipblaslt.so.1` and `librocblas.so.5` load with 0 errors via Python `ctypes.CDLL`.
+13. **Two-Shell Architecture Implementation (`shells/rocm.nix`, `shells/loom.nix`, `shells/default.nix`):**
+    - `amd-ai-dev` (default `nix develop`): Unified flagship devshell combining ROCm TheRock, Rust toolchain (`cargo`, `rustc`), build tools (`cmake`, `ninja`, `ccache`, `sccache`), PyTorch 2.12 + Flash Attention 2, and XDNA IRON helpers. Backward-compatible aliases for `torch-dev` and `hip-dev`.
+    - `loom-dev`: ROCm Loom & HRX System studio with Bazelisk, Bazel 7, CMake, LLVM/Clang, Python, and hardware target configuration for both Radeon 8060S (`gfx1151`) and Ryzen AI NPU (`amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`).
 
 ---
 
 ## 3. In-Flight Tasks & Next Immediate Steps
 
-- [x] Document AMD XDNA architecture and programming model in ADR-05.
-- [x] Document ROCm Loom (HRX) unified GPU + NPU architecture in ADR-06.
+- [x] Fix `libhipblaslt` patchelf corruption in `pkgs/rocm-therock/default.nix`.
+- [x] Implement 2-shell architecture (`amd-ai-dev` + `loom-dev`).
+- [x] Verify local build (`nh os build`).
 - [ ] *(Optional / Next)*: Activate live system generation via `nh os switch` (prompts via `ksshaskpass`).
-- [ ] *(Future Phase)*: Integrate XDNA development shell / packages when ready to begin on-device kernel writing.
 
 ---
 
