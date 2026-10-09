@@ -30,6 +30,12 @@
       pkgs,
       ...
     }:
+    let
+      # Nix value → YAML converter (pkgs.formats.yaml standard, remarshal-
+      # backed): the llama-swap config below is written as a Nix attrset and
+      # rendered to YAML at build time.
+      llamaSwapFormat = pkgs.formats.yaml { };
+    in
     {
       environment.systemPackages = [
         pkgs.sillytavern
@@ -41,50 +47,48 @@
       ];
 
       # llama-swap config, consumed at $XDG_CONFIG_HOME/llama-swap.yml.
-      # Derived from upstream's config-schema.json; models are declared under
-      # `models:` below as siblings of the existing entries.
+      # Written as a Nix attrset and rendered to YAML via pkgs.formats.yaml;
+      # schema notes live as comments next to the values they describe.
       home-manager.sharedModules = [
         {
-          xdg.configFile."llama-swap.yml".text = ''
-            # llama-swap configuration — managed declaratively by suite-ai-prose
-            # (Home-Manager xdg.configFile). Source of truth for the schema:
-            # config-schema.json @ github.com/mostlygeek/llama-swap — only
-            # `models` is required; every other top-level key has a default
-            # (healthCheckTimeout=120, globalTTL=0, unloadTimeout=10,
-            # logLevel=info, startPort=5800, ...).
-            #
-            # Each key under `models:` is a model ID as sent in API requests
-            # (`model: "..."`); `cmd` starts llama-server for it (macros work,
-            # `|` blocks welcome), `ttl` (INTEGER SECONDS, -1 = global, 0 =
-            # never) unloads it when idle. Spawned servers get their port from
-            # the ''${PORT} macro (startPort 5800, incremented per model) —
-            # `proxy` already defaults to http://localhost:''${PORT}.
-            #
-            models:
-              "creative/boulesis-v2.1-headtune":
-                ttl: 1200 # 20 minutes (schema: seconds)
-                cmd: |
-                  llama-server \
-                      --ctx-size 32768 \
-                      --batch-size 2048 \
-                      --ubatch-size 512 \
-                      --flash-attn on \
-                      --cache-type-k bf16 \
-                      --cache-type-v bf16 \
-                      --device Vulkan0 \
-                      --n-gpu-layers all \
-                      --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
-                      --ctx-checkpoints 0 \
-                      --cache-ram 1280 \
-                      --no-mmproj \
-                      --port ''${PORT} \
-                      --no-webui \
-                      --cache-reuse 256 \
-                      --reasoning-format deepseek \
-                      --reasoning on \
-                      --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
-                      --no-reasoning-preserve
-          '';
+          xdg.configFile."llama-swap.yml".source = llamaSwapFormat.generate "llama-swap.yml" (
+            # Schema: config-schema.json @ github.com/mostlygeek/llama-swap —
+            # only `models` is required; every other top-level key has a
+            # default (healthCheckTimeout=120, globalTTL=0, logLevel=info,
+            # startPort=5800 for the ${PORT} macro, proxy already
+            # http://localhost:${PORT}, checkEndpoint=/health).
+            #   * model ID = the `model` value clients send in API requests
+            #   * ttl is INTEGER SECONDS (-1 = global default, 0 = never)
+            {
+              models = {
+                "creative/boulesis-v2.1-headtune" = {
+                  ttl = 1200; # 20 minutes
+                  cmd = ''
+                    llama-server \
+                        --ctx-size 32768 \
+                        --batch-size 2048 \
+                        --ubatch-size 512 \
+                        --flash-attn on \
+                        --cache-type-k bf16 \
+                        --cache-type-v bf16 \
+                        --device Vulkan0 \
+                        --n-gpu-layers all \
+                        --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
+                        --ctx-checkpoints 0 \
+                        --cache-ram 1280 \
+                        --no-mmproj \
+                        --port ''${PORT} \
+                        --no-webui \
+                        --cache-reuse 256 \
+                        --reasoning-format deepseek \
+                        --reasoning on \
+                        --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
+                        --no-reasoning-preserve
+                  '';
+                };
+              };
+            }
+          );
 
           # User-level proxy service. Loopback-only: SillyTavern (same host)
           # is the intended client, so the LAN never reaches model backends.
