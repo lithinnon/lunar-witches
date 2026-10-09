@@ -10,7 +10,7 @@
 - **Timestamp:** 2026-10-09 18:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `0437019` (`feat(ai): integrate xrt-amdxdna in-tree package, unlimited memlock, and unified rocm devshell`)
+- **Active Git Commit:** `e0f26e0` (`docs(architecture): add complete AMD AI stack manual (ROCm, PyTorch, XRT, IRON, HRX, Loom)`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os build` dry-run evaluated and ready)
 
@@ -101,6 +101,10 @@
     - Proved `libamdf` passive hardware discovery: detected both `[0] AMD GPU gfx1151` (40 CUs) and `[1] AMD XDNA 17f0:11` (AIE2P).
     - Proved live NPU execution via Loom: compiled `add_i32.loom` -> `add.xdna` using `loom-compile` targeting `amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`, ran on physical NPU tiles via `iree-xdna-run` and `libamdf` over Linux DRM (`/dev/accel/accel0`) with 0 XRT dependencies, and verified 100% bit-exact results across 16 integer additions.
     - Proved live GPU execution via Loom: compiled Loom source on-the-fly and executed on physical Radeon 8060S GPU (`output=42`), and ran `LoomcAmdgpuIreeHalExecutionTest` with 3/3 passed.
+20. **Complete AMD AI Stack Master Architecture Manual (`retrospects/09-*`):**
+    - Synthesized comprehensive architecture guide covering the dual paradigms (Classic ROCm/XRT vs Next-Gen Loom/HRX).
+    - Clarified the concurrency & collision boundary between PyTorch, pyxrt, and IRON.
+    - Established definitive cheat sheet for `amd-ai-dev`, `loom-dev`, and `default` developer shells.
 
 ---
 
@@ -111,6 +115,7 @@
 - [x] Wired `xrt-amdxdna` and Python 3.14 into `shells/rocm.nix` (`amd-ai-dev`).
 - [x] Built and proved ROCm Loom / `libamdf` execution on both physical GPU and physical NPU silicon.
 - [x] Documented proof in `retrospects/08-rocm-loom-live-gpu-and-npu-silicon-execution-proof.md`.
+- [x] Authored complete master architecture manual in `retrospects/09-complete-amd-ai-stack-rocm-iron-xrt-loom-hrx.md`.
 - [ ] *(Optional / Next)*: Commit changes to Git and switch live system via `nh os switch`.
 
 ---
