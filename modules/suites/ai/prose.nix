@@ -39,6 +39,35 @@
         pkgs.llama-swap
       ];
 
+      # llama-swap config, consumed at $XDG_CONFIG_HOME/llama-swap.yml.
+      # Schema-minimal now (`models` is the only required key); model entries
+      # get added here once they are decided.
+      home-manager.sharedModules = [
+        {
+          xdg.configFile."llama-swap.yml".text = ''
+            # llama-swap configuration — managed declaratively by suite-ai-prose
+            # (Home-Manager xdg.configFile). Source of truth for the schema:
+            # config-schema.json @ github.com/mostlygeek/llama-swap — only
+            # `models` is required; every other top-level key has a default
+            # (healthCheckTimeout=120, globalTTL=0, unloadTimeout=10,
+            # logLevel=info, startPort=5800, ...).
+            #
+            # Models go here later. Each key under `models:` is a model ID the
+            # proxy serves; `cmd` starts llama-server for it. Spawned servers
+            # get their port from the ''${PORT} macro (startPort, incremented
+            # per model), so they never collide with each other or with the
+            # proxy's own listen address.
+            #
+            #   models:
+            #     qwen3-8b:
+            #       cmd: >-
+            #         llama-server -m /path/to/model.gguf --port ''${PORT} -ngl 99
+            #
+            models: {}
+          '';
+        }
+      ];
+
       # Native module configured directly (AGENTS rule 5) — defaults keep the
       # dedicated "sillytavern" service user and state in /var/lib/SillyTavern.
       services.sillytavern = {
