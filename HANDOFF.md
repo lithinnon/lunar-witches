@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 17:45 +07:00
+- **Timestamp:** 2026-10-09 17:51 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `2dcef87` (`fix(shells): preserve default devShell for nix flake editing (nixd, nixfmt)`)
+- **Active Git Commit:** `a443e4b` (`refactor(rocm): remove exposeCompilers, confining toolchain to devshells`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -53,7 +53,7 @@
    - Stripped global `ROCM_PATH`, `HIP_PATH`, and `CMAKE_PREFIX_PATH` session variables to eliminate pollution of unrelated CMake/host builds.
    - Retained dynamic library resolution in `programs.nix-ld.libraries` for standalone binaries.
    - Kept full compiler suite, include paths, and Python AI venv automation strictly within `devShells` (`amd-ai-dev`).
-   - Added typed `suites.ai.rocm.exposeCompilers = false` toggle.
+   - Removed `exposeCompilers` toggle entirely to enforce strict isolation of compilers to devshells.
 9. **Decoupled Flake DevShells to `shells/` Aggregator (`shells/rocm.nix`, `shells/loom.nix`, `flake.nix`):**
    - Created top-level `shells/default.nix` aggregator imported directly into `flake.nix`, maintaining clear domain boundaries.
 10. **Integrated Build Caching (`shells/rocm.nix`):**
