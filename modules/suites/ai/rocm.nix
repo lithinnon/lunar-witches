@@ -36,12 +36,6 @@
           default = "10.1.0";
           description = "ROCm (TheRock) release version.";
         };
-
-        exposeCompilers = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Whether to expose hipcc, amdclang, and compiler build variables globally. Defaults to false.";
-        };
       };
 
       config = lib.mkIf cfg.enable {
@@ -52,36 +46,21 @@
           }
         ];
 
-        # System packages: expose diagnostic tools by default; expose full compiler toolchain only if exposeCompilers is true
-        environment.systemPackages =
-          if rocmPkg == null then
-            [ ]
-          else if cfg.exposeCompilers then
-            [ rocmPkg ]
-          else
-            [
-              (pkgs.runCommand "rocm-diagnostics" { } ''
-                mkdir -p $out/bin
-                for bin in rocminfo amd-smi rocm_agent_enumerator; do
-                  if [ -e "${rocmPkg}/bin/$bin" ]; then
-                    ln -s "${rocmPkg}/bin/$bin" "$out/bin/$bin"
-                  fi
-                done
-              '')
-            ];
+        # System packages: expose only lightweight diagnostic utilities on global $PATH.
+        # Compilers (hipcc, amdclang++) are strictly confined to developer shells (amd-ai-dev).
+        environment.systemPackages = lib.optional (rocmPkg != null) (
+          pkgs.runCommand "rocm-diagnostics" { } ''
+            mkdir -p $out/bin
+            for bin in rocminfo amd-smi rocm_agent_enumerator; do
+              if [ -e "${rocmPkg}/bin/$bin" ]; then
+                ln -s "${rocmPkg}/bin/$bin" "$out/bin/$bin"
+              fi
+            done
+          ''
+        );
 
         # Runtime dynamic libraries for unpatched binaries & external runners via nix-ld
         programs.nix-ld.libraries = lib.optional (rocmPkg != null) rocmPkg;
-
-        # Only inject global compiler & build flags if exposeCompilers is true
-        environment.sessionVariables = lib.mkIf (rocmPkg != null && cfg.exposeCompilers) {
-          ROCM_PATH = "${rocmPkg}";
-          HIP_PATH = "${rocmPkg}";
-          CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
-          AMD_COMGR_CACHE_ENABLE = "1";
-          ROCFFT_KERNEL_CACHE_ENABLE = "1";
-          FLASH_ATTENTION_TRITON_AMD_ENABLE = "TRUE";
-        };
       };
     };
 }
