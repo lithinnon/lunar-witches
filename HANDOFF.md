@@ -96,6 +96,11 @@
     - Proved that PyTorch ROCm (GPU) and `pyxrt` (NPU) run concurrently in the **same Python process** with zero errors (`torch.cuda.is_available() == True`, GPU sum computed, and NPU DMA buffer allocated simultaneously).
     - Identified that `import aie.iron` / `import mlir_aie` cannot be imported in the exact same process as `import torch` due to conflicting LLVM `cl::opt` CommandLine registrations (`print-inst-addrs`).
     - Confirmed standard decoupled workflow: compile kernels via IRON/MLIR AOT or in a compilation subshell, then dispatch compiled `.xclbin` binaries to the NPU via `pyxrt` in the PyTorch application.
+19. **ROCm Loom Live GPU & NPU Execution Proven on Silicon (`retrospects/08-*`):**
+    - Built `hrx-system` with `AMDF_BUILD=ON`, `IREE_HAL_DRIVER_AMDGPU=ON`, and `AMDF_FAMILY_XDNA=ON` inside `loom-dev`.
+    - Proved `libamdf` passive hardware discovery: detected both `[0] AMD GPU gfx1151` (40 CUs) and `[1] AMD XDNA 17f0:11` (AIE2P).
+    - Proved live NPU execution via Loom: compiled `add_i32.loom` -> `add.xdna` using `loom-compile` targeting `amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`, ran on physical NPU tiles via `iree-xdna-run` and `libamdf` over Linux DRM (`/dev/accel/accel0`) with 0 XRT dependencies, and verified 100% bit-exact results across 16 integer additions.
+    - Proved live GPU execution via Loom: compiled Loom source on-the-fly and executed on physical Radeon 8060S GPU (`output=42`), and ran `LoomcAmdgpuIreeHalExecutionTest` with 3/3 passed.
 
 ---
 
@@ -104,7 +109,8 @@
 - [x] Sourced and packaged in-tree `xrt-amdxdna` derivation.
 - [x] Configured unlimited `memlock` in `modules/core/default.nix`.
 - [x] Wired `xrt-amdxdna` and Python 3.14 into `shells/rocm.nix` (`amd-ai-dev`).
-- [x] Tested evaluation and devshell launches (`amd-ai-dev`, `loom-dev`, `default`).
+- [x] Built and proved ROCm Loom / `libamdf` execution on both physical GPU and physical NPU silicon.
+- [x] Documented proof in `retrospects/08-rocm-loom-live-gpu-and-npu-silicon-execution-proof.md`.
 - [ ] *(Optional / Next)*: Commit changes to Git and switch live system via `nh os switch`.
 
 ---
