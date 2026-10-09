@@ -198,6 +198,11 @@
             name = "SillyTavern";
             scope = "system";
           }
+          {
+            id = "llama-swap.service";
+            name = "llama-swap";
+            scope = "user";
+          }
         ];
       }
     ];

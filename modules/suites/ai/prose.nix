@@ -14,11 +14,12 @@
 # Port 8000 is opened on the host firewall so the listen is reachable from
 # the LAN (remove networking.firewall entry if that is not wanted).
 #
-# llama-cpp-vulkan serves GGUF models over an OpenAI-compatible API on the
-# Strix Halo iGPU (RADV via hw-gpu-amd). Its default :8080 coexists with
-# SillyTavern's :8234 — start on demand:
-#
-#   llama-server -m <model.gguf> -ngl 99
+# llama-cpp-vulkan serves GGUF models on the Strix Halo iGPU (RADV via
+# hw-gpu-amd). The user-level llama-swap.service owns 127.0.0.1:8080,
+# spawning llama-server per model on ports from 5800 up (config `${PORT}`),
+# unloading via per-model ttl. Toggled from the "AI" service-deck group.
+# Manual llama-server runs need --port elsewhere (or stop the service).
+# SillyTavern (127.0.0.1:8234) points at the proxy for inference.
 { ... }:
 
 {
@@ -84,6 +85,25 @@
                       --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
                       --no-reasoning-preserve
           '';
+
+          # User-level proxy service. Loopback-only: SillyTavern (same host)
+          # is the intended client, so the LAN never reaches model backends.
+          # Spawned llama-server processes inherit the user-manager PATH
+          # (llama-server lives in the system profile).
+          systemd.user.services.llama-swap = {
+            Unit = {
+              Description = "llama-swap — on-demand model swapping proxy for llama.cpp";
+            };
+            Service = {
+              Type = "simple";
+              ExecStart = "${pkgs.llama-swap}/bin/llama-swap -config %h/.config/llama-swap.yml -listen 127.0.0.1:8080";
+              Restart = "on-failure";
+              RestartSec = 2;
+            };
+            Install = {
+              WantedBy = [ "default.target" ];
+            };
+          };
         }
       ];
 
