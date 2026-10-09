@@ -88,7 +88,7 @@
 
         suites.ai.rocm = {
           enable = true;
-          targetGfx = "gfx1151";
+          gfx = "gfx1151";
         };
 
         suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;

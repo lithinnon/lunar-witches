@@ -27,11 +27,11 @@
 ### Completed by Antigravity:
 1. **ROCm 10.1 (TheRock) In-Tree Derivation (`pkgs/rocm-therock`):**
    - Packaged AMD's official stable 10.1.0 prebuilts from `https://stable.repo.amd.com/rocm/core/tarball/`.
-   - **GFX-Agnostic with Strict Enforcement:** `targetGfx` has **no default value** and throws an explicit error if omitted.
+   - **GFX-Agnostic with Strict Enforcement:** `gfx` has **no default value** and throws an explicit error if omitted.
    - Built with `autoPatchelfHook`, linking `glibc`, `libstdc++`, `elfutils`, `numactl`, `libdrm`, and `libtool`.
    - Injected CRT objects, include dirs, and library rpaths into `rocm.cfg` and `amdclang++.cfg` so `hipcc` and `amdclang++` compile out-of-the-box with zero extra include or library flags. Tested and verified on hardware (`Kernel result = 1337`).
 2. **Capability Suite Integration (`modules/suites/ai/rocm.nix`):**
-   - Added typed module option `suites.ai.rocm.targetGfx` (strictly asserted, no default).
+   - Added typed module option `suites.ai.rocm.gfx` (strictly asserted, no default).
    - Injected ROCm into `environment.systemPackages` and `programs.nix-ld.libraries` (so unpatched Python wheels and binaries find `libamdhip64.so` system-wide without devshells).
    - Exposed system session variables (`ROCM_PATH`, `HIP_PATH`, `CMAKE_PREFIX_PATH`, `AMD_COMGR_CACHE_ENABLE`, `ROCFFT_KERNEL_CACHE_ENABLE`, `FLASH_ATTENTION_TRITON_AMD_ENABLE`).
 3. **Three Squashed `nix develop` DevShells & Live Hardware Validation:**
@@ -46,14 +46,14 @@
        Executed both standard QKV and packed QKV forward passes on the GPU with full finite output (`True`) and zero crashes.
    - Exported `flake.lib.mkRocmDevShells` to allow instantiating shells for any GPU architecture.
 4. **Host Leaf Composition (`hosts/lunar-qualia/default.nix`):**
-   - Configured `suites.ai.rocm.enable = true; suites.ai.rocm.targetGfx = "gfx1151";`.
+   - Configured `suites.ai.rocm.enable = true; suites.ai.rocm.gfx = "gfx1151";`.
    - Verified dry-run evaluation and built generation locally via `nh os build`.
 
 ---
 
 ## 3. In-Flight Tasks & Next Immediate Steps
 
-- [x] Integrate `pkgs/rocm-therock` (GFX-agnostic, strictly un-defaulted `targetGfx`).
+- [x] Integrate `pkgs/rocm-therock` (GFX-agnostic, strictly un-defaulted `gfx`).
 - [x] Create 3 squashed devShells (`hip-runtime`, `hip-dev`, `torch-dev`) with anti-drift constraints and Flash Attention helpers.
 - [x] Wire `suite-ai-rocm` into `lunar-qualia` and test local build (`nh os build`).
 - [ ] *(Optional / Next)*: Activate live system generation via `nh os switch` (prompts via `ksshaskpass`).
@@ -64,7 +64,7 @@
 
 1. **Privilege Escalation:**
    Always use `sudo -A` and `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` for system switching. The system uses KDE Plasma's `ksshaskpass` graphical dialog.
-2. **`targetGfx` Strict Invariant:**
-   `pkgs.rocm-therock` and `suites.ai.rocm.targetGfx` must NEVER default to any architecture. If invoked without an explicit architecture string, it throws an error / fails assertion by design.
+2. **`gfx` Strict Invariant:**
+   `pkgs.rocm-therock` and `suites.ai.rocm.gfx` must NEVER default to any architecture. If invoked without an explicit architecture string, it throws an error / fails assertion by design.
 3. **Python & Wheel Resolution:**
-   The official TheRock aggregate wheel index is `https://stable.repo.amd.com/rocm/whl-next`. PyTorch wheels in TheRock are split: `torch` is architecture-neutral host code, while `amd-torch-device-${targetGfx}` carries the GPU kernel packs. In `torch-dev`, `PIP_CONSTRAINT` / `UV_CONSTRAINT` prevents third-party packages from replacing ROCm packages with PyPI CPU wheels.
+   The official TheRock aggregate wheel index is `https://stable.repo.amd.com/rocm/whl-next`. PyTorch wheels in TheRock are split: `torch` is architecture-neutral host code, while `amd-torch-device-${gfx}` carries the GPU kernel packs. In `torch-dev`, `PIP_CONSTRAINT` / `UV_CONSTRAINT` prevents third-party packages from replacing ROCm packages with PyPI CPU wheels.

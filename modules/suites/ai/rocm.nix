@@ -6,16 +6,16 @@ let
   mkRocmDevShells =
     {
       pkgs,
-      targetGfx ? throw "mkRocmDevShells: 'targetGfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch').",
+      gfx ? throw "mkRocmDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch').",
     }:
     let
-      rocmPkg = pkgs.callPackage ../../../pkgs/rocm-therock { inherit targetGfx; };
+      rocmPkg = pkgs.callPackage ../../../pkgs/rocm-therock { inherit gfx; };
 
       # Immutable constraints file preventing third-party packages from pulling PyPI CPU/CUDA builds
-      constraintsFile = pkgs.writeText "rocm-torch-constraints-${targetGfx}.txt" ''
+      constraintsFile = pkgs.writeText "rocm-torch-constraints-${gfx}.txt" ''
         torch==2.12.0+rocm10.1.0
         triton==3.8.0+git669b31ac.rocm10.1.0
-        amd-torch-device-${targetGfx}==2.12.0+rocm10.1.0
+        amd-torch-device-${gfx}==2.12.0+rocm10.1.0
       '';
 
       # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch
@@ -27,11 +27,11 @@ let
           ${pkgs.python312}/bin/python3 -m venv "$VENV_DIR"
         fi
         source "$VENV_DIR/bin/activate"
-        echo "==> Installing ROCm 10.1 PyTorch & ${targetGfx} device libraries..."
+        echo "==> Installing ROCm 10.1 PyTorch & ${gfx} device libraries..."
         uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
           "torch==2.12.0+rocm10.1.0" \
           "triton==3.8.0+git669b31ac.rocm10.1.0" \
-          "amd-torch-device-${targetGfx}==2.12.0+rocm10.1.0" \
+          "amd-torch-device-${gfx}==2.12.0+rocm10.1.0" \
           pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
         echo "==> Ready! Virtual environment bootstrapped with zero CPU package drift."
       '';
@@ -63,7 +63,7 @@ let
     {
       # Variant 1: HIP Runtime (Minimal diagnostics & execution)
       hip-runtime = pkgs.mkShell {
-        name = "rocm-hip-runtime-${targetGfx}";
+        name = "rocm-hip-runtime-${gfx}";
         packages = [
           rocmPkg
           pkgs.pciutils
@@ -71,12 +71,12 @@ let
         env = {
           ROCM_PATH = "${rocmPkg}";
           HIP_PATH = "${rocmPkg}";
-          HSA_OVERRIDE_GFX_VERSION = if targetGfx == "gfx1151" then "11.5.1" else null;
+          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
         };
         shellHook = ''
           export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - HIP Runtime (${targetGfx})"
+          echo "  ROCm 10.1 (TheRock) - HIP Runtime (${gfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
           echo "=========================================================="
           ${rocmPkg}/bin/rocminfo | grep -E 'Name:[[:space:]]+gfx' || true
@@ -85,7 +85,7 @@ let
 
       # Variant 2: HIP Development (C++/HIP compiler, CMake packages, headers)
       hip-dev = pkgs.mkShell {
-        name = "rocm-hip-dev-${targetGfx}";
+        name = "rocm-hip-dev-${gfx}";
         packages = [
           rocmPkg
           pkgs.cmake
@@ -104,15 +104,15 @@ let
           CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
-          HSA_OVERRIDE_GFX_VERSION = if targetGfx == "gfx1151" then "11.5.1" else null;
-          AMDGPU_TARGETS = targetGfx;
-          GPU_TARGETS = targetGfx;
+          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
+          AMDGPU_TARGETS = gfx;
+          GPU_TARGETS = gfx;
         };
         shellHook = ''
           export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - HIP Development (${targetGfx})"
+          echo "  ROCm 10.1 (TheRock) - HIP Development (${gfx})"
           echo "  Compiler: $(${rocmPkg}/bin/hipcc --version | head -n 1)"
           echo "  ROCM_PATH: ${rocmPkg}"
           echo "=========================================================="
@@ -121,7 +121,7 @@ let
 
       # Variant 3: PyTorch ROCm Development + Flash Attention (Locked Wheels + Dev Tools)
       torch-dev = pkgs.mkShell {
-        name = "rocm-torch-dev-${targetGfx}";
+        name = "rocm-torch-dev-${gfx}";
         packages = [
           rocmPkg
           pkgs.python312
@@ -149,10 +149,10 @@ let
           CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
-          HSA_OVERRIDE_GFX_VERSION = if targetGfx == "gfx1151" then "11.5.1" else null;
-          PYTORCH_ROCM_ARCH = targetGfx;
-          AMDGPU_TARGETS = targetGfx;
-          GPU_TARGETS = targetGfx;
+          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
+          PYTORCH_ROCM_ARCH = gfx;
+          AMDGPU_TARGETS = gfx;
+          GPU_TARGETS = gfx;
 
           # Flash Attention 2 & AITER build/runtime flags
           FLASH_ATTENTION_TRITON_AMD_ENABLE = "TRUE";
@@ -174,7 +174,7 @@ let
             source .venv/bin/activate
           fi
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - PyTorch AI Environment (${targetGfx})"
+          echo "  ROCm 10.1 (TheRock) - PyTorch AI Environment (${gfx})"
           echo "  ROCM_PATH:        ${rocmPkg}"
           echo "  Locked Index:     https://stable.repo.amd.com/rocm/whl-next"
           echo "  Commands:         init-rocm-venv [dir]   (setup locked venv)"
@@ -193,7 +193,7 @@ in
       # Default devshells for lunar-qualia (native Strix Halo gfx1151)
       shellsGfx1151 = mkRocmDevShells {
         inherit pkgs;
-        targetGfx = "gfx1151";
+        gfx = "gfx1151";
       };
     in
     {
@@ -219,8 +219,8 @@ in
     let
       cfg = config.suites.ai.rocm;
       rocmPkg =
-        if cfg.targetGfx != null then
-          pkgs.callPackage ../../../pkgs/rocm-therock { targetGfx = cfg.targetGfx; }
+        if cfg.gfx != null then
+          pkgs.callPackage ../../../pkgs/rocm-therock { gfx = cfg.gfx; }
         else
           null;
     in
@@ -228,7 +228,7 @@ in
       options.suites.ai.rocm = {
         enable = lib.mkEnableOption "ROCm 10.1 (TheRock) AI and GPU compute suite";
 
-        targetGfx = lib.mkOption {
+        gfx = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = null;
           example = "gfx1151";
@@ -239,8 +239,8 @@ in
       config = lib.mkIf cfg.enable {
         assertions = [
           {
-            assertion = cfg.targetGfx != null;
-            message = "suites.ai.rocm.targetGfx must be explicitly set (e.g. 'gfx1151') when suites.ai.rocm is enabled.";
+            assertion = cfg.gfx != null;
+            message = "suites.ai.rocm.gfx must be explicitly set (e.g. 'gfx1151') when suites.ai.rocm is enabled.";
           }
         ];
 

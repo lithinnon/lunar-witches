@@ -10,12 +10,12 @@
 , libtool
 , glibc
 , gcc
-, targetGfx ? throw "pkgs.rocm-therock: 'targetGfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch')."
+, gfx ? throw "pkgs.rocm-therock: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch')."
 , hash ? null
 }:
 
 let
-  # Mapping from targetGfx to upstream TheRock tarball target identifier
+  # Mapping from gfx to upstream TheRock tarball target identifier
   tarballTargets = {
     # AMD APUs (Strix Halo / Strix Point / Kraken Point / Mendocino)
     "gfx1151" = { name = "gfx1151"; hash = "sha256-UN65kwNbwvalq6Xj3o1HbYxRKi7sLL/VqladceC4szc="; };
@@ -53,15 +53,15 @@ let
     "multiarch" = { name = "multiarch"; hash = ""; };
   };
 
-  targetInfo = tarballTargets.${targetGfx} or {
-    name = targetGfx;
+  targetInfo = tarballTargets.${gfx} or {
+    name = gfx;
     hash = "";
   };
 
   effectiveHash =
     if hash != null then hash
     else if targetInfo.hash != "" then targetInfo.hash
-    else throw "pkgs.rocm-therock: No precomputed hash for target '${targetGfx}'. Please provide an explicit 'hash' argument to rocm-therock.";
+    else throw "pkgs.rocm-therock: No precomputed hash for target '${gfx}'. Please provide an explicit 'hash' argument to rocm-therock.";
 in
 stdenv.mkDerivation rec {
   pname = "rocm-therock";
@@ -144,7 +144,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "AMD ROCm 10.1 (TheRock) toolchain, libraries, and runtime for ${targetGfx}";
+    description = "AMD ROCm 10.1 (TheRock) toolchain, libraries, and runtime for ${gfx}";
     homepage = "https://github.com/ROCm/TheRock";
     license = licenses.mit;
     platforms = [ "x86_64-linux" ];
