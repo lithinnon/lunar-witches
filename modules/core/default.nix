@@ -83,6 +83,8 @@
           openvpn
           python3
           btrfs-progs
+          zip
+          unzip
         ];
 
         system.stateVersion = "26.05";
