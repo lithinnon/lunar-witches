@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 22:06 +07:00
+- **Timestamp:** 2026-10-09 22:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `d517a1e`
+- **Active Git Commit:** `e3ea10a`
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 103 (Activated; 32.6 GiB total closure, -200 MiB delta, 2,858 store paths)
 
@@ -122,6 +122,13 @@
     - Extended `shells/loom.nix` to inherit the auto-activating PyTorch 2.12 and Flash Attention 2 environment from `amd-ai-dev`.
     - Cleanly stripped XRT (`xrt-amdxdna`, `pyxrt`, `xrt-smi`, `XILINX_XRT`, `AIE_XCLBINUTIL`), staying true to Loom's direct Linux DRM (`/dev/accel/accel0`) architecture.
     - Verified `python3` inside `loom-dev` has PyTorch + Flash Attention 2 ready to run with both standard ROCm and HRX (`hrx-run`).
+25. **Refactored `shells/loom.nix` to Architecture- and Version-Agnostic Function (`mkLoomDevShells` / `mkLoomDevShell`):**
+    - Parameterized devshell generator over `{ pkgs, gfx, version ? "10.1.0", rocmPkg ? ..., torchVersion ? ..., tritonVersion ? ... }`.
+    - Throws strict invariant error if `gfx` is missing (`mkLoomDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'gfx1201', 'gfx942').`).
+    - Exposed `options.flake.lib` in `shells/default.nix` allowing multiple modules to safely merge library functions into `flake.lib`.
+    - Exported `flake.lib.mkLoomDevShells` and `flake.lib.mkLoomDevShell` alongside `flake.lib.mkRocmDevShells`.
+    - Provided both flagship `loom-dev` and minimal `loom-runtime` shells (along with architecture-tagged aliases `loom-dev-gfx1151` and `loom-runtime-gfx1151`).
+    - Dynamic HSA override `HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null` preserving generic GPU compatibility.
 
 ---
 
@@ -138,6 +145,7 @@
 - [x] Upgraded `shells/loom.nix` to natively support all three execution methods (`hrx-run`, `hrxcc`, `loom-compile`).
 - [x] Empirically validated PyTorch 2.12 autograd training and Flash Attention 2 on HRX.
 - [x] Extended `shells/loom.nix` with PyTorch and Flash Attention 2 while strictly excluding XRT.
+- [x] Parameterized `shells/loom.nix` into `mkLoomDevShells` and exported `flake.lib.mkLoomDevShells`.
 
 ---
 

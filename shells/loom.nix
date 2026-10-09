@@ -8,16 +8,18 @@
 # 3. Method C: ROCm Loom compiler & unified GPU/NPU dispatch (loom-compile, iree-run-loom, iree-xdna-run)
 { lib, ... }:
 
-{
-  perSystem =
-    { pkgs, ... }:
+let
+  # Function to generate Loom & HRX devShells for any target architecture and ROCm version without hardcoding
+  mkLoomDevShells =
+    {
+      pkgs,
+      gfx ? throw "mkLoomDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'gfx1201', 'gfx942').",
+      version ? "10.1.0",
+      rocmPkg ? pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; },
+      torchVersion ? "2.12.0+rocm${rocmPkg.version}",
+      tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
+    }:
     let
-      gfx = "gfx1151";
-      version = "10.1.0";
-      rocmPkg = pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; };
-      torchVersion = "2.12.0+rocm${rocmPkg.version}";
-      tritonVersion = "3.8.0+git669b31ac.rocm${rocmPkg.version}";
-
       # Immutable constraints file preventing third-party packages from pulling PyPI CPU/CUDA builds
       constraintsFile = pkgs.writeText "rocm-torch-constraints-${gfx}.txt" ''
         torch==${torchVersion}
@@ -156,7 +158,7 @@
           -DCMAKE_INSTALL_LIBDIR=lib64 \
           -DCMAKE_BUILD_TYPE=Release \
           -DIREE_HAL_DRIVER_AMDGPU=ON \
-          -DIREE_HAL_AMDGPU_TARGETS="gfx1151" \
+          -DIREE_HAL_AMDGPU_TARGETS="${gfx}" \
           -DAMDF_BUILD=ON \
           -DAMDF_FAMILY_XDNA=ON
         ninja -C "$SRC_DIR/build/cmake" \
@@ -181,8 +183,82 @@
       '';
     in
     {
-      devShells.loom-dev = pkgs.mkShell {
-        name = "rocm-loom-dev";
+      # Minimal HRX / Loom Runtime Shell
+      loom-runtime = pkgs.mkShell {
+        name = "rocm-loom-runtime-${gfx}";
+        packages = [
+          rocmPkg
+          hrxRun
+          hrxCc
+          hrxCxx
+          pkgs.pciutils
+          pkgs.libdrm
+        ];
+        env = {
+          ROCM_PATH = "${rocmPkg}";
+          HIP_PATH = "${rocmPkg}";
+          AMDGPU_TARGETS = gfx;
+          GPU_TARGETS = gfx;
+          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
+        };
+        shellHook = ''
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${
+            lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              rocmPkg
+              pkgs.libdrm
+            ]
+          }:$LD_LIBRARY_PATH"
+          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
+
+          # Discover or configure HRX & Loom runtime directory
+          export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
+          if [ ! -d "$HRX_DIR" ] && [ -d "/tmp/hrx-system/install" ]; then
+            export HRX_DIR="/tmp/hrx-system/install"
+          fi
+
+          if [ -d "$HRX_DIR" ]; then
+            export PATH="$HRX_DIR/bin:$PATH"
+            export LD_LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LD_LIBRARY_PATH"
+            export LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LIBRARY_PATH"
+            export C_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$C_INCLUDE_PATH"
+            export CPLUS_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$CPLUS_INCLUDE_PATH"
+            export CMAKE_PREFIX_PATH="$HRX_DIR/lib64/cmake/hrx:$HRX_DIR/lib64/cmake/loomc:$CMAKE_PREFIX_PATH"
+            export HRX_HIP_PRELOAD="$HRX_DIR/lib64/libamdhip64.so"
+          fi
+
+          # Session toggle helpers
+          enable-hrx-hip() {
+            if [ ! -f "$HRX_HIP_PRELOAD" ]; then
+              echo "Error: HRX libamdhip64.so not found at $HRX_HIP_PRELOAD"
+              return 1
+            fi
+            export LD_PRELOAD="$HRX_HIP_PRELOAD"
+            echo "✓ HRX HIP runtime enabled globally for this session"
+            echo "  Active: $LD_PRELOAD"
+          }
+
+          disable-hrx-hip() {
+            unset LD_PRELOAD
+            echo "✓ Restored standard ROCm HIP runtime"
+          }
+
+          export -f enable-hrx-hip disable-hrx-hip
+
+          echo "=========================================================="
+          echo "  ROCm HRX Runtime Environment (${gfx})"
+          echo "  ROCM_PATH:       ${rocmPkg}"
+          echo "  HRX Runtime Dir: $HRX_DIR"
+          echo "  Commands:        hrx-run <exec>   (run app with HRX)"
+          echo "                   enable-hrx-hip   (enable HRX globally)"
+          echo "                   disable-hrx-hip  (restore ROCm HIP)"
+          echo "=========================================================="
+        '';
+      };
+
+      # Flagship Loom & HRX Development Shell (with PyTorch + FA2 + Compilers)
+      loom-dev = pkgs.mkShell {
+        name = "rocm-loom-dev-${gfx}";
         packages = [
           rocmPkg
           # HRX & Loom runtime wrappers
@@ -229,7 +305,7 @@
           AMDGPU_TARGETS = gfx;
           GPU_TARGETS = gfx;
           PYTORCH_ROCM_ARCH = gfx;
-          HSA_OVERRIDE_GFX_VERSION = "11.5.1";
+          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
           HIP_PLATFORM = "amd";
           HIP_COMPILER = "clang";
           HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
@@ -321,7 +397,7 @@
           echo "================================================================================"
           echo "  ROCm Loom & HRX System Studio (Unified PyTorch + Flash Attention + Loom)"
           echo "================================================================================"
-          echo "  AMDGPU Target:   Radeon 8060S (${gfx})"
+          echo "  AMDGPU Target:   ${if gfx == "gfx1151" then "Radeon 8060S (gfx1151)" else gfx}"
           if [ -e /dev/accel/accel0 ]; then
             echo "  XDNA NPU Target: AIE2p (amd.xdna.strix_halo.17f0_11 over /dev/accel/accel0)"
             echo "  NPU Transport:   Direct Linux DRM (libamdf - Zero XRT)"
@@ -347,6 +423,31 @@
           echo "     $ hrx-info                           # Displays HRX accelerator endpoints"
           echo "================================================================================"
         '';
+      };
+    };
+in
+{
+  flake.lib.mkLoomDevShells = mkLoomDevShells;
+  flake.lib.mkLoomDevShell = args: (mkLoomDevShells args).loom-dev;
+
+  perSystem =
+    { pkgs, ... }:
+    let
+      # Default devshells for lunar-qualia (native Strix Halo gfx1151)
+      shellsGfx1151 = mkLoomDevShells {
+        inherit pkgs;
+        gfx = "gfx1151";
+      };
+    in
+    {
+      devShells = {
+        # Primary unified Loom devShell
+        loom-dev = shellsGfx1151.loom-dev;
+        "loom-dev-gfx1151" = shellsGfx1151.loom-dev;
+
+        # Minimal HRX runtime shell
+        loom-runtime = shellsGfx1151.loom-runtime;
+        "loom-runtime-gfx1151" = shellsGfx1151.loom-runtime;
       };
     };
 }
