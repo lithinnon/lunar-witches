@@ -201,3 +201,27 @@ nh os switch /home/nnon/lunar-witches
 # 5. Clean older generations (keeps last 3)
 nh clean all --keep 3
 ```
+
+---
+
+## 7. Multi-Agent Handover Protocol (Antigravity ↔ Pi / MiMo v2.6)
+
+When collaborating across different AI coding environments (**Google Antigravity** and **Earendil Pi / MiMo v2.6**), all agents must synchronize their state and context using [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) located at the repository root.
+
+### Swap & Handover Invariants
+
+1. **Orientation (On Session Start / Swap In):**
+   - Check `git status` and `git log -n 3 --oneline` to understand recent commits.
+   - Read [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to inspect:
+     - Who was active last (`Antigravity` or `Pi / MiMo v2.6`).
+     - What tasks were completed and what remains in-flight.
+     - Known quirks, obstacles, or instructions left by the previous agent.
+2. **Handover (On Session Yield / Swap Out):**
+   - Before handing control back to the user or when the user indicates a switch to the other tool, update [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md).
+   - If a feature or fix is working, commit it with a conventional commit message.
+   - If work is in progress (WIP) and uncommitted, explicitly list all dirty files and the reasoning in `HANDOFF.md`.
+   - Update the **Active State** header (agent name, timestamp, active Git commit, and live NixOS generation).
+3. **Division of Labor & Tool Strengths:**
+   - **Antigravity:** Excels at high-level architectural refactors, multi-agent decomposition, multimodal UI verification (analyzing GUI logs/screenshots), and complex Flake module creation.
+   - **Pi (MiMo v2.6):** Excels at rapid terminal iterations, localized module adjustments, interactive CLI debugging, and swift parameter tweaking.
+
