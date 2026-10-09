@@ -40,8 +40,8 @@
       ];
 
       # llama-swap config, consumed at $XDG_CONFIG_HOME/llama-swap.yml.
-      # Schema-minimal now (`models` is the only required key); model entries
-      # get added here once they are decided.
+      # Derived from upstream's config-schema.json; models are declared under
+      # `models:` below as siblings of the existing entries.
       home-manager.sharedModules = [
         {
           xdg.configFile."llama-swap.yml".text = ''
@@ -52,18 +52,37 @@
             # (healthCheckTimeout=120, globalTTL=0, unloadTimeout=10,
             # logLevel=info, startPort=5800, ...).
             #
-            # Models go here later. Each key under `models:` is a model ID the
-            # proxy serves; `cmd` starts llama-server for it. Spawned servers
-            # get their port from the ''${PORT} macro (startPort, incremented
-            # per model), so they never collide with each other or with the
-            # proxy's own listen address.
+            # Each key under `models:` is a model ID as sent in API requests
+            # (`model: "..."`); `cmd` starts llama-server for it (macros work,
+            # `|` blocks welcome), `ttl` (INTEGER SECONDS, -1 = global, 0 =
+            # never) unloads it when idle. Spawned servers get their port from
+            # the ''${PORT} macro (startPort 5800, incremented per model) —
+            # `proxy` already defaults to http://localhost:''${PORT}.
             #
-            #   models:
-            #     qwen3-8b:
-            #       cmd: >-
-            #         llama-server -m /path/to/model.gguf --port ''${PORT} -ngl 99
-            #
-            models: {}
+            models:
+              "creative/boulesis-v2.1-headtune":
+                ttl: 1200 # 20 minutes (schema: seconds)
+                cmd: |
+                  llama-server \
+                      --ctx-size 32768 \
+                      --batch-size 2048 \
+                      --ubatch-size 512 \
+                      --flash-attn on \
+                      --cache-type-k bf16 \
+                      --cache-type-v bf16 \
+                      --device Vulkan0 \
+                      --n-gpu-layers all \
+                      --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
+                      --ctx-checkpoints 0 \
+                      --cache-ram 1280 \
+                      --no-mmproj \
+                      --port ''${PORT} \
+                      --no-webui \
+                      --cache-reuse 256 \
+                      --reasoning-format deepseek \
+                      --reasoning on \
+                      --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
+                      --no-reasoning-preserve
           '';
         }
       ];
