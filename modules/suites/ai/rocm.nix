@@ -32,7 +32,7 @@ let
           "torch==2.12.0+rocm10.1.0" \
           "triton==3.8.0+git669b31ac.rocm10.1.0" \
           "amd-torch-device-${targetGfx}==2.12.0+rocm10.1.0" \
-          pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl
+          pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
         echo "==> Ready! Virtual environment bootstrapped with zero CPU package drift."
       '';
 
@@ -49,7 +49,7 @@ let
         git clone --depth 1 https://github.com/Dao-AILab/flash-attention "$TMPDIR/flash-attention"
         (
           cd "$TMPDIR/flash-attention"
-          git submodule update --init --depth 1 third_party/aiter 3rdparty/composable_kernel || true
+          git submodule update --init --depth 1 third_party/aiter csrc/composable_kernel || true
           echo "==> Building & installing aiter..."
           AITER_USE_SYSTEM_TRITON=1 ENABLE_CK=1 PREBUILD_KERNELS=0 \
             pip install --no-build-isolation --no-deps ./third_party/aiter
@@ -74,7 +74,7 @@ let
           HSA_OVERRIDE_GFX_VERSION = if targetGfx == "gfx1151" then "11.5.1" else null;
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           echo "=========================================================="
           echo "  ROCm 10.1 (TheRock) - HIP Runtime (${targetGfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
@@ -109,7 +109,7 @@ let
           GPU_TARGETS = targetGfx;
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
           echo "=========================================================="
           echo "  ROCm 10.1 (TheRock) - HIP Development (${targetGfx})"
@@ -167,7 +167,7 @@ let
           UV_CONSTRAINT = "${constraintsFile}";
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
           if [ -d ".venv" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
             echo "==> Auto-activating existing .venv..."
