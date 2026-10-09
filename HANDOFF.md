@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 23:45 +07:00
+- **Timestamp:** 2026-10-09 23:47 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `ed24caf`
+- **Active Git Commit:** `d8b32a1`
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 103 (Activated; 32.6 GiB total closure, -200 MiB delta, 2,858 store paths)
+- **Live NixOS Generation:** Generation 104 (Activated; 31.7 GiB total closure, -962 MiB delta, 2,808 store paths)
 
 ---
 
@@ -154,6 +154,7 @@
 - [x] Empirically validated PyTorch 2.12 autograd training and Flash Attention 2 on HRX.
 - [x] Extended `shells/loom.nix` with PyTorch and Flash Attention 2 while strictly excluding XRT.
 - [x] Parameterized `shells/loom.nix` into `mkLoomDevShells` and exported `flake.lib.mkLoomDevShells`.
+- [x] Switched live system to Generation 104 with flake inputs updated, KDE PIM purged, and closure reduced to 31.7 GiB (-962 MiB).
 
 ---
 
