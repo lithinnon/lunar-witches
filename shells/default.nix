@@ -8,8 +8,13 @@
   ];
 
   perSystem =
-    { config, ... }:
+    { pkgs, ... }:
     {
-      devShells.default = config.devShells.amd-ai-dev;
+      devShells.default = pkgs.mkShell {
+        packages = with pkgs; [
+          nixd
+          nixfmt
+        ];
+      };
     };
 }
