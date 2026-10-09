@@ -10,7 +10,7 @@
 - **Timestamp:** 2026-10-09 12:21 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `ddcfe93` (`refactor(ai): eliminate hardcoded ROCm and package version strings`)
+- **Active Git Commit:** `6805698` (`feat(ai): support Pattern B shared venv auto-bootstrap and optional --flash-attn flag`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/36czw5w052qik5z4kmvcwaxkvmgz2g5i-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -26,24 +26,16 @@
 
 ### Completed by Antigravity:
 1. **ROCm 10.1 (TheRock) In-Tree Derivation (`pkgs/rocm-therock`):**
-   - Packaged AMD's official stable 10.1.0 prebuilts from `https://stable.repo.amd.com/rocm/core/tarball/`.
-   - **GFX-Agnostic with Strict Enforcement:** `gfx` has **no default value** and throws an explicit error if omitted.
-   - Built with `autoPatchelfHook`, linking `glibc`, `libstdc++`, `elfutils`, `numactl`, `libdrm`, and `libtool`.
-   - Injected CRT objects, include dirs, and library rpaths into `rocm.cfg` and `amdclang++.cfg` so `hipcc` and `amdclang++` compile out-of-the-box with zero extra include or library flags. Tested and verified on hardware (`Kernel result = 1337`).
+   - Packaged AMD's official stable prebuilts with overridable `version ? "10.1.0"` and strictly required `gfx`.
+   - Injected CRT objects, include dirs, and library rpaths into `rocm.cfg` and `amdclang++.cfg` for zero-flag compilation.
 2. **Capability Suite Integration (`modules/suites/ai/rocm.nix`):**
-   - Added typed module option `suites.ai.rocm.gfx` (strictly asserted, no default).
-   - Injected ROCm into `environment.systemPackages` and `programs.nix-ld.libraries` (so unpatched Python wheels and binaries find `libamdhip64.so` system-wide without devshells).
-   - Exposed system session variables (`ROCM_PATH`, `HIP_PATH`, `CMAKE_PREFIX_PATH`, `AMD_COMGR_CACHE_ENABLE`, `ROCFFT_KERNEL_CACHE_ENABLE`, `FLASH_ATTENTION_TRITON_AMD_ENABLE`).
-3. **Three Squashed `nix develop` DevShells & Live Hardware Validation:**
-   - **`hip-runtime` (`.#hip-runtime`):** Minimal execution and hardware verification shell (`rocminfo`, `rocm-smi`, runtime libraries).
-   - **`hip-dev` (`.#hip-dev`):** Pure C++/HIP development environment (`hipcc`, `amdclang++`, `cmake`, `ninja`, `pkg-config`, `gcc`, `make`, full CMake package targets in `lib/cmake`).
-   - **`torch-dev` (`.#torch-dev`):** Unified PyTorch AI environment with `libstdc++` and system runtime libs in `LD_LIBRARY_PATH`.
-   - **Hardware Validation of Flash Attention 2 on Radeon 8060S (`gfx1151`):**
-     - Bootstrapped test venv via `init-rocm-venv` with locked `torch==2.12.0+rocm10.1.0`, `triton==3.8.0+git669b31ac.rocm10.1.0`, and `amd-torch-device-gfx1151==2.12.0+rocm10.1.0`.
-     - Built and installed `amd-aiter` and `flash-attention` with AITER Triton/CK backend.
-     - Executed live Python validation script:
-       `from flash_attn import flash_attn_qkvpacked_func, flash_attn_func`
-       Executed both standard QKV and packed QKV forward passes on the GPU with full finite output (`True`) and zero crashes.
+   - Generalized all version strings (`version`, `torchVersion`, `tritonVersion`) dynamically derived from `rocmPkg.version`.
+   - Injected ROCm into `environment.systemPackages` and `programs.nix-ld.libraries` for unpatched binaries and wheels.
+3. **Pattern B Shared Virtual Environment (`~/.local/share/rocm/venv-${gfx}`):**
+   - `torch-dev` automatically prioritizes a project-local `./.venv` if present, otherwise auto-activates `~/.local/share/rocm/venv-${gfx}`.
+   - On first run, `torch-dev` automatically bootstraps the shared environment once. All subsequent launches in any folder activate instantly (0.01s).
+   - `init-rocm-venv` supports `--flash-attn` (and `--with-flash-attn`) to automatically compile and install Flash Attention 2 during environment bootstrap.
+   - Live hardware validated on Radeon 8060S (`gfx1151`) with standard and packed QKV forward passes (`flash_attn_func`, `flash_attn_qkvpacked_func`).
    - Exported `flake.lib.mkRocmDevShells` to allow instantiating shells for any GPU architecture.
 4. **Host Leaf Composition (`hosts/lunar-qualia/default.nix`):**
    - Configured `suites.ai.rocm.enable = true; suites.ai.rocm.gfx = "gfx1151";`.
