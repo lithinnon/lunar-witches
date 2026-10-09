@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 16:22 +07:00
+- **Timestamp:** 2026-10-09 16:42 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `ce6adc3` (`refactor(ai): decouple rocm devShells to shells/ and trim suite-ai-rocm module`)
+- **Active Git Commit:** `f70eed6` (`feat(shells): integrate ccache and sccache into hip-dev and torch-dev`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/n9l756pv691qkzizvjcfmdl4ifkphqk7-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -58,6 +58,9 @@
    - Sliced `modules/suites/ai/rocm.nix` from 330 lines to 72 lines of pure NixOS module.
    - Relocated developer shells (`torch-dev`, `hip-dev`, `hip-runtime`), `mkRocmDevShells`, and bootstrap scripts to `shells/rocm.nix`.
    - Created top-level `shells/default.nix` aggregator imported directly into `flake.nix`, maintaining clear domain boundaries.
+10. **Integrated Build Caching (`shells/rocm.nix`):**
+    - Packaged `ccache` and `sccache` into `hip-dev` and `torch-dev` developer shells.
+    - Configured `CMAKE_C_COMPILER_LAUNCHER = "ccache"` and `CMAKE_CXX_COMPILER_LAUNCHER = "ccache"` for zero-configuration build acceleration.
 
 ---
 
