@@ -46,6 +46,8 @@
    - Zero configuration required for users targeting any of these architectures without needing to pass an explicit `hash`.
 6. **Added Universal Archive Utilities (`modules/core/default.nix`):**
    - Declared `zip` and companion `unzip` in baseline `environment.systemPackages`.
+7. **Decommissioned Legacy `rocmctl` Tooling:**
+   - Deleted the obsolete Fedora-era binary `/home/nnon/.local/bin/rocmctl` and purged the legacy skill directory at `~/.gemini/config/skills/rocmctl`.
 
 ---
 
