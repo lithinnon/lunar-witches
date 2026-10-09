@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 18:25 +07:00
+- **Timestamp:** 2026-10-09 18:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `f17a22d` (`docs(xdna): verify live on-hardware execution of IRON and XRT on Strix Halo NPU`)
+- **Active Git Commit:** `0437019` (`feat(ai): integrate xrt-amdxdna in-tree package, unlimited memlock, and unified rocm devshell`)
 - **Working Tree:** Clean (all changes committed)
-- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
+- **Live NixOS Generation:** Generation 101 (`nh os build` dry-run evaluated and ready)
 
 ---
 
@@ -80,15 +80,32 @@
     - Identified and bypassed `RLIMIT_MEMLOCK` EAGAIN requirement for the 64 MB kernel ring buffer.
     - Successfully JIT-compiled Python `@iron.jit` designs to MLIR targeting `aie.device(npu2)` using Peano Clang 21 and `aiecc`.
     - Executed multi-tile streaming vector compute kernel on physical NPU tiles via double-buffered `ObjectFifo` DMAs with 100% bit-exact correctness across 4096 elements.
+15. **In-Tree XRT & AMDXDNA Driver Nix Derivation (`pkgs/xrt-amdxdna`, `pkgs/default.nix`):**
+    - Sourced official, matched Arch Linux binaries for XRT `2.21.75` + AMDXDNA driver plugin `2.21.75` + Boost `1.92.0`.
+    - Patched with `autoPatchelfHook` and `makeBinaryWrapper`, exporting `XILINX_XRT` and pre-configuring Python 3.14 auto-init.
+    - Verified all shared objects (`libxrt_core`, `libxrt_coreutil`, `libxrt_driver_xdna`) resolve to Nix store dependencies without missing symbols.
+16. **System-Wide Unlimited Locked Memory (`modules/core/default.nix`):**
+    - Configured PAM login limits (`item = "memlock"; value = "unlimited"`) and modern NixOS 26.11 systemd parameters (`systemd.settings.Manager.DefaultLimitMEMLOCK = "infinity"`, `systemd.user.settings.Manager.DefaultLimitMEMLOCK = "infinity"`).
+    - Eliminates the `mmap(flags=MAP_LOCKED) err=-11 EAGAIN` limit for the 64 MB hardware NPU DMA ring buffer.
+17. **Integrated XDNA & Python 3.14 into Unified `amd-ai-dev` Shell (`shells/rocm.nix`, `shells/loom.nix`):**
+    - Sourced `xrtPkg = pkgs.callPackage ../pkgs/xrt-amdxdna { }` directly into `amd-ai-dev`.
+    - Switched devshell Python from hardcoded `python312` to NixOS 26.11 baseline Python 3.14 (`pkgs.python3`), matching the prebuilt `pyxrt` extension and official AMD PyTorch wheels (`torch==2.12.0+rocm10.1.0`).
+    - Enhanced `init-rocm-venv` to link host `pyxrt` into `$VENV_DIR` via `xrt.pth` and auto-configure Peano compiler paths (`PEANO_INSTALL_DIR`, `AIECC_PATH`, `AIE_XCLBINUTIL`).
+    - Verified `amd-ai-dev`, `loom-dev`, and `default` devshells evaluate and load cleanly.
+18. **Dual-LLVM Collision Nuance & Multi-Device Runtime Proof:**
+    - Proved that PyTorch ROCm (GPU) and `pyxrt` (NPU) run concurrently in the **same Python process** with zero errors (`torch.cuda.is_available() == True`, GPU sum computed, and NPU DMA buffer allocated simultaneously).
+    - Identified that `import aie.iron` / `import mlir_aie` cannot be imported in the exact same process as `import torch` due to conflicting LLVM `cl::opt` CommandLine registrations (`print-inst-addrs`).
+    - Confirmed standard decoupled workflow: compile kernels via IRON/MLIR AOT or in a compilation subshell, then dispatch compiled `.xclbin` binaries to the NPU via `pyxrt` in the PyTorch application.
 
 ---
 
 ## 3. In-Flight Tasks & Next Immediate Steps
 
-- [x] Fix `libhipblaslt` patchelf corruption in `pkgs/rocm-therock/default.nix`.
-- [x] Implement 2-shell architecture (`amd-ai-dev` + `loom-dev`).
-- [x] Verify local build (`nh os build`).
-- [ ] *(Optional / Next)*: Activate live system generation via `nh os switch` (prompts via `ksshaskpass`).
+- [x] Sourced and packaged in-tree `xrt-amdxdna` derivation.
+- [x] Configured unlimited `memlock` in `modules/core/default.nix`.
+- [x] Wired `xrt-amdxdna` and Python 3.14 into `shells/rocm.nix` (`amd-ai-dev`).
+- [x] Tested evaluation and devshell launches (`amd-ai-dev`, `loom-dev`, `default`).
+- [ ] *(Optional / Next)*: Commit changes to Git and switch live system via `nh os switch`.
 
 ---
 

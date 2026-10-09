@@ -23,9 +23,9 @@
           pkgs.gnumake
           pkgs.clang
           pkgs.lld
-          pkgs.python312
+          pkgs.python3
           pkgs.uv
-          pkgs.python312Packages.pyyaml
+          pkgs.python3Packages.pyyaml
           pkgs.ruff
           pkgs.pciutils
           pkgs.libdrm

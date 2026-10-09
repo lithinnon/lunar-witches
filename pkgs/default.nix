@@ -10,6 +10,7 @@
       plasma-widget-servicedeck = pkgs.callPackage ./plasma-widget-servicedeck { };
       plasma-widget-amdgpuboost = pkgs.callPackage ./plasma-widget-amdgpuboost { };
       app = pkgs.callPackage ./app { };
+      xrt-amdxdna = pkgs.callPackage ./xrt-amdxdna { };
     };
   };
 
@@ -23,5 +24,6 @@
     plasma-widget-amdgpuboost = final.callPackage ./plasma-widget-amdgpuboost { };
     app = final.callPackage ./app { };
     rocm-therock = final.callPackage ./rocm-therock;
+    xrt-amdxdna = final.callPackage ./xrt-amdxdna { };
   };
 }

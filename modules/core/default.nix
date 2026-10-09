@@ -67,6 +67,18 @@
           Defaults passprompt_override,env_keep+="SUDO_ASKPASS"
         '';
 
+        # Unlimited locked memory for hardware accelerators (NPU DMA, ROCm, io_uring, audio)
+        security.pam.loginLimits = [
+          {
+            domain = "*";
+            item = "memlock";
+            type = "-";
+            value = "unlimited";
+          }
+        ];
+        systemd.settings.Manager.DefaultLimitMEMLOCK = "infinity";
+        systemd.user.settings.Manager.DefaultLimitMEMLOCK = "infinity";
+
         time.timeZone = config.core.timeZone;
         i18n.defaultLocale = config.core.defaultLocale;
 

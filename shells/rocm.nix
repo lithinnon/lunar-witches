@@ -9,6 +9,7 @@ let
       gfx ? throw "mkRocmDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch').",
       version ? "10.1.0",
       rocmPkg ? pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; },
+      xrtPkg ? pkgs.callPackage ../pkgs/xrt-amdxdna { },
       torchVersion ? "2.12.0+rocm${rocmPkg.version}",
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
@@ -86,9 +87,14 @@ let
         mkdir -p "$(dirname "$VENV_DIR")"
         if [ ! -d "$VENV_DIR" ]; then
           echo "==> Creating virtual environment at $VENV_DIR..."
-          ${pkgs.python312}/bin/python3 -m venv "$VENV_DIR"
+          ${pkgs.python3}/bin/python3 -m venv "$VENV_DIR"
         fi
         source "$VENV_DIR/bin/activate"
+
+        # Link host pyxrt from xrt-amdxdna package into venv site-packages
+        SITE_PKGS="$("$VENV_DIR/bin/python" -c "import site; print(site.getsitepackages()[0])")"
+        echo "${xrtPkg}/lib/python3.14/site-packages" > "$SITE_PKGS/xrt.pth"
+
         echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
         uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
           "torch==${torchVersion}" \
@@ -105,6 +111,13 @@ let
           echo "==> Installing MLIR-AIE (IRON) & Peano LLVM compiler wheels for Ryzen AI NPU..."
           uv pip install mlir_aie --find-links https://github.com/Xilinx/mlir-aie/releases/expanded_assets/v1.4.2
           uv pip install llvm-aie --find-links https://github.com/Xilinx/llvm-aie/releases/expanded_assets/nightly-20240501-20260527
+          echo "==> Configuring Peano compiler environment..."
+          PEANO_DIR="$VENV_DIR/lib/python3.14/site-packages/llvm-aie"
+          if [ -d "$PEANO_DIR" ]; then
+            echo "export PEANO_INSTALL_DIR=\"$PEANO_DIR\"" >> "$VENV_DIR/bin/activate"
+            echo "export AIECC_PATH=\"$VENV_DIR/bin/aiecc\"" >> "$VENV_DIR/bin/activate"
+            echo "export AIE_XCLBINUTIL=\"${xrtPkg}/bin/xclbinutil\"" >> "$VENV_DIR/bin/activate"
+          fi
         fi
 
         echo "==> Ready! Virtual environment at $VENV_DIR is active and protected from CPU package drift."
@@ -144,6 +157,7 @@ let
         name = "amd-ai-dev-${gfx}";
         packages = [
           rocmPkg
+          xrtPkg
           pkgs.cargo
           pkgs.rustc
           pkgs.cmake
@@ -154,15 +168,16 @@ let
           pkgs.gnumake
           pkgs.ccache
           pkgs.sccache
-          pkgs.python312
-          pkgs.python312Packages.pip
-          pkgs.python312Packages.virtualenv
+          pkgs.python3
+          pkgs.python3Packages.pip
+          pkgs.python3Packages.virtualenv
           pkgs.uv
           pkgs.zlib
           pkgs.libdrm
           pkgs.numactl
           pkgs.elfutils
           pkgs.pciutils
+          pkgs.util-linux
           initVenvScript
           initIronScript
           buildFlashAttnScript
@@ -170,10 +185,12 @@ let
         env = {
           ROCM_PATH = "${rocmPkg}";
           HIP_PATH = "${rocmPkg}";
+          XILINX_XRT = "${xrtPkg}";
+          AIE_XCLBINUTIL = "${xrtPkg}/bin/xclbinutil";
           HIP_PLATFORM = "amd";
           HIP_COMPILER = "clang";
           HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
-          CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
+          CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake:${xrtPkg}:${xrtPkg}/share/cmake";
 
           # Compiler caching integration
           CMAKE_C_COMPILER_LAUNCHER = "ccache";
@@ -200,8 +217,8 @@ let
           UV_CONSTRAINT = "${constraintsFile}";
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils ]}:$LD_LIBRARY_PATH"
-          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${xrtPkg}/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg xrtPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils pkgs.util-linux.lib ]}:$LD_LIBRARY_PATH"
+          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:${xrtPkg}/bin:$PATH"
 
           GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
 
@@ -217,6 +234,12 @@ let
             source "$GLOBAL_VENV/bin/activate"
           fi
 
+          # Auto-configure Peano compiler if present in active venv
+          if [ -n "''${VIRTUAL_ENV:-}" ] && [ -d "$VIRTUAL_ENV/lib/python3.14/site-packages/llvm-aie" ]; then
+            export PEANO_INSTALL_DIR="$VIRTUAL_ENV/lib/python3.14/site-packages/llvm-aie"
+            export AIECC_PATH="$VIRTUAL_ENV/bin/aiecc"
+          fi
+
           echo "=========================================================="
           echo "  AMD Unified AI Development Environment (${gfx} + XDNA)"
           echo "  ROCm (TheRock):   ${rocmPkg.version} (at ${rocmPkg})"
@@ -226,11 +249,12 @@ let
           echo "  Locked PyTorch:   ${torchVersion}"
           echo "  Active Venv:      ''${VIRTUAL_ENV:-None}"
           if [ -e /dev/accel/accel0 ]; then
-            echo "  NPU Device:       /dev/accel/accel0 (Ready for IRON / XRT)"
+            echo "  NPU Device:       /dev/accel/accel0 (XRT ${xrtPkg.version} ready)"
           fi
           echo "  Commands:         build-flash-attention   (compile Flash Attention 2)"
           echo "                    init-rocm-venv [dir] [--flash-attn] [--with-iron]"
           echo "                    init-iron-venv [dir]   (install MLIR-AIE IRON wheels)"
+          echo "                    xrt-smi examine        (NPU status & telemetry)"
           echo "=========================================================="
         '';
       };
