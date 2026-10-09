@@ -1,4 +1,4 @@
-# Developer shells for AMD ROCm (TheRock), HIP, and PyTorch AI development
+# Unified developer shell for AMD ROCm (TheRock), HIP, PyTorch AI, Flash Attention, and XDNA (NPU)
 { lib, ... }:
 
 let
@@ -50,10 +50,11 @@ let
         echo "==> Flash Attention 2 successfully built and installed!"
       '';
 
-      # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch
+      # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch & optional IRON NPU tools
       initVenvScript = pkgs.writeShellScriptBin "init-rocm-venv" ''
         set -euo pipefail
         WITH_FLASH_ATTN=0
+        WITH_IRON=0
         TARGET_DIR=""
 
         for arg in "$@"; do
@@ -61,10 +62,14 @@ let
             --flash-attn|--with-flash-attn)
               WITH_FLASH_ATTN=1
               ;;
+            --iron|--with-iron)
+              WITH_IRON=1
+              ;;
             -h|--help)
-              echo "Usage: init-rocm-venv [directory] [--flash-attn]"
+              echo "Usage: init-rocm-venv [directory] [--flash-attn] [--with-iron]"
               echo "  directory     Target directory (defaults to ~/.local/share/rocm/venv-${gfx})"
               echo "  --flash-attn  Automatically build and install Flash Attention 2"
+              echo "  --with-iron   Automatically install MLIR-AIE (IRON) & Peano LLVM compiler wheels"
               exit 0
               ;;
             *)
@@ -96,11 +101,23 @@ let
           ${buildFlashAttnScript}/bin/build-flash-attention
         fi
 
+        if [ "$WITH_IRON" -eq 1 ]; then
+          echo "==> Installing MLIR-AIE (IRON) & Peano LLVM compiler wheels for Ryzen AI NPU..."
+          uv pip install mlir_aie --find-links https://github.com/Xilinx/mlir-aie/releases/expanded_assets/v1.4.2
+          uv pip install llvm-aie --find-links https://github.com/Xilinx/llvm-aie/releases/expanded_assets/nightly-20240501-20260527
+        fi
+
         echo "==> Ready! Virtual environment at $VENV_DIR is active and protected from CPU package drift."
+      '';
+
+      # Standalone helper script to bootstrap IRON NPU tools into active or default venv
+      initIronScript = pkgs.writeShellScriptBin "init-iron-venv" ''
+        set -euo pipefail
+        ${initVenvScript}/bin/init-rocm-venv "''${1:-}" --with-iron
       '';
     in
     {
-      # Variant 1: HIP Runtime (Minimal diagnostics & execution)
+      # Variant 1: Minimal HIP Runtime (Diagnostics & device execution)
       hip-runtime = pkgs.mkShell {
         name = "rocm-hip-runtime-${gfx}";
         packages = [
@@ -113,7 +130,7 @@ let
           HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           echo "=========================================================="
           echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Runtime (${gfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
@@ -122,11 +139,13 @@ let
         '';
       };
 
-      # Variant 2: HIP Development (C++/HIP compiler, CMake packages, headers)
-      hip-dev = pkgs.mkShell {
-        name = "rocm-hip-dev-${gfx}";
+      # Variant 2: Flagship Unified AI Development Shell (ROCm GPU + XDNA NPU + Rust Toolchain)
+      amd-ai-dev = pkgs.mkShell {
+        name = "amd-ai-dev-${gfx}";
         packages = [
           rocmPkg
+          pkgs.cargo
+          pkgs.rustc
           pkgs.cmake
           pkgs.ninja
           pkgs.pkg-config
@@ -135,60 +154,17 @@ let
           pkgs.gnumake
           pkgs.ccache
           pkgs.sccache
-        ];
-        env = {
-          ROCM_PATH = "${rocmPkg}";
-          HIP_PATH = "${rocmPkg}";
-          HIP_PLATFORM = "amd";
-          HIP_COMPILER = "clang";
-          HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
-          CMAKE_PREFIX_PATH = "${rocmPkg}:${rocmPkg}/lib/cmake";
-
-          # Compiler caching integration
-          CMAKE_C_COMPILER_LAUNCHER = "ccache";
-          CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
-
-          # ROCm hardware / driver shader caches
-          AMD_COMGR_CACHE_ENABLE = "1";
-          ROCFFT_KERNEL_CACHE_ENABLE = "1";
-          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
-          AMDGPU_TARGETS = gfx;
-          GPU_TARGETS = gfx;
-        };
-        shellHook = ''
-          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
-          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
-          echo "=========================================================="
-          echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Development (${gfx})"
-          echo "  Compiler:       $(${rocmPkg}/bin/hipcc --version | head -n 1)"
-          echo "  ROCM_PATH:      ${rocmPkg}"
-          echo "  Build Cache:    ccache & sccache (CMake launcher: ccache)"
-          echo "  Shader Cache:   AMD COMGR & rocFFT kernel caches enabled"
-          echo "=========================================================="
-        '';
-      };
-
-      # Variant 3: PyTorch ROCm Development + Flash Attention (Locked Wheels + Dev Tools)
-      torch-dev = pkgs.mkShell {
-        name = "rocm-torch-dev-${gfx}";
-        packages = [
-          rocmPkg
           pkgs.python312
           pkgs.python312Packages.pip
           pkgs.python312Packages.virtualenv
           pkgs.uv
-          pkgs.cmake
-          pkgs.ninja
-          pkgs.pkg-config
-          pkgs.git
-          pkgs.gcc
-          pkgs.gnumake
-          pkgs.ccache
-          pkgs.sccache
           pkgs.zlib
           pkgs.libdrm
           pkgs.numactl
+          pkgs.elfutils
+          pkgs.pciutils
           initVenvScript
+          initIronScript
           buildFlashAttnScript
         ];
         env = {
@@ -203,6 +179,7 @@ let
           CMAKE_C_COMPILER_LAUNCHER = "ccache";
           CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
 
+          # AMD shader / kernel compilation caches
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
           HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
@@ -223,7 +200,7 @@ let
           UV_CONSTRAINT = "${constraintsFile}";
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils ]}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
 
           GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
@@ -241,14 +218,19 @@ let
           fi
 
           echo "=========================================================="
-          echo "  ROCm ${rocmPkg.version} (TheRock) - PyTorch AI Environment (${gfx})"
-          echo "  ROCM_PATH:        ${rocmPkg}"
-          echo "  Locked Index:     https://stable.repo.amd.com/rocm/whl-next"
-          echo "  Locked PyTorch:   ${torchVersion}"
+          echo "  AMD Unified AI Development Environment (${gfx} + XDNA)"
+          echo "  ROCm (TheRock):   ${rocmPkg.version} (at ${rocmPkg})"
+          echo "  Compiler:         $(${rocmPkg}/bin/hipcc --version | head -n 1)"
+          echo "  Rust Toolchain:   $(cargo --version)"
           echo "  Build Cache:      ccache & sccache (CMake launcher: ccache)"
+          echo "  Locked PyTorch:   ${torchVersion}"
           echo "  Active Venv:      ''${VIRTUAL_ENV:-None}"
+          if [ -e /dev/accel/accel0 ]; then
+            echo "  NPU Device:       /dev/accel/accel0 (Ready for IRON / XRT)"
+          fi
           echo "  Commands:         build-flash-attention   (compile Flash Attention 2)"
-          echo "                    init-rocm-venv [dir] [--flash-attn]"
+          echo "                    init-rocm-venv [dir] [--flash-attn] [--with-iron]"
+          echo "                    init-iron-venv [dir]   (install MLIR-AIE IRON wheels)"
           echo "=========================================================="
         '';
       };
@@ -268,14 +250,19 @@ in
     in
     {
       devShells = {
-        hip-runtime = shellsGfx1151.hip-runtime;
-        hip-dev = shellsGfx1151.hip-dev;
-        torch-dev = shellsGfx1151.torch-dev;
+        # Primary unified devShell
+        amd-ai-dev = shellsGfx1151.amd-ai-dev;
+        "amd-ai-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
 
-        # Explicit architecture aliases
+        # Backward compatibility aliases
+        torch-dev = shellsGfx1151.amd-ai-dev;
+        hip-dev = shellsGfx1151.amd-ai-dev;
+        "torch-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
+        "hip-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
+
+        # Minimal runtime shell
+        hip-runtime = shellsGfx1151.hip-runtime;
         "hip-runtime-gfx1151" = shellsGfx1151.hip-runtime;
-        "hip-dev-gfx1151" = shellsGfx1151.hip-dev;
-        "torch-dev-gfx1151" = shellsGfx1151.torch-dev;
       };
     };
 }

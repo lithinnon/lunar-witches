@@ -4,16 +4,12 @@
 {
   imports = [
     ./rocm.nix
+    ./loom.nix
   ];
 
   perSystem =
-    { pkgs, ... }:
+    { config, ... }:
     {
-      devShells.default = pkgs.mkShell {
-        packages = with pkgs; [
-          nixd
-          nixfmt
-        ];
-      };
+      devShells.default = config.devShells.amd-ai-dev;
     };
 }

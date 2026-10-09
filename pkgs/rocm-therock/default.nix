@@ -1,7 +1,7 @@
 { lib
 , stdenv
 , fetchurl
-, autoPatchelfHook
+, patchelf
 , makeWrapper
 , zlib
 , numactl
@@ -82,7 +82,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    autoPatchelfHook
+    patchelf
     makeWrapper
   ];
 
@@ -102,23 +102,29 @@ stdenv.mkDerivation rec {
   # Do not strip: kernel packs (.kpack), GPU bitcode (.bc), and code objects must remain intact
   dontStrip = true;
 
-  # rocgdb provides wrappers for multiple Python minor versions; these and GPU driver shims are resolved at runtime
-  autoPatchelfIgnoreMissingDeps = [
-    "libcuda.so.1"
-    "libnvidia-ml.so.1"
-    "libpython3.10.so.1.0"
-    "libpython3.11.so.1.0"
-    "libpython3.12.so.1.0"
-    "libpython3.13.so.1.0"
-    "libpython3.14.so.1.0"
-    "libcrypt.so.1"
-  ];
-
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out
     cp -r * $out/
+
+    # CRITICAL INVARIANT: DO NOT run patchelf on .so files!
+    # AMD's TheRock compiler toolchain packs embedded Tensile/GPU code objects with PT_PHDR
+    # segments at the tail of the ELF file (offset 0x8c0000). Standard patchelf relocates PHDR
+    # to offset 0x40 and triggers an integer underflow in VirtAddr (0xffffffffffd9d040),
+    # corrupting libhipblaslt, librocblas, librocfft, etc. and causing instant SIGSEGV in ld-linux.
+    # Because AMD designed TheRock with relative $ORIGIN rpaths, all shared objects resolve
+    # each other and bundled rocm_sysdeps out-of-the-box. We ONLY patch the interpreter and RPATH
+    # on standalone executable binaries in bin/ and lib/llvm/bin/.
+    local rpath="$out/lib:$out/lib/llvm/lib:$out/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ glibc gcc.cc.lib zlib numactl libdrm elfutils libtool ]}"
+    local interp="${stdenv.cc.bintools.dynamicLinker}"
+
+    find "$out/bin" "$out/lib/llvm/bin" -maxdepth 2 -type f 2>/dev/null | while read -r f; do
+      if [ -x "$f" ] && patchelf --print-interpreter "$f" &>/dev/null; then
+        patchelf --set-interpreter "$interp" "$f" || true
+        patchelf --set-rpath "$rpath" "$f" || true
+      fi
+    done
 
     # Ensure amdclang/amdclang++/hipcc find glibc headers, CRT objects, and libstdc++ transparently
     local cfg_flags="--gcc-toolchain=${gcc.cc}
@@ -127,7 +133,7 @@ stdenv.mkDerivation rec {
 -B${gcc.cc.lib}/lib
 -L${glibc}/lib
 -L${gcc.cc.lib}/lib
--Wl,-rpath,${glibc}/lib:${gcc.cc.lib}/lib:$out/lib
+-Wl,-rpath,${glibc}/lib:${gcc.cc.lib}/lib:$out/lib:$out/lib/rocm_sysdeps/lib
 "
 
     # Append to rocm.cfg (which clang++.cfg and clang.cfg include via @rocm.cfg)
