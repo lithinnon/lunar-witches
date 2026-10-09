@@ -20,31 +20,19 @@ let
         amd-torch-device-${gfx}==${torchVersion}
       '';
 
-      # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch
-      initVenvScript = pkgs.writeShellScriptBin "init-rocm-venv" ''
-        set -euo pipefail
-        VENV_DIR="''${1:-.venv}"
-        if [ ! -d "$VENV_DIR" ]; then
-          echo "==> Creating virtual environment at $VENV_DIR..."
-          ${pkgs.python312}/bin/python3 -m venv "$VENV_DIR"
-        fi
-        source "$VENV_DIR/bin/activate"
-        echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
-        uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
-          "torch==${torchVersion}" \
-          "triton==${tritonVersion}" \
-          "amd-torch-device-${gfx}==${torchVersion}" \
-          pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
-        echo "==> Ready! Virtual environment bootstrapped with zero CPU package drift."
-      '';
-
       # Build script for Flash Attention 2 with AITER Triton/CK backend
       buildFlashAttnScript = pkgs.writeShellScriptBin "build-flash-attention" ''
         set -euo pipefail
         if [ -z "''${VIRTUAL_ENV:-}" ]; then
-          echo "Error: No active virtual environment. Run 'init-rocm-venv' first."
-          exit 1
+          GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+          if [ -d "$GLOBAL_DEFAULT" ]; then
+            source "$GLOBAL_DEFAULT/bin/activate"
+          else
+            echo "Error: No active virtual environment found. Run 'init-rocm-venv' first."
+            exit 1
+          fi
         fi
+        echo "==> Building Flash Attention 2 for active environment: $VIRTUAL_ENV"
         echo "==> Cloning Flash Attention (shallow)..."
         TMPDIR=$(mktemp -d)
         trap 'rm -rf "$TMPDIR"' EXIT
@@ -60,6 +48,55 @@ let
             pip install --no-build-isolation --no-deps .
         )
         echo "==> Flash Attention 2 successfully built and installed!"
+      '';
+
+      # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch
+      initVenvScript = pkgs.writeShellScriptBin "init-rocm-venv" ''
+        set -euo pipefail
+        WITH_FLASH_ATTN=0
+        TARGET_DIR=""
+
+        for arg in "$@"; do
+          case "$arg" in
+            --flash-attn|--with-flash-attn)
+              WITH_FLASH_ATTN=1
+              ;;
+            -h|--help)
+              echo "Usage: init-rocm-venv [directory] [--flash-attn]"
+              echo "  directory     Target directory (defaults to ~/.local/share/rocm/venv-${gfx})"
+              echo "  --flash-attn  Automatically build and install Flash Attention 2"
+              exit 0
+              ;;
+            *)
+              if [ -z "$TARGET_DIR" ]; then
+                TARGET_DIR="$arg"
+              fi
+              ;;
+          esac
+        done
+
+        GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+        VENV_DIR="''${TARGET_DIR:-$GLOBAL_DEFAULT}"
+
+        mkdir -p "$(dirname "$VENV_DIR")"
+        if [ ! -d "$VENV_DIR" ]; then
+          echo "==> Creating virtual environment at $VENV_DIR..."
+          ${pkgs.python312}/bin/python3 -m venv "$VENV_DIR"
+        fi
+        source "$VENV_DIR/bin/activate"
+        echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
+        uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
+          "torch==${torchVersion}" \
+          "triton==${tritonVersion}" \
+          "amd-torch-device-${gfx}==${torchVersion}" \
+          pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
+
+        if [ "$WITH_FLASH_ATTN" -eq 1 ]; then
+          echo "==> Building Flash Attention 2 (--flash-attn requested)..."
+          ${buildFlashAttnScript}/bin/build-flash-attention
+        fi
+
+        echo "==> Ready! Virtual environment at $VENV_DIR is active and protected from CPU package drift."
       '';
     in
     {
@@ -171,17 +208,29 @@ let
         shellHook = ''
           export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
+
+          GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+
           if [ -d ".venv" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
-            echo "==> Auto-activating existing .venv..."
+            echo "==> Activating project-local virtual environment (./.venv)..."
             source .venv/bin/activate
+          elif [ -d "$GLOBAL_VENV" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
+            echo "==> Activating shared ROCm virtual environment ($GLOBAL_VENV)..."
+            source "$GLOBAL_VENV/bin/activate"
+          elif [ -z "''${VIRTUAL_ENV:-}" ]; then
+            echo "==> First-time setup: Auto-bootstrapping shared ROCm environment at $GLOBAL_VENV..."
+            ${initVenvScript}/bin/init-rocm-venv "$GLOBAL_VENV"
+            source "$GLOBAL_VENV/bin/activate"
           fi
+
           echo "=========================================================="
           echo "  ROCm ${rocmPkg.version} (TheRock) - PyTorch AI Environment (${gfx})"
           echo "  ROCM_PATH:        ${rocmPkg}"
           echo "  Locked Index:     https://stable.repo.amd.com/rocm/whl-next"
           echo "  Locked PyTorch:   ${torchVersion}"
-          echo "  Commands:         init-rocm-venv [dir]   (setup locked venv)"
-          echo "                    build-flash-attention  (build Flash Attention 2)"
+          echo "  Active Venv:      ''${VIRTUAL_ENV:-None}"
+          echo "  Commands:         build-flash-attention   (compile Flash Attention 2)"
+          echo "                    init-rocm-venv [dir] [--flash-attn]"
           echo "=========================================================="
         '';
       };
