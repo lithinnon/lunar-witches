@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 13:16 +07:00
+- **Timestamp:** 2026-10-09 13:23 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `9ac6af0` (`feat(pkgs): populate precomputed hashes for all rocm-therock architectures`)
+- **Active Git Commit:** `7d627ba` (`feat(core): add zip and unzip to systemPackages`)
 - **Working Tree:** Clean (all changes committed)
-- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/36czw5w052qik5z4kmvcwaxkvmgz2g5i-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
+- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/6hyfh3nsq5a1h1wal9q05zcyx4p7sa25-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
 ---
 
@@ -44,6 +44,8 @@
    - Sourced and verified official SHA-256 SRI hashes directly from AMD's stable distribution tarballs.
    - Fully covered AMD APUs (`gfx1150`, `gfx1151`, `gfx1152`, `gfx1153`), RDNA 3 (`gfx1100`–`gfx1103`, `gfx110X-all`), RDNA 2 (`gfx1030`–`gfx1035`, `gfx103X-all`), RDNA 1 (`gfx1010`–`gfx1012`, `gfx101X-dgpu`), RDNA 4 (`gfx1200`–`gfx1201`, `gfx120X-all`), CDNA (`gfx908`, `gfx90a`, `gfx942`, `gfx94X-dcgpu`, `gfx950`, `gfx125X-dcgpu`), and universal `multiarch`.
    - Zero configuration required for users targeting any of these architectures without needing to pass an explicit `hash`.
+6. **Added Universal Archive Utilities (`modules/core/default.nix`):**
+   - Declared `zip` and companion `unzip` in baseline `environment.systemPackages`.
 
 ---
 
