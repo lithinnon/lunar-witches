@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 12:21 +07:00
+- **Timestamp:** 2026-10-09 13:16 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `6805698` (`feat(ai): support Pattern B shared venv auto-bootstrap and optional --flash-attn flag`)
+- **Active Git Commit:** `9ac6af0` (`feat(pkgs): populate precomputed hashes for all rocm-therock architectures`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/36czw5w052qik5z4kmvcwaxkvmgz2g5i-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -40,6 +40,10 @@
 4. **Host Leaf Composition (`hosts/lunar-qualia/default.nix`):**
    - Configured `suites.ai.rocm.enable = true; suites.ai.rocm.gfx = "gfx1151";`.
    - Verified dry-run evaluation and built generation locally via `nh os build`.
+5. **Populated Precomputed SRI Hashes for All Architectures (`pkgs/rocm-therock/default.nix`):**
+   - Sourced and verified official SHA-256 SRI hashes directly from AMD's stable distribution tarballs.
+   - Fully covered AMD APUs (`gfx1150`, `gfx1151`, `gfx1152`, `gfx1153`), RDNA 3 (`gfx1100`–`gfx1103`, `gfx110X-all`), RDNA 2 (`gfx1030`–`gfx1035`, `gfx103X-all`), RDNA 1 (`gfx1010`–`gfx1012`, `gfx101X-dgpu`), RDNA 4 (`gfx1200`–`gfx1201`, `gfx120X-all`), CDNA (`gfx908`, `gfx90a`, `gfx942`, `gfx94X-dcgpu`, `gfx950`, `gfx125X-dcgpu`), and universal `multiarch`.
+   - Zero configuration required for users targeting any of these architectures without needing to pass an explicit `hash`.
 
 ---
 
@@ -48,6 +52,7 @@
 - [x] Integrate `pkgs/rocm-therock` (GFX-agnostic, strictly un-defaulted `gfx`).
 - [x] Create 3 squashed devShells (`hip-runtime`, `hip-dev`, `torch-dev`) with anti-drift constraints and Flash Attention helpers.
 - [x] Wire `suite-ai-rocm` into `lunar-qualia` and test local build (`nh os build`).
+- [x] Populate precomputed SRI hashes for all supported ROCm TheRock architectures.
 - [ ] *(Optional / Next)*: Activate live system generation via `nh os switch` (prompts via `ksshaskpass`).
 
 ---
