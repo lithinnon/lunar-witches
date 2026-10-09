@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 16:42 +07:00
+- **Timestamp:** 2026-10-09 17:24 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `f70eed6` (`feat(shells): integrate ccache and sccache into hip-dev and torch-dev`)
+- **Active Git Commit:** `e8a2f0c` (`docs(retrospects): document AMD XDNA NPU and ROCm Loom (HRX) architecture`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/n9l756pv691qkzizvjcfmdl4ifkphqk7-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -61,16 +61,21 @@
 10. **Integrated Build Caching (`shells/rocm.nix`):**
     - Packaged `ccache` and `sccache` into `hip-dev` and `torch-dev` developer shells.
     - Configured `CMAKE_C_COMPILER_LAUNCHER = "ccache"` and `CMAKE_CXX_COMPILER_LAUNCHER = "ccache"` for zero-configuration build acceleration.
+11. **AMD XDNA & ROCm Loom Architecture Research (`retrospects/05-*`, `retrospects/06-*`):**
+    - Proved in-tree `amdxdna` kernel driver is loaded and initialized on Linux 7.2.8 (`/dev/accel/accel0`, FW `1.1.2.65`, `NPU Strix Halo`, PCI `17f0:11`). No DKMS driver required.
+    - Documented 5-layer XDNA stack and proved both C++ (`aie_api` + XRT Native C++ API) and Python (`aie.iron` DSL + `pyxrt`) workflows.
+    - Investigated `mlir-aie` latest updates and official AMD Agent Skills (`aie-model-baseline`, `aie-dataflow-presim`, `aie-hw-bringup`, `aie-kernel-opt`, `aie-dataflow-opt`).
+    - Discovered ROCm Loom (`ROCm/hrx-system`) compiler targeting both AMDGPU (`gfx1151`) and AMD XDNA (`strix_halo.17f0_11`).
+    - Documented how Loom executes `.xdna` ELFs via `libamdf` over native Linux DRM, completely bypassing XRT on Linux.
 
 ---
 
 ## 3. In-Flight Tasks & Next Immediate Steps
 
-- [x] Integrate `pkgs/rocm-therock` (GFX-agnostic, strictly un-defaulted `gfx`).
-- [x] Create 3 squashed devShells (`hip-runtime`, `hip-dev`, `torch-dev`) with anti-drift constraints and Flash Attention helpers.
-- [x] Wire `suite-ai-rocm` into `lunar-qualia` and test local build (`nh os build`).
-- [x] Populate precomputed SRI hashes for all supported ROCm TheRock architectures.
+- [x] Document AMD XDNA architecture and programming model in ADR-05.
+- [x] Document ROCm Loom (HRX) unified GPU + NPU architecture in ADR-06.
 - [ ] *(Optional / Next)*: Activate live system generation via `nh os switch` (prompts via `ksshaskpass`).
+- [ ] *(Future Phase)*: Integrate XDNA development shell / packages when ready to begin on-device kernel writing.
 
 ---
 
