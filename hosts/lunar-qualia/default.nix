@@ -86,6 +86,11 @@
 
         chula.wifi.environmentFile = "/home/nnon/.config/chula/environment";
 
+        suites.ai.rocm = {
+          enable = true;
+          targetGfx = "gfx1151";
+        };
+
         suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;
       })
     ];

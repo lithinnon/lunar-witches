@@ -22,5 +22,6 @@
     plasma-widget-servicedeck = final.callPackage ./plasma-widget-servicedeck { };
     plasma-widget-amdgpuboost = final.callPackage ./plasma-widget-amdgpuboost { };
     app = final.callPackage ./app { };
+    rocm-therock = final.callPackage ./rocm-therock;
   };
 }
