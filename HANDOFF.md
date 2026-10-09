@@ -7,11 +7,11 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 17:51 +07:00
+- **Timestamp:** 2026-10-09 18:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
 - **Active Git Commit:** `a443e4b` (`refactor(rocm): remove exposeCompilers, confining toolchain to devshells`)
-- **Working Tree:** Clean (all changes committed)
+- **Working Tree:** Dirty (`retrospects/07-amd-xdna-iron-xrt-live-hardware-verification.md` added)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
 ---
@@ -72,6 +72,14 @@
 13. **Two-Shell Architecture Implementation (`shells/rocm.nix`, `shells/loom.nix`, `shells/default.nix`):**
     - `amd-ai-dev` (default `nix develop`): Unified flagship devshell combining ROCm TheRock, Rust toolchain (`cargo`, `rustc`), build tools (`cmake`, `ninja`, `ccache`, `sccache`), PyTorch 2.12 + Flash Attention 2, and XDNA IRON helpers. Backward-compatible aliases for `torch-dev` and `hip-dev`.
     - `loom-dev`: ROCm Loom & HRX System studio with Bazelisk, Bazel 7, CMake, LLVM/Clang, Python, and hardware target configuration for both Radeon 8060S (`gfx1151`) and Ryzen AI NPU (`amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`).
+14. **AMD XDNA (IRON & XRT) Live Hardware Verification (`retrospects/07-*`):**
+    - Proven on live hardware (`lunar-qualia`, Strix Halo AIE2p NPU `0000:65:00.1` on Linux 7.2.8 with FW `1.1.2.65`).
+    - Successfully verified `xrt-smi examine` hardware detection and telemetry.
+    - Verified `pyxrt` physical DMA buffer allocation (`pyxrt.bo`), cacheable memory transfers, and bit-exact readback.
+    - Resolved `robcohen/nix-amd-npu` version mismatch by pairing XRT `2.21.75` with `amdxdna-driver-2.21.75`.
+    - Identified and bypassed `RLIMIT_MEMLOCK` EAGAIN requirement for the 64 MB kernel ring buffer.
+    - Successfully JIT-compiled Python `@iron.jit` designs to MLIR targeting `aie.device(npu2)` using Peano Clang 21 and `aiecc`.
+    - Executed multi-tile streaming vector compute kernel on physical NPU tiles via double-buffered `ObjectFifo` DMAs with 100% bit-exact correctness across 4096 elements.
 
 ---
 
