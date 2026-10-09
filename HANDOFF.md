@@ -7,7 +7,7 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 19:11 +07:00
+- **Timestamp:** 2026-10-09 22:06 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
 - **Active Git Commit:** `d1133f2`
@@ -108,6 +108,12 @@
 21. **Documentation Rearchitecture to 6-Tier Retrospect Taxonomy (`retrospects/`):**
     - Restructured former flat `01-`–`09-` files into a clean taxonomy: `adr/` (16 granular ADRs), `postmortems/` (incident RCAs), `proofs/` (silicon verification runs), `manuals/` (living guides), `troubleshooting/` (runbook), and `history/` (milestones).
     - Added [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md) navigation index.
+22. **Upgraded `loom-dev` Shell for All Three Execution Methods (`shells/loom.nix`):**
+    - Persisted full HRX System distribution (headers, `libamdhip64.so`, `libhrx.so`, `libloomc.so`, tools) into `~/.local/share/rocm/hrx-system`.
+    - Integrated **Method 1 (Drop-in HIP Interception)**: Packaged executable `hrx-run <binary>` and `enable-hrx-hip` / `disable-hrx-hip` session toggles preloading HRX's lightweight `libamdhip64.so`. Verified live with a compiled HIP vector-add kernel.
+    - Integrated **Method 2 (Native Heterogeneous C/C++ API)**: Packaged `hrxcc` and `hrxcxx` wrappers automatically linking `-lhrx` with include and runtime paths for `<hrx_runtime.h>`.
+    - Integrated **Method 3 (ROCm Loom DSL & Silicon Execution)**: Exposed `loom-compile`, `iree-run-loom`, `iree-xdna-run`, `amdf-enumerate`, and `hrx-info` directly in `$PATH`.
+    - Packaged `build-hrx-system` for automated rebuilding from source when needed.
 
 ---
 
@@ -121,6 +127,7 @@
 - [x] Authored complete master architecture manual in `retrospects/manuals/amd-ai-compute-stack.md`.
 - [x] Switched live system to Generation 103 via `nh os switch` with verified unlimited `memlock` and 32.6 GiB closure.
 - [x] Restructured `retrospects/` directory into 6 categorized domains (`adr/`, `postmortems/`, `proofs/`, `manuals/`, `troubleshooting/`, `history/`).
+- [x] Upgraded `shells/loom.nix` to natively support all three execution methods (`hrx-run`, `hrxcc`, `loom-compile`).
 
 ---
 

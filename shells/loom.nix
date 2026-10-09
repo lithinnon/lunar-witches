@@ -1,18 +1,105 @@
 # Developer shell for ROCm Loom and the HRX System (HIP Runtime Extended)
+# Enables three execution workflows:
+# 1. Method A: Drop-in HIP runtime replacement for standard ROCm apps via LD_PRELOAD (hrx-run)
+# 2. Method B: Native HRX Heterogeneous C/C++ API development (<hrx_runtime.h>, libhrx.so, hrxcc, hrxcxx)
+# 3. Method C: ROCm Loom compiler & unified GPU/NPU dispatch (loom-compile, iree-run-loom, iree-xdna-run, amdf-enumerate, hrx-info)
 { lib, ... }:
 
 {
   perSystem =
     { pkgs, ... }:
     let
-      # Use Strix Halo rocm-therock package for device headers and runtime libraries
+      # Use Strix Halo rocm-therock package for device headers, compilers, and runtime libraries
       rocmPkg = pkgs.callPackage ../pkgs/rocm-therock { gfx = "gfx1151"; };
+
+      # Method 1 Wrapper: Run any ROCm/HIP application using HRX's lightweight libamdhip64.so
+      hrxRun = pkgs.writeShellScriptBin "hrx-run" ''
+        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
+        if [ ! -f "$HRX_DIR/lib64/libamdhip64.so" ] && [ -f "/tmp/hrx-system/install/lib64/libamdhip64.so" ]; then
+          HRX_DIR="/tmp/hrx-system/install"
+        fi
+
+        if [ $# -eq 0 ]; then
+          echo "Usage: hrx-run <executable> [args...]"
+          echo "Executes any standard ROCm/HIP application with HRX's lightweight runtime preloaded."
+          exit 1
+        fi
+
+        if [ ! -f "$HRX_DIR/lib64/libamdhip64.so" ]; then
+          echo "Error: HRX libamdhip64.so not found at $HRX_DIR/lib64/libamdhip64.so"
+          echo "Run 'build-hrx-system' to compile the HRX distribution."
+          exit 1
+        fi
+
+        LD_PRELOAD="$HRX_DIR/lib64/libamdhip64.so" exec "$@"
+      '';
+
+      # Method 2 Wrappers: Native HRX C and C++ Compiler Wrappers
+      hrxCc = pkgs.writeShellScriptBin "hrxcc" ''
+        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
+        if [ ! -d "$HRX_DIR/include" ] && [ -d "/tmp/hrx-system/install/include" ]; then
+          HRX_DIR="/tmp/hrx-system/install"
+        fi
+        exec clang -I"$HRX_DIR/include" -I"$HRX_DIR/include/hrx" -L"$HRX_DIR/lib64" -lhrx -Wl,-rpath,"$HRX_DIR/lib64" "$@"
+      '';
+
+      hrxCxx = pkgs.writeShellScriptBin "hrxcxx" ''
+        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
+        if [ ! -d "$HRX_DIR/include" ] && [ -d "/tmp/hrx-system/install/include" ]; then
+          HRX_DIR="/tmp/hrx-system/install"
+        fi
+        exec clang++ -I"$HRX_DIR/include" -I"$HRX_DIR/include/hrx" -L"$HRX_DIR/lib64" -lhrx -Wl,-rpath,"$HRX_DIR/lib64" "$@"
+      '';
+
+      # Build Automation Helper
+      buildHrxSystem = pkgs.writeShellScriptBin "build-hrx-system" ''
+        SRC_DIR="''${1:-$HOME/sources/hrx-system}"
+        PREFIX="''${2:-$HOME/.local/share/rocm/hrx-system}"
+        echo "Building HRX System & Loom from $SRC_DIR -> $PREFIX..."
+        if [ ! -d "$SRC_DIR" ]; then
+          mkdir -p "$(dirname "$SRC_DIR")"
+          git clone https://github.com/ROCm/hrx-system.git "$SRC_DIR"
+        fi
+        mkdir -p "$SRC_DIR/build/cmake"
+        cmake -S "$SRC_DIR" -B "$SRC_DIR/build/cmake" -GNinja \
+          -DIREE_ROCM_PATH="${rocmPkg}" \
+          -DIREE_ROCM_DEPENDENCY_MODE=package \
+          -DCMAKE_INSTALL_LIBDIR=lib64 \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DIREE_HAL_DRIVER_AMDGPU=ON \
+          -DIREE_HAL_AMDGPU_TARGETS="gfx1151" \
+          -DAMDF_BUILD=ON \
+          -DAMDF_FAMILY_XDNA=ON
+        ninja -C "$SRC_DIR/build/cmake" \
+          libhrx_src_binding_hip_amdhip64 \
+          libhrx_src_libhrx_hrx \
+          libhrx_tools_hrx-info \
+          loomc_shared \
+          loom-compile \
+          iree-run-loom \
+          iree-xdna-run \
+          enumerate
+        cmake --install "$SRC_DIR/build/cmake" --prefix "$PREFIX" --component HrxPublicDist
+        cp "$SRC_DIR/build/cmake/loom/src/loom/tools/loom-compile/loom-compile" "$PREFIX/bin/"
+        cp "$SRC_DIR/build/cmake/loom/src/loom/tools/iree-run-loom/iree-run-loom" "$PREFIX/bin/"
+        cp "$SRC_DIR/build/cmake/experimental/xdna/iree-xdna-run" "$PREFIX/bin/"
+        cp "$SRC_DIR/build/cmake/libamdf/examples/enumerate" "$PREFIX/bin/amdf-enumerate"
+        cp -d "$SRC_DIR/build/cmake/libamdf"/libamdf.so* "$PREFIX/lib64/"
+        ln -sf lib64 "$PREFIX/lib"
+        ln -sf hrx/hrx_runtime.h "$PREFIX/include/hrx_runtime.h"
+        ln -sf hrx/hrx_runtime_cxx.h "$PREFIX/include/hrx_runtime_cxx.h"
+        echo "✓ HRX System built and installed to $PREFIX"
+      '';
     in
     {
       devShells.loom-dev = pkgs.mkShell {
         name = "rocm-loom-dev";
         packages = [
           rocmPkg
+          hrxRun
+          hrxCc
+          hrxCxx
+          buildHrxSystem
           pkgs.bazelisk
           pkgs.bazel_7
           pkgs.cmake
@@ -42,21 +129,78 @@
         };
 
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.libdrm pkgs.numactl ]}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${
+            lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              pkgs.libdrm
+              pkgs.numactl
+            ]
+          }:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
 
-          echo "=========================================================="
-          echo "  ROCm Loom & HRX System Development Studio"
-          echo "  Repository:       https://github.com/ROCm/hrx-system"
-          echo "  Build System:     Bazelisk / Bazel 7 & CMake/Ninja"
-          echo "  AMDGPU Target:    Radeon 8060S (gfx1151)"
-          if [ -e /dev/accel/accel0 ]; then
-            echo "  XDNA NPU Target:  amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11"
-            echo "  Transport:        libamdf over Linux DRM (/dev/accel/accel0)"
+          # Discover or configure HRX & Loom runtime directory
+          export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
+          if [ ! -d "$HRX_DIR" ] && [ -d "/tmp/hrx-system/install" ]; then
+            export HRX_DIR="/tmp/hrx-system/install"
           fi
-          echo "  Quickstart:       python dev.py bazel setup"
-          echo "                    python dev.py bazel precommit"
-          echo "=========================================================="
+
+          if [ -d "$HRX_DIR" ]; then
+            export PATH="$HRX_DIR/bin:$PATH"
+            export LD_LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LD_LIBRARY_PATH"
+            export LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LIBRARY_PATH"
+            export C_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$C_INCLUDE_PATH"
+            export CPLUS_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$CPLUS_INCLUDE_PATH"
+            export CMAKE_PREFIX_PATH="$HRX_DIR/lib64/cmake/hrx:$HRX_DIR/lib64/cmake/loomc:$CMAKE_PREFIX_PATH"
+            export HRX_HIP_PRELOAD="$HRX_DIR/lib64/libamdhip64.so"
+          fi
+
+          # Session toggle helpers
+          enable-hrx-hip() {
+            if [ ! -f "$HRX_HIP_PRELOAD" ]; then
+              echo "Error: HRX libamdhip64.so not found at $HRX_HIP_PRELOAD"
+              return 1
+            fi
+            export LD_PRELOAD="$HRX_HIP_PRELOAD"
+            echo "✓ HRX HIP runtime enabled globally for this session"
+            echo "  Active: $LD_PRELOAD"
+          }
+
+          disable-hrx-hip() {
+            unset LD_PRELOAD
+            echo "✓ Restored standard ROCm HIP runtime"
+          }
+
+          export -f enable-hrx-hip disable-hrx-hip
+
+          # --------------------------------------------------------------------------
+          # Interactive Studio Banner
+          # --------------------------------------------------------------------------
+          echo "================================================================================"
+          echo "  ROCm Loom & HRX System (HIP Runtime Extended) Studio"
+          echo "================================================================================"
+          echo "  AMDGPU Target:   Radeon 8060S (gfx1151)"
+          if [ -e /dev/accel/accel0 ]; then
+            echo "  XDNA NPU Target: AIE2p (amd.xdna.strix_halo.17f0_11 over /dev/accel/accel0)"
+          fi
+          echo "  HRX Runtime Dir: $HRX_DIR"
+          echo ""
+          echo "  Supported Execution Methods:"
+          echo "  ------------------------------------------------------------------------------"
+          echo "  1. Method A: Drop-In HIP Runtime (Run ROCm apps with HRX):"
+          echo "     $ hrx-run ./my_rocm_app              # Preloads HRX libamdhip64.so"
+          echo "     $ enable-hrx-hip                     # Toggles HRX for entire session"
+          echo ""
+          echo "  2. Method B: Native HRX Heterogeneous C/C++ API (<hrx_runtime.h>):"
+          echo "     $ hrxcc my_app.c -o my_app           # Compiles with -lhrx and rpath"
+          echo "     $ hrxcxx my_app.cpp -o my_app        # Compiles with C++ HRX helpers"
+          echo ""
+          echo "  3. Method C: ROCm Loom DSL & Hardware Compilation:"
+          echo "     $ loom-compile input.loom -target amdgpu:gfx1151 -o out.hsaco"
+          echo "     $ loom-compile input.loom -target amd.xdna.aie2p:... -o out.xdna"
+          echo "     $ iree-xdna-run out.xdna             # Dispatches directly to NPU"
+          echo "     $ amdf-enumerate                     # Discovers active GPU/NPU bus"
+          echo "     $ hrx-info                           # Displays HRX accelerator endpoints"
+          echo "================================================================================"
         '';
       };
     };
