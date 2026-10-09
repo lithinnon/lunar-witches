@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 23:24 +07:00
+- **Timestamp:** 2026-10-09 23:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `6b7c090`
+- **Active Git Commit:** `ed24caf`
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 103 (Activated; 32.6 GiB total closure, -200 MiB delta, 2,858 store paths)
 
@@ -132,7 +132,11 @@
 26. **Flake Inputs Updated & Candidate Generation Verified (`flake.lock`):**
     - Ran `nix flake update` (updated `nixpkgs` to `e7439b6`, `home-manager` to `dfadbe5`, `antigravity-nix` to `bb5f514`, and `bedrock-on-linux` to `00b71a7`).
     - Successfully built candidate generation locally via `nh os build` (`/nix/store/ms51ah99vm4qhdl09j4w6iv421xa6i7a-nixos-system-lunar-qualia-26.11.20261008.e7439b6`).
-    - Verified system closure shrank by 461 MiB (32.6 GiB -> 32.2 GiB) through Python 3.12 removal and QtWebEngine deduplication. Upgraded VS Code (1.140.0), Google Chrome (155.0), Antigravity 2.22.0, Codex 0.161.0, llama-cpp 0.6.0, and Pi coding agent 1.0.4.
+    - Verified system closure shrank by 461 MiB through Python 3.12 removal and QtWebEngine deduplication. Upgraded VS Code (1.140.0), Google Chrome (155.0), Antigravity 2.22.0, Codex 0.161.0, llama-cpp 0.6.0, and Pi coding agent 1.0.4.
+27. **Purged KDE PIM & Akonadi Overhead (`modules/suites/desktop/plasma.nix`):**
+    - Explicitly configured `programs.kde-pim.enable = false;` to counter the new upstream Nixpkgs default that bundled KMail, Kontact, Merkuro, and Akonadi MariaDB daemon into Plasma 6.
+    - Dropped 50 superfluous store paths including MariaDB server (264 MiB), Akonadi (20.1 MiB), KDEPIM runtime (21.8 MiB), and Messagelib (17.2 MiB).
+    - Reduced total system closure by **-962 MiB** (32.6 GiB -> **31.7 GiB**, 2,808 store paths in candidate `/nix/store/jrkq5vpc5rd87khzffb56c4xccinkzmv-nixos-system-lunar-qualia-26.11.20261008.e7439b6`).
 
 ---
 
