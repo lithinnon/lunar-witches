@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 17:43 +07:00
+- **Timestamp:** 2026-10-09 17:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `c434a56` (`feat(ai): refactor devshells into amd-ai-dev and loom-dev, fix patchelf corruption in rocm-therock`)
+- **Active Git Commit:** `2dcef87` (`fix(shells): preserve default devShell for nix flake editing (nixd, nixfmt)`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
