@@ -35,6 +35,8 @@
         pkgs.llama-cpp-vulkan
         # HF Hub client (`hf` CLI) for pulling GGUF models and datasets
         pkgs.python314Packages.huggingface-hub
+        # On-demand model swap proxy: manages llama-server instances per model
+        pkgs.llama-swap
       ];
 
       # Native module configured directly (AGENTS rule 5) — defaults keep the
