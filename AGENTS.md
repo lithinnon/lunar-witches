@@ -102,7 +102,7 @@ flowchart TD
 | **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon/default.nix`, `shell.nix`, `development.nix`, `desktop.nix`, `plasma.nix`). |
 | **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |
 | **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`mem-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`, `app`, `plasma-widget-servicedeck`, `plasma-widget-amdgpuboost`). Built and exported to system overlays. |
-| **`retrospects/`** | Markdown docs | Architectural decision records (ADRs), post-mortems, and migration logs. |
+| **`retrospects/`** | Markdown docs | Categorized repository knowledge base: `adr/` (decision records), `postmortems/` (incident RCAs), `proofs/` (hardware verification runs), `manuals/` (living stack guides), `troubleshooting/` (runbooks), and `history/` (milestones). |
 
 ---
 

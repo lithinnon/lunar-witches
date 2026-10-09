@@ -59,7 +59,7 @@
 10. **Integrated Build Caching (`shells/rocm.nix`):**
     - Packaged `ccache` and `sccache` into `amd-ai-dev` developer shell.
     - Configured `CMAKE_C_COMPILER_LAUNCHER = "ccache"` and `CMAKE_CXX_COMPILER_LAUNCHER = "ccache"` for zero-configuration build acceleration.
-11. **AMD XDNA & ROCm Loom Architecture Research (`retrospects/05-*`, `retrospects/06-*`):**
+11. **AMD XDNA & ROCm Loom Architecture Research:**
     - Proved in-tree `amdxdna` kernel driver is loaded and initialized on Linux 7.2.8 (`/dev/accel/accel0`, FW `1.1.2.65`, `NPU Strix Halo`, PCI `17f0:11`). No DKMS driver required.
     - Documented 5-layer XDNA stack and proved both C++ (`aie_api` + XRT Native C++ API) and Python (`aie.iron` DSL + `pyxrt`) workflows.
     - Investigated `mlir-aie` latest updates and official AMD Agent Skills (`aie-model-baseline`, `aie-dataflow-presim`, `aie-hw-bringup`, `aie-kernel-opt`, `aie-dataflow-opt`).
@@ -72,7 +72,7 @@
 13. **Two-Shell Architecture Implementation (`shells/rocm.nix`, `shells/loom.nix`, `shells/default.nix`):**
     - `amd-ai-dev` (default `nix develop`): Unified flagship devshell combining ROCm TheRock, Rust toolchain (`cargo`, `rustc`), build tools (`cmake`, `ninja`, `ccache`, `sccache`), PyTorch 2.12 + Flash Attention 2, and XDNA IRON helpers. Backward-compatible aliases for `torch-dev` and `hip-dev`.
     - `loom-dev`: ROCm Loom & HRX System studio with Bazelisk, Bazel 7, CMake, LLVM/Clang, Python, and hardware target configuration for both Radeon 8060S (`gfx1151`) and Ryzen AI NPU (`amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`).
-14. **AMD XDNA (IRON & XRT) Live Hardware Verification (`retrospects/07-*`):**
+14. **AMD XDNA (IRON & XRT) Live Hardware Verification ([`retrospects/proofs/2026-10-09-amd-xdna-iron-xrt-verification.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-amd-xdna-iron-xrt-verification.md)):**
     - Proven on live hardware (`lunar-qualia`, Strix Halo AIE2p NPU `0000:65:00.1` on Linux 7.2.8 with FW `1.1.2.65`).
     - Successfully verified `xrt-smi examine` hardware detection and telemetry.
     - Verified `pyxrt` physical DMA buffer allocation (`pyxrt.bo`), cacheable memory transfers, and bit-exact readback.
@@ -86,7 +86,7 @@
     - Verified all shared objects (`libxrt_core`, `libxrt_coreutil`, `libxrt_driver_xdna`) resolve to Nix store dependencies without missing symbols.
 16. **System-Wide Unlimited Locked Memory (`modules/core/default.nix`):**
     - Configured PAM login limits (`item = "memlock"; value = "unlimited"`) and modern NixOS 26.11 systemd parameters (`systemd.settings.Manager.DefaultLimitMEMLOCK = "infinity"`, `systemd.user.settings.Manager.DefaultLimitMEMLOCK = "infinity"`).
-    - Eliminates the `mmap(flags=MAP_LOCKED) err=-11 EAGAIN` limit for the 64 MB hardware NPU DMA ring buffer.
+    - Eliminates the `mmap(flags=MAP_LOCKED) err=-11 EAGAIN` limit for the 64 MB hardware NPU DMA ring buffer (documented in [ADR 0016](file:///home/nnon/lunar-witches/retrospects/adr/0016-unlimited-memlock-for-hardware-accelerators.md) and [Post-Mortem](file:///home/nnon/lunar-witches/retrospects/postmortems/2026-10-09-amdxdna-ring-buffer-eagain.md)).
 17. **Integrated XDNA & Python 3.14 into Unified `amd-ai-dev` Shell (`shells/rocm.nix`, `shells/loom.nix`):**
     - Sourced `xrtPkg = pkgs.callPackage ../pkgs/xrt-amdxdna { }` directly into `amd-ai-dev`.
     - Switched devshell Python from hardcoded `python312` to NixOS 26.11 baseline Python 3.14 (`pkgs.python3`), matching the prebuilt `pyxrt` extension and official AMD PyTorch wheels (`torch==2.12.0+rocm10.1.0`).
@@ -96,15 +96,18 @@
     - Proved that PyTorch ROCm (GPU) and `pyxrt` (NPU) run concurrently in the **same Python process** with zero errors (`torch.cuda.is_available() == True`, GPU sum computed, and NPU DMA buffer allocated simultaneously).
     - Identified that `import aie.iron` / `import mlir_aie` cannot be imported in the exact same process as `import torch` due to conflicting LLVM `cl::opt` CommandLine registrations (`print-inst-addrs`).
     - Confirmed standard decoupled workflow: compile kernels via IRON/MLIR AOT or in a compilation subshell, then dispatch compiled `.xclbin` binaries to the NPU via `pyxrt` in the PyTorch application.
-19. **ROCm Loom Live GPU & NPU Execution Proven on Silicon (`retrospects/08-*`):**
+19. **ROCm Loom Live GPU & NPU Execution Proven on Silicon ([`retrospects/proofs/2026-10-09-rocm-loom-libamdf-silicon-execution.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-rocm-loom-libamdf-silicon-execution.md)):**
     - Built `hrx-system` with `AMDF_BUILD=ON`, `IREE_HAL_DRIVER_AMDGPU=ON`, and `AMDF_FAMILY_XDNA=ON` inside `loom-dev`.
     - Proved `libamdf` passive hardware discovery: detected both `[0] AMD GPU gfx1151` (40 CUs) and `[1] AMD XDNA 17f0:11` (AIE2P).
     - Proved live NPU execution via Loom: compiled `add_i32.loom` -> `add.xdna` using `loom-compile` targeting `amd.xdna.aie2p:amd.xdna.strix_halo.17f0_11`, ran on physical NPU tiles via `iree-xdna-run` and `libamdf` over Linux DRM (`/dev/accel/accel0`) with 0 XRT dependencies, and verified 100% bit-exact results across 16 integer additions.
     - Proved live GPU execution via Loom: compiled Loom source on-the-fly and executed on physical Radeon 8060S GPU (`output=42`), and ran `LoomcAmdgpuIreeHalExecutionTest` with 3/3 passed.
-20. **Complete AMD AI Stack Master Architecture Manual (`retrospects/09-*`):**
+20. **Complete AMD AI Stack Master Architecture Manual ([`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md)):**
     - Synthesized comprehensive architecture guide covering the dual paradigms (Classic ROCm/XRT vs Next-Gen Loom/HRX).
     - Clarified the concurrency & collision boundary between PyTorch, pyxrt, and IRON.
     - Established definitive cheat sheet for `amd-ai-dev`, `loom-dev`, and `default` developer shells.
+21. **Documentation Rearchitecture to 6-Tier Retrospect Taxonomy (`retrospects/`):**
+    - Restructured former flat `01-`–`09-` files into a clean taxonomy: `adr/` (16 granular ADRs), `postmortems/` (incident RCAs), `proofs/` (silicon verification runs), `manuals/` (living guides), `troubleshooting/` (runbook), and `history/` (milestones).
+    - Added [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md) navigation index.
 
 ---
 
@@ -114,9 +117,10 @@
 - [x] Configured unlimited `memlock` in `modules/core/default.nix`.
 - [x] Wired `xrt-amdxdna` and Python 3.14 into `shells/rocm.nix` (`amd-ai-dev`).
 - [x] Built and proved ROCm Loom / `libamdf` execution on both physical GPU and physical NPU silicon.
-- [x] Documented proof in `retrospects/08-rocm-loom-live-gpu-and-npu-silicon-execution-proof.md`.
-- [x] Authored complete master architecture manual in `retrospects/09-complete-amd-ai-stack-rocm-iron-xrt-loom-hrx.md`.
+- [x] Documented proof in `retrospects/proofs/2026-10-09-rocm-loom-libamdf-silicon-execution.md`.
+- [x] Authored complete master architecture manual in `retrospects/manuals/amd-ai-compute-stack.md`.
 - [x] Switched live system to Generation 103 via `nh os switch` with verified unlimited `memlock` and 32.6 GiB closure.
+- [x] Restructured `retrospects/` directory into 6 categorized domains (`adr/`, `postmortems/`, `proofs/`, `manuals/`, `troubleshooting/`, `history/`).
 
 ---
 

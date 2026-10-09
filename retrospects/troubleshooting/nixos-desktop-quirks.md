@@ -1,4 +1,4 @@
-# Retrospect 03: Troubleshooting, Edge Cases & Learnings
+# NixOS Desktop Operational Quirks & Troubleshooting Runbook
 
 During the migration and post-install configuration, several notable edge cases and NixOS nuances were encountered and resolved.
 
