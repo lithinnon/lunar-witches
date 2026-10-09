@@ -10,7 +10,7 @@
 - **Timestamp:** 2026-10-09 12:21 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `a3fa7c6` (`fix(ai): enhance devshell library paths and flash-attention build dependencies`)
+- **Active Git Commit:** `f24d8b5` (`refactor(ai): rename targetGfx parameter to gfx`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/36czw5w052qik5z4kmvcwaxkvmgz2g5i-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
