@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 13:23 +07:00
+- **Timestamp:** 2026-10-09 15:52 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `7d627ba` (`feat(core): add zip and unzip to systemPackages`)
+- **Active Git Commit:** `0cc7a65` (`refactor(ai): trim suite-ai-rocm to diagnostic tier and move compilers to devShell`)
 - **Working Tree:** Clean (all changes committed)
-- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/6hyfh3nsq5a1h1wal9q05zcyx4p7sa25-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
+- **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/n9l756pv691qkzizvjcfmdl4ifkphqk7-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
 ---
 
@@ -48,6 +48,12 @@
    - Declared `zip` and companion `unzip` in baseline `environment.systemPackages`.
 7. **Decommissioned Legacy `rocmctl` Tooling:**
    - Deleted the obsolete Fedora-era binary `/home/nnon/.local/bin/rocmctl` and purged the legacy skill directory at `~/.gemini/config/skills/rocmctl`.
+8. **Refactored `suite-ai-rocm` to 3-Tier Best Practice (`modules/suites/ai/rocm.nix`):**
+   - Replaced full compiler package on global `$PATH` with lightweight `rocm-diagnostics` wrapper exposing only `rocminfo`, `amd-smi`, and `rocm_agent_enumerator`.
+   - Stripped global `ROCM_PATH`, `HIP_PATH`, and `CMAKE_PREFIX_PATH` session variables to eliminate pollution of unrelated CMake/host builds.
+   - Retained dynamic library resolution in `programs.nix-ld.libraries` for standalone binaries.
+   - Kept full compiler suite, include paths, and Python AI venv automation strictly within `devShells` (`torch-dev`, `hip-dev`, `hip-runtime`).
+   - Added typed `suites.ai.rocm.exposeCompilers = false` toggle.
 
 ---
 
