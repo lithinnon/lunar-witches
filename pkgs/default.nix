@@ -11,6 +11,7 @@
       plasma-widget-amdgpuboost = pkgs.callPackage ./plasma-widget-amdgpuboost { };
       app = pkgs.callPackage ./app { };
       xrt-amdxdna = pkgs.callPackage ./xrt-amdxdna { };
+      beellama = pkgs.callPackage ./beellama { };
     };
   };
 
@@ -25,5 +26,6 @@
     app = final.callPackage ./app { };
     rocm-therock = final.callPackage ./rocm-therock;
     xrt-amdxdna = final.callPackage ./xrt-amdxdna { };
+    beellama = final.callPackage ./beellama { };
   };
 }

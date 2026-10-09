@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 23:47 +07:00
+- **Timestamp:** 2026-10-10 01:15 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `d8b32a1`
+- **Active Git Commit:** `f239f35`
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 104 (Activated; 31.7 GiB total closure, -962 MiB delta, 2,808 store paths)
 
@@ -137,6 +137,11 @@
     - Explicitly configured `programs.kde-pim.enable = false;` to counter the new upstream Nixpkgs default that bundled KMail, Kontact, Merkuro, and Akonadi MariaDB daemon into Plasma 6.
     - Dropped 50 superfluous store paths including MariaDB server (264 MiB), Akonadi (20.1 MiB), KDEPIM runtime (21.8 MiB), and Messagelib (17.2 MiB).
     - Reduced total system closure by **-962 MiB** (32.6 GiB -> **31.7 GiB**, 2,808 store paths in candidate `/nix/store/jrkq5vpc5rd87khzffb56c4xccinkzmv-nixos-system-lunar-qualia-26.11.20261008.e7439b6`).
+28. **Packaged `beellama.cpp` and Purged Nixpkgs `llama-cpp-vulkan` (`pkgs/beellama`, `modules/suites/ai/prose.nix`):**
+    - Created in-tree derivation `pkgs/beellama` wrapping the local HRX build (`/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build-hrx`) with embedded HRX shim and library search paths.
+    - Replaced `pkgs.llama-cpp-vulkan` with `pkgs.beellama` in `suite-ai-prose` (`modules/suites/ai/prose.nix`), cutting 87.3 MiB.
+    - Updated `llama-swap.yml` model runner to use `--device ROCm0` instead of `--device Vulkan0`, enabling native ROCm HIP graphs, flash attention, and HRX acceleration on Radeon 8060S (`gfx1151`).
+    - Reduced total system closure to **31.6 GiB** (net -87.3 MiB reduction).
 
 ---
 

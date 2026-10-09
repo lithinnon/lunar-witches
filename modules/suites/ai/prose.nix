@@ -1,4 +1,4 @@
-# Capability suite: Local LLM prose stack — SillyTavern + llama.cpp (Vulkan)
+# Capability suite: Local LLM prose stack — SillyTavern + beellama.cpp (ROCm / HRX)
 #
 # SillyTavern runs as the native `services.sillytavern` system unit
 # (sillytavern.service — hardened sandbox, state in /var/lib/SillyTavern,
@@ -14,8 +14,8 @@
 # Port 8000 is opened on the host firewall so the listen is reachable from
 # the LAN (remove networking.firewall entry if that is not wanted).
 #
-# llama-cpp-vulkan serves GGUF models on the Strix Halo iGPU (RADV via
-# hw-gpu-amd). The user-level llama-swap.service owns 127.0.0.1:8080,
+# beellama serves GGUF models on the Strix Halo iGPU (Radeon 8060S gfx1151 via
+# HRX / ROCm). The user-level llama-swap.service owns 127.0.0.1:8080,
 # spawning llama-server per model on ports from 5800 up (config `${PORT}`),
 # unloading via per-model ttl. Toggled from the "AI" service-deck group.
 # Manual llama-server runs need --port elsewhere (or stop the service).
@@ -39,7 +39,7 @@
     {
       environment.systemPackages = [
         pkgs.sillytavern
-        pkgs.llama-cpp-vulkan
+        pkgs.beellama
         # HF Hub client (`hf` CLI) for pulling GGUF models and datasets
         pkgs.python314Packages.huggingface-hub
         # On-demand model swap proxy: manages llama-server instances per model
@@ -71,7 +71,7 @@
                         --flash-attn on \
                         --cache-type-k bf16 \
                         --cache-type-v bf16 \
-                        --device Vulkan0 \
+                        --device ROCm0 \
                         --n-gpu-layers all \
                         --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
                         --ctx-checkpoints 0 \
