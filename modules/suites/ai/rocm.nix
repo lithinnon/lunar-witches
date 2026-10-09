@@ -1,21 +1,23 @@
-# Capability suite: ROCm 10.1 (TheRock) AI & Compute Optimization Environment
+# Capability suite: ROCm (TheRock) AI & Compute Optimization Environment
 { self, lib, ... }:
 
 let
-  # Function to generate devShells for any target architecture without defaults
+  # Function to generate devShells for any target architecture and ROCm version without hardcoding
   mkRocmDevShells =
     {
       pkgs,
       gfx ? throw "mkRocmDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch').",
+      version ? "10.1.0",
+      rocmPkg ? pkgs.callPackage ../../../pkgs/rocm-therock { inherit gfx version; },
+      torchVersion ? "2.12.0+rocm${rocmPkg.version}",
+      tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
     let
-      rocmPkg = pkgs.callPackage ../../../pkgs/rocm-therock { inherit gfx; };
-
       # Immutable constraints file preventing third-party packages from pulling PyPI CPU/CUDA builds
       constraintsFile = pkgs.writeText "rocm-torch-constraints-${gfx}.txt" ''
-        torch==2.12.0+rocm10.1.0
-        triton==3.8.0+git669b31ac.rocm10.1.0
-        amd-torch-device-${gfx}==2.12.0+rocm10.1.0
+        torch==${torchVersion}
+        triton==${tritonVersion}
+        amd-torch-device-${gfx}==${torchVersion}
       '';
 
       # Bootstrap script for a locked, clean virtual environment with ROCm PyTorch
@@ -27,11 +29,11 @@ let
           ${pkgs.python312}/bin/python3 -m venv "$VENV_DIR"
         fi
         source "$VENV_DIR/bin/activate"
-        echo "==> Installing ROCm 10.1 PyTorch & ${gfx} device libraries..."
+        echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
         uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
-          "torch==2.12.0+rocm10.1.0" \
-          "triton==3.8.0+git669b31ac.rocm10.1.0" \
-          "amd-torch-device-${gfx}==2.12.0+rocm10.1.0" \
+          "torch==${torchVersion}" \
+          "triton==${tritonVersion}" \
+          "amd-torch-device-${gfx}==${torchVersion}" \
           pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
         echo "==> Ready! Virtual environment bootstrapped with zero CPU package drift."
       '';
@@ -76,7 +78,7 @@ let
         shellHook = ''
           export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - HIP Runtime (${gfx})"
+          echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Runtime (${gfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
           echo "=========================================================="
           ${rocmPkg}/bin/rocminfo | grep -E 'Name:[[:space:]]+gfx' || true
@@ -112,7 +114,7 @@ let
           export LD_LIBRARY_PATH="${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - HIP Development (${gfx})"
+          echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Development (${gfx})"
           echo "  Compiler: $(${rocmPkg}/bin/hipcc --version | head -n 1)"
           echo "  ROCM_PATH: ${rocmPkg}"
           echo "=========================================================="
@@ -174,9 +176,10 @@ let
             source .venv/bin/activate
           fi
           echo "=========================================================="
-          echo "  ROCm 10.1 (TheRock) - PyTorch AI Environment (${gfx})"
+          echo "  ROCm ${rocmPkg.version} (TheRock) - PyTorch AI Environment (${gfx})"
           echo "  ROCM_PATH:        ${rocmPkg}"
           echo "  Locked Index:     https://stable.repo.amd.com/rocm/whl-next"
+          echo "  Locked PyTorch:   ${torchVersion}"
           echo "  Commands:         init-rocm-venv [dir]   (setup locked venv)"
           echo "                    build-flash-attention  (build Flash Attention 2)"
           echo "=========================================================="
@@ -220,19 +223,28 @@ in
       cfg = config.suites.ai.rocm;
       rocmPkg =
         if cfg.gfx != null then
-          pkgs.callPackage ../../../pkgs/rocm-therock { gfx = cfg.gfx; }
+          pkgs.callPackage ../../../pkgs/rocm-therock {
+            gfx = cfg.gfx;
+            inherit (cfg) version;
+          }
         else
           null;
     in
     {
       options.suites.ai.rocm = {
-        enable = lib.mkEnableOption "ROCm 10.1 (TheRock) AI and GPU compute suite";
+        enable = lib.mkEnableOption "ROCm (TheRock) AI and GPU compute suite";
 
         gfx = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = null;
           example = "gfx1151";
           description = "Target GPU architecture for ROCm (e.g. 'gfx1151', 'gfx1100', 'multiarch'). Must be explicitly specified.";
+        };
+
+        version = lib.mkOption {
+          type = lib.types.str;
+          default = "10.1.0";
+          description = "ROCm (TheRock) release version.";
         };
       };
 

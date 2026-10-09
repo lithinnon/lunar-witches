@@ -11,6 +11,7 @@
 , glibc
 , gcc
 , gfx ? throw "pkgs.rocm-therock: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch')."
+, version ? "10.1.0"
 , hash ? null
 }:
 
@@ -65,7 +66,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "rocm-therock";
-  version = "10.1.0";
+  inherit version;
 
   src = fetchurl {
     url = "https://stable.repo.amd.com/rocm/core/tarball/therock-dist-linux-${targetInfo.name}-${version}.tar.gz";
@@ -144,7 +145,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "AMD ROCm 10.1 (TheRock) toolchain, libraries, and runtime for ${gfx}";
+    description = "AMD ROCm ${version} (TheRock) toolchain, libraries, and runtime for ${gfx}";
     homepage = "https://github.com/ROCm/TheRock";
     license = licenses.mit;
     platforms = [ "x86_64-linux" ];
