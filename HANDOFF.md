@@ -142,6 +142,16 @@
     - Replaced `pkgs.llama-cpp-vulkan` with `pkgs.beellama` in `suite-ai-prose` (`modules/suites/ai/prose.nix`), cutting 87.3 MiB.
     - Updated `llama-swap.yml` model runner to use `--device ROCm0` instead of `--device Vulkan0`, enabling native ROCm HIP graphs, flash attention, and HRX acceleration on Radeon 8060S (`gfx1151`).
     - Reduced total system closure to **31.6 GiB** (net -87.3 MiB reduction).
+29. **Created Dedicated `suite-ai-local` & Configured 64k `snc8` Disk Cache (`modules/suites/ai/local.nix`, `modules/suites/ai/prose.nix`):**
+    - Extracted local inference provider into dedicated capability suite `modules/suites/ai/local.nix` (`self.nixosModules.suite-ai-local`), providing `pkgs.beellama` declaratively.
+    - Composed `self.nixosModules.suite-ai-local` into `hosts/lunar-qualia/default.nix` and aggregator `modules/suites/default.nix`.
+    - Updated `llama-swap.yml` Boulesis 26B A4B model definition in `suite-ai-prose`:
+      - Explicit binary binding: `${pkgs.beellama}/bin/llama-server`.
+      - Bumped context to 64k (`--ctx-size 65536`).
+      - Sub-normalized 8-bit KV quantization: `--cache-type-k snc8 --cache-type-v snc8`.
+      - Full 1024-token SWA attention tail preservation: `--kv-tail-tokens 1024 --kv-tail-type bf16`.
+      - Zero Host RAM overhead with 16 GiB persistent NVMe Radix disk cache: `--cache-ram 0 --cache-disk 16384`.
+      - BeeLlama automatically hydrates existing `.ckpt` chunks from `${XDG_CACHE_HOME}/beellama.cpp/radix` at startup on `--cache-disk > 0`.
 
 ---
 
@@ -161,6 +171,7 @@
 - [x] Parameterized `shells/loom.nix` into `mkLoomDevShells` and exported `flake.lib.mkLoomDevShells`.
 - [x] Switched live system to Generation 104 with flake inputs updated, KDE PIM purged, and closure reduced to 31.7 GiB (-962 MiB).
 - [x] Switched live system to Generation 105 with beellama.cpp (ROCm / HRX) replacing nixpkgs llama-cpp-vulkan.
+- [x] Created `suite-ai-local` and configured Boulesis 64k `snc8`/`snc8` with 1024 `bf16` tail tokens and 16 GiB NVMe disk offloading.
 
 ---
 

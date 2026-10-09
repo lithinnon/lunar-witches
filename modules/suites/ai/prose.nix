@@ -39,7 +39,6 @@
     {
       environment.systemPackages = [
         pkgs.sillytavern
-        pkgs.beellama
         # HF Hub client (`hf` CLI) for pulling GGUF models and datasets
         pkgs.python314Packages.huggingface-hub
         # On-demand model swap proxy: manages llama-server instances per model
@@ -64,18 +63,20 @@
                 "creative/boulesis-v2.1-headtune" = {
                   ttl = 1200; # 20 minutes
                   cmd = ''
-                    llama-server \
-                        --ctx-size 32768 \
+                    ${pkgs.beellama}/bin/llama-server \
+                        --ctx-size 65536 \
                         --batch-size 2048 \
                         --ubatch-size 512 \
                         --flash-attn on \
-                        --cache-type-k bf16 \
-                        --cache-type-v bf16 \
+                        --cache-type-k snc8 \
+                        --cache-type-v snc8 \
+                        --kv-tail-tokens 1024 \
+                        --kv-tail-type bf16 \
+                        --cache-ram 0 \
+                        --cache-disk 16384 \
                         --device ROCm0 \
                         --n-gpu-layers all \
                         --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
-                        --ctx-checkpoints 0 \
-                        --cache-ram 1280 \
                         --no-mmproj \
                         --port ''${PORT} \
                         --no-webui \
