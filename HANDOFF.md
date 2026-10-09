@@ -114,6 +114,10 @@
     - Integrated **Method 2 (Native Heterogeneous C/C++ API)**: Packaged `hrxcc` and `hrxcxx` wrappers automatically linking `-lhrx` with include and runtime paths for `<hrx_runtime.h>`.
     - Integrated **Method 3 (ROCm Loom DSL & Silicon Execution)**: Exposed `loom-compile`, `iree-run-loom`, `iree-xdna-run`, `amdf-enumerate`, and `hrx-info` directly in `$PATH`.
     - Packaged `build-hrx-system` for automated rebuilding from source when needed.
+23. **PyTorch 2.12 Autograd & Flash Attention 2 Proven on HRX ([`retrospects/proofs/2026-10-09-pytorch-flash-attention-live-hrx-execution.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-pytorch-flash-attention-live-hrx-execution.md)):**
+    - Demonstrated live silicon proof that standard unpatched PyTorch 2.12 runs on HRX's 2.8 MB `libamdhip64.so` via `LD_PRELOAD`.
+    - Proved tensor allocations (`torch.ones`), matrix multiplication (`torch.matmul`), neural network forward passes, and full autograd backward passes (`loss.backward()`) computing valid weight gradients on Radeon 8060S (`gfx1151`).
+    - Proved Flash Attention 2 (`flash_attn_func`) forward passes execute bit-exactly on HRX in `bfloat16`.
 
 ---
 
@@ -128,6 +132,7 @@
 - [x] Switched live system to Generation 103 via `nh os switch` with verified unlimited `memlock` and 32.6 GiB closure.
 - [x] Restructured `retrospects/` directory into 6 categorized domains (`adr/`, `postmortems/`, `proofs/`, `manuals/`, `troubleshooting/`, `history/`).
 - [x] Upgraded `shells/loom.nix` to natively support all three execution methods (`hrx-run`, `hrxcc`, `loom-compile`).
+- [x] Empirically validated PyTorch 2.12 autograd training and Flash Attention 2 on HRX.
 
 ---
 
