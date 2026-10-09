@@ -10,8 +10,8 @@
 - **Timestamp:** 2026-10-09 18:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `a443e4b` (`refactor(rocm): remove exposeCompilers, confining toolchain to devshells`)
-- **Working Tree:** Dirty (`retrospects/07-amd-xdna-iron-xrt-live-hardware-verification.md` added)
+- **Active Git Commit:** `f17a22d` (`docs(xdna): verify live on-hardware execution of IRON and XRT on Strix Halo NPU`)
+- **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/rvkvrn43i071vdn51drxv3vrq6wv84pi-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
 ---
