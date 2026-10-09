@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 12:15 +07:00
+- **Timestamp:** 2026-10-09 12:21 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `92b439e` (`feat(ai): integrate rocm 10.1 therock with gfx-agnostic derivation and devshells`)
+- **Active Git Commit:** `a3fa7c6` (`fix(ai): enhance devshell library paths and flash-attention build dependencies`)
 - **Working Tree:** Clean (all changes committed)
 - **Live NixOS Generation:** Generation 101 (`nh os switch` candidate built and ready at `/nix/store/36czw5w052qik5z4kmvcwaxkvmgz2g5i-nixos-system-lunar-qualia-26.11.20261006.151fa4e`)
 
@@ -34,14 +34,16 @@
    - Added typed module option `suites.ai.rocm.targetGfx` (strictly asserted, no default).
    - Injected ROCm into `environment.systemPackages` and `programs.nix-ld.libraries` (so unpatched Python wheels and binaries find `libamdhip64.so` system-wide without devshells).
    - Exposed system session variables (`ROCM_PATH`, `HIP_PATH`, `CMAKE_PREFIX_PATH`, `AMD_COMGR_CACHE_ENABLE`, `ROCFFT_KERNEL_CACHE_ENABLE`, `FLASH_ATTENTION_TRITON_AMD_ENABLE`).
-3. **Three Squashed `nix develop` DevShells:**
+3. **Three Squashed `nix develop` DevShells & Live Hardware Validation:**
    - **`hip-runtime` (`.#hip-runtime`):** Minimal execution and hardware verification shell (`rocminfo`, `rocm-smi`, runtime libraries).
    - **`hip-dev` (`.#hip-dev`):** Pure C++/HIP development environment (`hipcc`, `amdclang++`, `cmake`, `ninja`, `pkg-config`, `gcc`, `make`, full CMake package targets in `lib/cmake`).
-   - **`torch-dev` (`.#torch-dev`):** Unified PyTorch AI environment:
-     - Includes Python 3.12, `uv`, `pip`, `virtualenv`, full compiler toolchain, and development headers.
-     - Enforces `PIP_CONSTRAINT` and `UV_CONSTRAINT` pointing to an immutable constraints file locking `torch==2.12.0+rocm10.1.0`, `triton==3.8.0+git669b31ac.rocm10.1.0`, and `amd-torch-device-${targetGfx}==2.12.0+rocm10.1.0`.
-     - Automatically points `PIP_EXTRA_INDEX_URL` and `UV_EXTRA_INDEX_URL` to AMD's official wheel repository (`https://stable.repo.amd.com/rocm/whl-next`), making it impossible for PyPI to overwrite ROCm wheels with generic CPU/CUDA builds.
-     - Bundles bootstrap commands: `init-rocm-venv` (creates & bootstraps locked venv) and `build-flash-attention` (builds Flash Attention 2 + AITER backend with zero drift).
+   - **`torch-dev` (`.#torch-dev`):** Unified PyTorch AI environment with `libstdc++` and system runtime libs in `LD_LIBRARY_PATH`.
+   - **Hardware Validation of Flash Attention 2 on Radeon 8060S (`gfx1151`):**
+     - Bootstrapped test venv via `init-rocm-venv` with locked `torch==2.12.0+rocm10.1.0`, `triton==3.8.0+git669b31ac.rocm10.1.0`, and `amd-torch-device-gfx1151==2.12.0+rocm10.1.0`.
+     - Built and installed `amd-aiter` and `flash-attention` with AITER Triton/CK backend.
+     - Executed live Python validation script:
+       `from flash_attn import flash_attn_qkvpacked_func, flash_attn_func`
+       Executed both standard QKV and packed QKV forward passes on the GPU with full finite output (`True`) and zero crashes.
    - Exported `flake.lib.mkRocmDevShells` to allow instantiating shells for any GPU architecture.
 4. **Host Leaf Composition (`hosts/lunar-qualia/default.nix`):**
    - Configured `suites.ai.rocm.enable = true; suites.ai.rocm.targetGfx = "gfx1151";`.
