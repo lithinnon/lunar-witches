@@ -118,6 +118,10 @@
     - Demonstrated live silicon proof that standard unpatched PyTorch 2.12 runs on HRX's 2.8 MB `libamdhip64.so` via `LD_PRELOAD`.
     - Proved tensor allocations (`torch.ones`), matrix multiplication (`torch.matmul`), neural network forward passes, and full autograd backward passes (`loss.backward()`) computing valid weight gradients on Radeon 8060S (`gfx1151`).
     - Proved Flash Attention 2 (`flash_attn_func`) forward passes execute bit-exactly on HRX in `bfloat16`.
+24. **`loom-dev` Shell Extended with PyTorch & Flash Attention 2 (Clean Zero-XRT Substrate):**
+    - Extended `shells/loom.nix` to inherit the auto-activating PyTorch 2.12 and Flash Attention 2 environment from `amd-ai-dev`.
+    - Cleanly stripped XRT (`xrt-amdxdna`, `pyxrt`, `xrt-smi`, `XILINX_XRT`, `AIE_XCLBINUTIL`), staying true to Loom's direct Linux DRM (`/dev/accel/accel0`) architecture.
+    - Verified `python3` inside `loom-dev` has PyTorch + Flash Attention 2 ready to run with both standard ROCm and HRX (`hrx-run`).
 
 ---
 
@@ -133,6 +137,7 @@
 - [x] Restructured `retrospects/` directory into 6 categorized domains (`adr/`, `postmortems/`, `proofs/`, `manuals/`, `troubleshooting/`, `history/`).
 - [x] Upgraded `shells/loom.nix` to natively support all three execution methods (`hrx-run`, `hrxcc`, `loom-compile`).
 - [x] Empirically validated PyTorch 2.12 autograd training and Flash Attention 2 on HRX.
+- [x] Extended `shells/loom.nix` with PyTorch and Flash Attention 2 while strictly excluding XRT.
 
 ---
 

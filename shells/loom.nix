@@ -1,16 +1,105 @@
 # Developer shell for ROCm Loom and the HRX System (HIP Runtime Extended)
-# Enables three execution workflows:
-# 1. Method A: Drop-in HIP runtime replacement for standard ROCm apps via LD_PRELOAD (hrx-run)
-# 2. Method B: Native HRX Heterogeneous C/C++ API development (<hrx_runtime.h>, libhrx.so, hrxcc, hrxcxx)
-# 3. Method C: ROCm Loom compiler & unified GPU/NPU dispatch (loom-compile, iree-run-loom, iree-xdna-run, amdf-enumerate, hrx-info)
+# Inherits PyTorch 2.12 and Flash Attention 2 capabilities from amd-ai-dev,
+# but deliberately omits XRT/pyxrt (as Loom/HRX operates over libamdf and direct Linux DRM).
+#
+# Supported Workflows:
+# 1. Method A: Drop-in HIP runtime replacement for PyTorch/ROCm apps (hrx-run python app.py)
+# 2. Method B: Native HRX Heterogeneous C/C++ API (<hrx_runtime.h>, libhrx.so, hrxcc, hrxcxx)
+# 3. Method C: ROCm Loom compiler & unified GPU/NPU dispatch (loom-compile, iree-run-loom, iree-xdna-run)
 { lib, ... }:
 
 {
   perSystem =
     { pkgs, ... }:
     let
-      # Use Strix Halo rocm-therock package for device headers, compilers, and runtime libraries
-      rocmPkg = pkgs.callPackage ../pkgs/rocm-therock { gfx = "gfx1151"; };
+      gfx = "gfx1151";
+      version = "10.1.0";
+      rocmPkg = pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; };
+      torchVersion = "2.12.0+rocm${rocmPkg.version}";
+      tritonVersion = "3.8.0+git669b31ac.rocm${rocmPkg.version}";
+
+      # Immutable constraints file preventing third-party packages from pulling PyPI CPU/CUDA builds
+      constraintsFile = pkgs.writeText "rocm-torch-constraints-${gfx}.txt" ''
+        torch==${torchVersion}
+        triton==${tritonVersion}
+        amd-torch-device-${gfx}==${torchVersion}
+      '';
+
+      # Build script for Flash Attention 2 with AITER Triton/CK backend
+      buildFlashAttnScript = pkgs.writeShellScriptBin "build-flash-attention" ''
+        set -euo pipefail
+        if [ -z "''${VIRTUAL_ENV:-}" ]; then
+          GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+          if [ -d "$GLOBAL_DEFAULT" ]; then
+            source "$GLOBAL_DEFAULT/bin/activate"
+          else
+            echo "Error: No active virtual environment found. Run 'init-rocm-venv' first."
+            exit 1
+          fi
+        fi
+        echo "==> Building Flash Attention 2 for active environment: $VIRTUAL_ENV"
+        TMPDIR=$(mktemp -d)
+        trap 'rm -rf "$TMPDIR"' EXIT
+        git clone --depth 1 https://github.com/Dao-AILab/flash-attention "$TMPDIR/flash-attention"
+        (
+          cd "$TMPDIR/flash-attention"
+          git submodule update --init --depth 1 third_party/aiter csrc/composable_kernel || true
+          echo "==> Building & installing aiter..."
+          AITER_USE_SYSTEM_TRITON=1 ENABLE_CK=1 PREBUILD_KERNELS=0 \
+            pip install --no-build-isolation --no-deps ./third_party/aiter
+          echo "==> Building & installing flash-attention..."
+          FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE" \
+            pip install --no-build-isolation --no-deps .
+        )
+        echo "==> Flash Attention 2 successfully built and installed!"
+      '';
+
+      # Bootstrap script for shared ROCm PyTorch virtual environment (XRT-free)
+      initVenvScript = pkgs.writeShellScriptBin "init-rocm-venv" ''
+        set -euo pipefail
+        WITH_FLASH_ATTN=0
+        TARGET_DIR=""
+
+        for arg in "$@"; do
+          case "$arg" in
+            --flash-attn|--with-flash-attn)
+              WITH_FLASH_ATTN=1
+              ;;
+            -h|--help)
+              echo "Usage: init-rocm-venv [directory] [--flash-attn]"
+              echo "  directory     Target directory (defaults to ~/.local/share/rocm/venv-${gfx})"
+              echo "  --flash-attn  Automatically build and install Flash Attention 2"
+              exit 0
+              ;;
+            *)
+              if [ -z "$TARGET_DIR" ]; then
+                TARGET_DIR="$arg"
+              fi
+              ;;
+          esac
+        done
+
+        GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+        VENV_DIR="''${TARGET_DIR:-$GLOBAL_DEFAULT}"
+
+        mkdir -p "$(dirname "$VENV_DIR")"
+        if [ ! -d "$VENV_DIR" ]; then
+          echo "==> Creating virtual environment at $VENV_DIR..."
+          ${pkgs.python3}/bin/python3 -m venv "$VENV_DIR"
+        fi
+        source "$VENV_DIR/bin/activate"
+
+        echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
+        uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
+          "torch==${torchVersion}" \
+          "triton==${tritonVersion}" \
+          "amd-torch-device-${gfx}==${torchVersion}"
+
+        if [ "$WITH_FLASH_ATTN" -eq 1 ]; then
+          ${buildFlashAttnScript}/bin/build-flash-attention
+        fi
+        echo "==> Virtual environment successfully bootstrapped at $VENV_DIR!"
+      '';
 
       # Method 1 Wrapper: Run any ROCm/HIP application using HRX's lightweight libamdhip64.so
       hrxRun = pkgs.writeShellScriptBin "hrx-run" ''
@@ -96,10 +185,15 @@
         name = "rocm-loom-dev";
         packages = [
           rocmPkg
+          # HRX & Loom runtime wrappers
           hrxRun
           hrxCc
           hrxCxx
           buildHrxSystem
+          # PyTorch & Flash Attention helpers (without XRT)
+          initVenvScript
+          buildFlashAttnScript
+          # Build tools & compilers
           pkgs.bazelisk
           pkgs.bazel_7
           pkgs.cmake
@@ -110,33 +204,82 @@
           pkgs.gnumake
           pkgs.clang
           pkgs.lld
+          pkgs.ccache
+          pkgs.sccache
+          # Python & package management
           pkgs.python3
+          pkgs.python3Packages.pip
+          pkgs.python3Packages.virtualenv
           pkgs.uv
           pkgs.python3Packages.pyyaml
           pkgs.ruff
+          # System libraries & drivers
+          pkgs.zlib
           pkgs.pciutils
           pkgs.libdrm
           pkgs.numactl
           pkgs.elfutils
+          pkgs.util-linux
         ];
 
         env = {
           ROCM_PATH = "${rocmPkg}";
+          HIP_PATH = "${rocmPkg}";
           IREE_ROCM_PATH = "${rocmPkg}";
-          AMDGPU_TARGETS = "gfx1151";
-          GPU_TARGETS = "gfx1151";
+          AMDGPU_TARGETS = gfx;
+          GPU_TARGETS = gfx;
+          PYTORCH_ROCM_ARCH = gfx;
           HSA_OVERRIDE_GFX_VERSION = "11.5.1";
+          HIP_PLATFORM = "amd";
+          HIP_COMPILER = "clang";
+          HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
+
+          # Compiler caching
+          CMAKE_C_COMPILER_LAUNCHER = "ccache";
+          CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
+          AMD_COMGR_CACHE_ENABLE = "1";
+          ROCFFT_KERNEL_CACHE_ENABLE = "1";
+
+          # Flash Attention 2 & AITER build/runtime flags
+          FLASH_ATTENTION_TRITON_AMD_ENABLE = "TRUE";
+          AITER_USE_SYSTEM_TRITON = "1";
+          ENABLE_CK = "1";
+          PREBUILD_KERNELS = "0";
+
+          # Python constraints & AMD wheel index
+          PIP_EXTRA_INDEX_URL = "https://stable.repo.amd.com/rocm/whl-next";
+          UV_EXTRA_INDEX_URL = "https://stable.repo.amd.com/rocm/whl-next";
+          PIP_CONSTRAINT = "${constraintsFile}";
+          UV_CONSTRAINT = "${constraintsFile}";
         };
 
         shellHook = ''
           export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${
             lib.makeLibraryPath [
               pkgs.stdenv.cc.cc.lib
+              rocmPkg
+              pkgs.zlib
               pkgs.libdrm
               pkgs.numactl
+              pkgs.elfutils
+              pkgs.util-linux.lib
             ]
           }:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
+
+          # Auto-activate shared ROCm virtual environment (with PyTorch and Flash Attention 2)
+          GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
+          if [ -d ".venv" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
+            echo "==> Activating project-local virtual environment (./.venv)..."
+            source .venv/bin/activate
+          elif [ -d "$GLOBAL_VENV" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
+            echo "==> Activating shared ROCm virtual environment ($GLOBAL_VENV)..."
+            source "$GLOBAL_VENV/bin/activate"
+          elif [ -z "''${VIRTUAL_ENV:-}" ]; then
+            echo "==> First-time setup: Auto-bootstrapping shared ROCm environment at $GLOBAL_VENV..."
+            ${initVenvScript}/bin/init-rocm-venv "$GLOBAL_VENV"
+            source "$GLOBAL_VENV/bin/activate"
+          fi
 
           # Discover or configure HRX & Loom runtime directory
           export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
@@ -176,18 +319,20 @@
           # Interactive Studio Banner
           # --------------------------------------------------------------------------
           echo "================================================================================"
-          echo "  ROCm Loom & HRX System (HIP Runtime Extended) Studio"
+          echo "  ROCm Loom & HRX System Studio (Unified PyTorch + Flash Attention + Loom)"
           echo "================================================================================"
-          echo "  AMDGPU Target:   Radeon 8060S (gfx1151)"
+          echo "  AMDGPU Target:   Radeon 8060S (${gfx})"
           if [ -e /dev/accel/accel0 ]; then
             echo "  XDNA NPU Target: AIE2p (amd.xdna.strix_halo.17f0_11 over /dev/accel/accel0)"
+            echo "  NPU Transport:   Direct Linux DRM (libamdf - Zero XRT)"
           fi
+          echo "  PyTorch Stack:   ${torchVersion} (Active Venv: ''${VIRTUAL_ENV:-None})"
           echo "  HRX Runtime Dir: $HRX_DIR"
           echo ""
-          echo "  Supported Execution Methods:"
+          echo "  Supported Execution Workflows:"
           echo "  ------------------------------------------------------------------------------"
-          echo "  1. Method A: Drop-In HIP Runtime (Run ROCm apps with HRX):"
-          echo "     $ hrx-run ./my_rocm_app              # Preloads HRX libamdhip64.so"
+          echo "  1. Method A: Run PyTorch / ROCm Apps with HRX Runtime:"
+          echo "     $ hrx-run python my_script.py        # Intercepts HIP with HRX libamdhip64"
           echo "     $ enable-hrx-hip                     # Toggles HRX for entire session"
           echo ""
           echo "  2. Method B: Native HRX Heterogeneous C/C++ API (<hrx_runtime.h>):"
@@ -195,7 +340,7 @@
           echo "     $ hrxcxx my_app.cpp -o my_app        # Compiles with C++ HRX helpers"
           echo ""
           echo "  3. Method C: ROCm Loom DSL & Hardware Compilation:"
-          echo "     $ loom-compile input.loom -target amdgpu:gfx1151 -o out.hsaco"
+          echo "     $ loom-compile input.loom -target amdgpu:${gfx} -o out.hsaco"
           echo "     $ loom-compile input.loom -target amd.xdna.aie2p:... -o out.xdna"
           echo "     $ iree-xdna-run out.xdna             # Dispatches directly to NPU"
           echo "     $ amdf-enumerate                     # Discovers active GPU/NPU bus"
