@@ -7,12 +7,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 18:45 +07:00
+- **Timestamp:** 2026-10-09 19:11 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `e0f26e0` (`docs(architecture): add complete AMD AI stack manual (ROCm, PyTorch, XRT, IRON, HRX, Loom)`)
-- **Working Tree:** Clean (all changes committed)
-- **Live NixOS Generation:** Generation 101 (`nh os build` dry-run evaluated and ready)
+- **Active Git Commit:** `48a45a2`
+- **Working Tree:** Clean
+- **Live NixOS Generation:** Generation 103 (Activated; 32.6 GiB total closure, -200 MiB delta, 2,858 store paths)
 
 ---
 
@@ -116,7 +116,7 @@
 - [x] Built and proved ROCm Loom / `libamdf` execution on both physical GPU and physical NPU silicon.
 - [x] Documented proof in `retrospects/08-rocm-loom-live-gpu-and-npu-silicon-execution-proof.md`.
 - [x] Authored complete master architecture manual in `retrospects/09-complete-amd-ai-stack-rocm-iron-xrt-loom-hrx.md`.
-- [ ] *(Optional / Next)*: Commit changes to Git and switch live system via `nh os switch`.
+- [x] Switched live system to Generation 103 via `nh os switch` with verified unlimited `memlock` and 32.6 GiB closure.
 
 ---
 
