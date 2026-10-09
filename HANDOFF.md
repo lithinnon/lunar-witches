@@ -7,10 +7,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-09 22:25 +07:00
+- **Timestamp:** 2026-10-09 23:24 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `e3ea10a`
+- **Active Git Commit:** `6b7c090`
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 103 (Activated; 32.6 GiB total closure, -200 MiB delta, 2,858 store paths)
 
@@ -129,6 +129,10 @@
     - Exported `flake.lib.mkLoomDevShells` and `flake.lib.mkLoomDevShell` alongside `flake.lib.mkRocmDevShells`.
     - Provided both flagship `loom-dev` and minimal `loom-runtime` shells (along with architecture-tagged aliases `loom-dev-gfx1151` and `loom-runtime-gfx1151`).
     - Dynamic HSA override `HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null` preserving generic GPU compatibility.
+26. **Flake Inputs Updated & Candidate Generation Verified (`flake.lock`):**
+    - Ran `nix flake update` (updated `nixpkgs` to `e7439b6`, `home-manager` to `dfadbe5`, `antigravity-nix` to `bb5f514`, and `bedrock-on-linux` to `00b71a7`).
+    - Successfully built candidate generation locally via `nh os build` (`/nix/store/ms51ah99vm4qhdl09j4w6iv421xa6i7a-nixos-system-lunar-qualia-26.11.20261008.e7439b6`).
+    - Verified system closure shrank by 461 MiB (32.6 GiB -> 32.2 GiB) through Python 3.12 removal and QtWebEngine deduplication. Upgraded VS Code (1.140.0), Google Chrome (155.0), Antigravity 2.22.0, Codex 0.161.0, llama-cpp 0.6.0, and Pi coding agent 1.0.4.
 
 ---
 
