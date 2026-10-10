@@ -152,6 +152,11 @@
       - Full 1024-token SWA attention tail preservation: `--kv-tail-tokens 1024 --kv-tail-type bf16`.
       - Zero Host RAM overhead with 16 GiB persistent NVMe Radix disk cache: `--cache-ram 0 --cache-disk 16384`.
       - BeeLlama automatically hydrates existing `.ckpt` chunks from `${XDG_CACHE_HOME}/beellama.cpp/radix` at startup on `--cache-disk > 0`.
+30. **Switched `beellama.cpp` to Native Standard ROCm HIP (`pkgs/beellama`, `modules/suites/ai/local.nix`):**
+    - Compiled `beellama.cpp` with standard ROCm HIP (`build.sh`) into `/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build`, linking directly against TheRock ROCm 10.1 HIP (`libamdhip64.so.7`) and `hipBLAS`.
+    - Parameterized `pkgs/beellama` with `backend ? "rocm"` (defaulting to standard ROCm `build/`, with `"hrx"` selecting `build-hrx/`).
+    - Added `suites.ai.local.backend` (`"rocm"` | `"hrx"`) and `suites.ai.local.package` options to `suite-ai-local`.
+    - Validated all 64k `snc8`/`snc8` flags and disk tier options parse cleanly on standard ROCm.
 
 ---
 
@@ -172,6 +177,7 @@
 - [x] Switched live system to Generation 104 with flake inputs updated, KDE PIM purged, and closure reduced to 31.7 GiB (-962 MiB).
 - [x] Switched live system to Generation 105 with beellama.cpp (ROCm / HRX) replacing nixpkgs llama-cpp-vulkan.
 - [x] Created `suite-ai-local` and configured Boulesis 64k `snc8`/`snc8` with 1024 `bf16` tail tokens and 16 GiB NVMe disk offloading.
+- [x] Switched `beellama.cpp` inference engine to standard ROCm HIP.
 
 ---
 

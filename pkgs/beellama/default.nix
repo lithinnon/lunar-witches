@@ -1,10 +1,16 @@
 # In-tree derivation for beellama.cpp (custom llama.cpp fork with ROCm & HRX support)
-# Wraps the local build-hrx binaries into standard Nix package outputs with HRX runpath
+# Wraps the local build directory binaries into standard Nix package outputs
 {
   lib,
   stdenvNoCC,
+  # Runtime backend: "rocm" (standard TheRock HIP) or "hrx" (HIP Runtime Extended)
+  backend ? "rocm",
   # Path to the compiled beellama.cpp build directory
-  beellamaDir ? "/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build-hrx",
+  beellamaDir ?
+    if backend == "hrx" then
+      "/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build-hrx"
+    else
+      "/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build",
 }:
 
 let
@@ -32,6 +38,7 @@ let
     "llama-tokenize"
     "llama-tts"
   ];
+  buildScript = if backend == "hrx" then "build-hrx.sh" else "build.sh";
 in
 stdenvNoCC.mkDerivation {
   pname = "beellama";
@@ -47,7 +54,7 @@ stdenvNoCC.mkDerivation {
       export LD_LIBRARY_PATH="${beellamaDir}/lib:${beellamaDir}/bin''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       if [ ! -x "${beellamaDir}/bin/${bin}" ]; then
         echo "Error: ${bin} not found at ${beellamaDir}/bin/${bin}" >&2
-        echo "Run 'build-hrx.sh' in ${beellamaDir}/.. to compile beellama.cpp" >&2
+        echo "Run '${buildScript}' in ${beellamaDir}/.. to compile beellama.cpp" >&2
         exit 1
       fi
       exec "${beellamaDir}/bin/${bin}" "$@"
