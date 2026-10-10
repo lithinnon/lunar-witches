@@ -230,6 +230,10 @@
         <string>colorScheme</string>
         <de.neemann.digital.draw.graphics.ColorScheme_-ColorSchemes>DARK</de.neemann.digital.draw.graphics.ColorScheme_-ColorSchemes>
       </entry>
+      <entry>
+        <string>wireToolTips</string>
+        <boolean>true</boolean>
+      </entry>
     </attributes>
   '';
 }

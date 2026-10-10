@@ -157,6 +157,9 @@
     - Parameterized `pkgs/beellama` with `backend ? "rocm"` (defaulting to standard ROCm `build/`, with `"hrx"` selecting `build-hrx/`).
     - Added `suites.ai.local.backend` (`"rocm"` | `"hrx"`) and `suites.ai.local.package` options to `suite-ai-local`.
     - Validated all 64k `snc8`/`snc8` flags and disk tier options parse cleanly on standard ROCm.
+31. **Enabled Wire Tooltips in Digital (`modules/users/nnon/desktop.nix`):**
+    - Configured `<entry><string>wireToolTips</string><boolean>true</boolean></entry>` declaratively in `home.file.".digital.cfg"`.
+    - Overcame read-only nix store symlink limitation in Home Manager where GUI preference changes cannot write to `~/.digital.cfg` directly.
 
 ---
 
@@ -178,6 +181,7 @@
 - [x] Switched live system to Generation 105 with beellama.cpp (ROCm / HRX) replacing nixpkgs llama-cpp-vulkan.
 - [x] Created `suite-ai-local` and configured Boulesis 64k `snc8`/`snc8` with 1024 `bf16` tail tokens and 16 GiB NVMe disk offloading.
 - [x] Switched `beellama.cpp` inference engine to standard ROCm HIP.
+- [x] Enabled Digital wire tooltips declaratively in `~/.digital.cfg`.
 
 ---
 
