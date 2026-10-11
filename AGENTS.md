@@ -214,18 +214,19 @@ Tier 1: Active Chat Context Window (Ephemeral, volatile, bounded ~0-100k tokens)
    ▼ (Session Compaction / Rotation)
 Tier 2: Active Working Register (HANDOFF.md — sliding window strictly capped at ~100 lines)
    │
-   ├─► Tier 3: Domain Knowledge Base (retrospects/ indexed via retrospects/README.md)
+   ├─► Tier 3: Domain Knowledge Base & Indexed Chronicles (retrospects/ indexed via retrospects/README.md)
    │
    ▼ (Milestone Graduation)
-Tier 4: Archival Ledgers & Raw Forensics (retrospects/history/ & raw .jsonl session logs)
+Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl session logs)
 ```
 
-### Raw Forensics & Transcript Paths (Tier 4)
-When an edge-case requires inspecting the raw commands, compiler traces, or discussions from a prior session, query the on-disk transcript logs rather than loading them into working context:
-- **Antigravity Traces:**  
-  `~/.gemini/antigravity-cli/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
-- **Pi Traces:**  
-  `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/<session-id>.jsonl`
+### Extracted Knowledge Chronicles vs. Raw Forensics
+- **Tier 3 Indexed Chronicles:** Prior sessions' substantive engineering knowledge, decisions, and hardware proofs are synthesized and indexed in [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md). Fresh sessions and incoming agents should **always** consult the structured retrospects rather than loading raw session logs into context.
+- **Tier 4 Cold Forensics:** Multi-megabyte `.jsonl` transcript logs are retained on disk strictly as cold forensic artifacts for pinpoint verification of raw compiler traces or exact past commands:
+  - **Antigravity Traces:**  
+    `~/.gemini/antigravity-cli/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
+  - **Pi Traces:**  
+    `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/<session-id>.jsonl`
 
 ### The Sliding-Window Rule (`HANDOFF.md`)
 - `HANDOFF.md` is an **active register**, not a permanent log. It must never exceed ~100–120 lines (~1.2k tokens).

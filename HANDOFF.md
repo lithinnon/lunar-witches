@@ -16,28 +16,28 @@
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 109 (Activated; 31.6 GiB closure, 2,808 store paths)
 
-### Active & Prior Session Traces (Raw Forensics)
-- **Antigravity Session ID:** `d0afd4c3-9ac9-42c7-8b57-ff726f2c6577`  
-  *Path:* `~/.gemini/antigravity-cli/brain/d0afd4c3-9ac9-42c7-8b57-ff726f2c6577/.system_generated/logs/transcript.jsonl`
-- **Pi Session ID:** `01a10a7f-7d9a-753c-9b68-372aa214bb10`  
-  *Path:* `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-05T05-18-09-818Z_01a10a7f-7d9a-753c-9b68-372aa214bb10.jsonl`
+### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
+- **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
+- **Cold Forensic Traces:** Pi `01a10a7f-7d9a-753c-9b68-372aa214bb10`, Antigravity `f73d4a6a-84c7-4614-9114-d72055951b42`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Multi-session continuity architecture and routine flake maintenance.
+- **Current Focus:** Multi-session continuity architecture and knowledge indexing.
 - [x] Switched `beellama.cpp` inference engine to standard ROCm HIP.
 - [x] Enabled Digital wire tooltips declaratively in `~/.digital.cfg` (Generation 108).
 - [x] Routine flake inputs update & switch to Generation 109.
 - [x] Archived completed historical ledger items 1–31 to `retrospects/history/2026-10-session-ledger.md`.
-- [ ] Formalize Session Rotation & Continuity Protocol in `AGENTS.md`.
+- [x] Extracted substantive technical knowledge from Pi & Antigravity sessions into `retrospects/history/2026-10-session-chronicles.md`.
+- [x] Formalized session rotation & continuity protocol in `AGENTS.md` and indexed in `retrospects/README.md`.
 
 ---
 
 ## 3. Active Subsystem Pointers
 
 When working on active subsystems, consult these authoritative references:
+- **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md)
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
