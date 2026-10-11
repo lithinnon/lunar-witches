@@ -215,6 +215,24 @@ AMD ROCm Loom introduces a unified heterogeneous runtime (HRX / `libamdf`) capab
    Migrated `~/.config/mcp/mcp.json` into Home Manager, ensuring tool server definitions persist declaratively.
 4. **Universal Baseline Utilities:**  
    Added `zip` and `unzip` to `modules/core/default.nix` to prevent missing archive extraction utilities in standard developer workflows.
+5. **Privilege Escalation & `NH_SUDO_ASKPASS` Invariant:**  
+   - Proved that `nh os switch` uses internal elevation logic in Rust that ignores interactive shell prompts. Passing `-A` requires setting `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` (or `NH_SUDOOPTS="-A"`).
+   - Configured graphically in `suite-desktop-plasma` and `users/nnon/default.nix` session variables, enforcing the invariant that AI agents never touch user passwords directly.
+6. **User Profile Modularization & `plasma-manager`:**  
+   - Refactored monolithic `modules/users/nnon.nix` into a 5-module dendritic tree: `default.nix` (account baseline), `shell.nix` (fish/bash/zsh), `development.nix` (git/compilers/tools), `desktop.nix` (xdg/mime/apps), and `plasma.nix` (KDE Plasma declarative theming).
+   - Adopted `plasma-manager` for declarative panels, window rules, and keybindings.
+7. **Hardware & Power Management Tooling:**  
+   - Renamed `amd-ttm` to universal `mem-ttm` to provide vendor-agnostic TTM pool inspection across all GPU platforms.
+   - Built in-tree `pkgs/sync-power-state` to dynamically align CPU governors and platform profiles between AC and battery operation.
+8. **Global Wayland Productivity Shortcuts:**  
+   Declared persistent global Wayland shortcuts in `modules/users/nnon/plasma.nix`:
+   - `Super+Shift+L`: LocalSend
+   - `Super+Shift+Q`: Kate Editor
+   - `Super+Shift+D`: KCalc
+   - `Super+Shift+C`: Google Calendar via user default browser
+9. **NixOS MCP Tool Integration (`mcp-nixos`):**  
+   - Evaluated `uvx` vs. declarative Nix flake provisioning for `mcp-nixos`.
+   - Integrated `mcp-nixos` declaratively under MCP servers, providing AI agents with native package search and system evaluation capabilities.
 
 ---
 
