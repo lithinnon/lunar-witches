@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-11 12:54 +07:00
+- **Timestamp:** 2026-10-11 15:35 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `a2a9589`
+- **Active Git Commit:** `4228770`
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 109 (Activated; 31.6 GiB closure, 2,808 store paths)
+- **Live NixOS Generation:** Generation 110 (Activated; 32.0 GiB closure, 2,811 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -28,7 +28,7 @@
 - [x] Added `olafkfreund/nix-craftapps` flake input (`flake.nix`, `flake.lock`).
 - [x] Configured PhotoCraft, FilmCraft, and PdfCraft in `modules/suites/desktop/apps.nix`.
 - [x] Verified and cached candidate generation via `nh os build /home/nnon/lunar-witches` (+365 MiB).
-- [ ] Activate configuration via graphical Askpass switch (`nh os switch /home/nnon/lunar-witches`).
+- [x] Activated configuration via graphical Askpass switch (Generation 110).
 
 ---
 
