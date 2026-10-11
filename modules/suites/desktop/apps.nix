@@ -1,8 +1,19 @@
 # Capability suite: Daily Desktop Utilities & Native Applications
-{ pkgs, ... }:
+{ inputs, ... }:
 
 {
   flake.nixosModules.suite-desktop-apps = { pkgs, ... }: {
+    imports = [
+      inputs.nix-craftapps.nixosModules.default
+    ];
+
+    programs.craftapps = {
+      enable = true;
+      apps.photocraft.enable = true;
+      apps.filmcraft.enable = true;
+      apps.pdfcraft.enable = true;
+    };
+
     services.flatpak.enable = true;
 
     programs.localsend = {

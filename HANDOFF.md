@@ -24,13 +24,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Multi-session continuity architecture and knowledge indexing.
-- [x] Switched `beellama.cpp` inference engine to standard ROCm HIP.
-- [x] Enabled Digital wire tooltips declaratively in `~/.digital.cfg` (Generation 108).
-- [x] Routine flake inputs update & switch to Generation 109.
-- [x] Archived completed historical ledger items 1–31 to `retrospects/history/2026-10-session-ledger.md`.
-- [x] Extracted substantive technical knowledge from Pi & Antigravity sessions into `retrospects/history/2026-10-session-chronicles.md`.
-- [x] Formalized session rotation & continuity protocol in `AGENTS.md` and indexed in `retrospects/README.md`.
+- **Current Focus:** Desktop creative applications integration (`nix-craftapps`).
+- [x] Added `olafkfreund/nix-craftapps` flake input (`flake.nix`, `flake.lock`).
+- [x] Configured PhotoCraft, FilmCraft, and PdfCraft in `modules/suites/desktop/apps.nix`.
+- [x] Verified and cached candidate generation via `nh os build /home/nnon/lunar-witches` (+365 MiB).
+- [ ] Activate configuration via graphical Askpass switch (`nh os switch /home/nnon/lunar-witches`).
 
 ---
 
@@ -47,8 +45,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-28. **Packaged `beellama.cpp` and Purged Nixpkgs `llama-cpp-vulkan` (`pkgs/beellama`):**
-    - Created in-tree derivation wrapping local build, cutting 87.3 MiB.
 29. **Created Dedicated `suite-ai-local` & Configured 64k `snc8` Disk Cache:**
     - Decoupled `beellama` into `modules/suites/ai/local.nix`.
     - Configured Boulesis 26B A4B in `llama-swap`: 64k context, `snc8`/`snc8` KV cache, 1024 `bf16` tail tokens, 0-RAM with 16 GiB NVMe radix disk tier.
@@ -61,6 +57,11 @@ When working on active subsystems, consult these authoritative references:
 32. **Routine Flake Inputs Update (`flake.lock`):**
     - Bumped `nixpkgs` (2026-10-08 -> 2026-10-10), `home-manager`, `antigravity-nix`, `bedrock-on-linux`.
     - Activated Generation 109 (+10.6 MiB net diff; KDE Gear 26.08.2, Brave 1.97, Obsidian 1.14, Telegram 7.2.9).
+33. **Integrated ArtCraft Apps (`nix-craftapps`, `suite-desktop-apps`):**
+    - Added `olafkfreund/nix-craftapps` flake input.
+    - Configured `programs.craftapps` with PhotoCraft, FilmCraft, and PdfCraft.
+    - Solves `/usr/share/fonts` NixOS lookup via declarative `linkFonts = true` tmpfiles symlink.
+    - Successfully built and cached candidate system closure (+365 MiB).
 
 ---
 
