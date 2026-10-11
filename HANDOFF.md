@@ -9,16 +9,16 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity
-- **Timestamp:** 2026-10-11 11:05 +07:00
+- **Timestamp:** 2026-10-11 11:12 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `0832ba4`
+- **Active Git Commit:** `1f2bf30`
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 108 (Activated; 31.6 GiB closure, 2,808 store paths)
+- **Live NixOS Generation:** Generation 109 (Activated; 31.6 GiB closure, 2,808 store paths)
 
 ### Active & Prior Session Traces (Raw Forensics)
-- **Antigravity Session ID:** `f73d4a6a-84c7-4614-9114-d72055951b42`  
-  *Path:* `~/.gemini/antigravity-cli/brain/f73d4a6a-84c7-4614-9114-d72055951b42/.system_generated/logs/transcript.jsonl`
+- **Antigravity Session ID:** `d0afd4c3-9ac9-42c7-8b57-ff726f2c6577`  
+  *Path:* `~/.gemini/antigravity-cli/brain/d0afd4c3-9ac9-42c7-8b57-ff726f2c6577/.system_generated/logs/transcript.jsonl`
 - **Pi Session ID:** `01a10a7f-7d9a-753c-9b68-372aa214bb10`  
   *Path:* `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-05T05-18-09-818Z_01a10a7f-7d9a-753c-9b68-372aa214bb10.jsonl`
 
@@ -26,9 +26,10 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Multi-session continuity architecture and knowledge compaction.
+- **Current Focus:** Multi-session continuity architecture and routine flake maintenance.
 - [x] Switched `beellama.cpp` inference engine to standard ROCm HIP.
 - [x] Enabled Digital wire tooltips declaratively in `~/.digital.cfg` (Generation 108).
+- [x] Routine flake inputs update & switch to Generation 109.
 - [x] Archived completed historical ledger items 1–31 to `retrospects/history/2026-10-session-ledger.md`.
 - [ ] Formalize Session Rotation & Continuity Protocol in `AGENTS.md`.
 
@@ -46,8 +47,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-27. **Purged KDE PIM & Akonadi Overhead (`modules/suites/desktop/plasma.nix`):**
-    - Set `programs.kde-pim.enable = false;` dropping MariaDB and Akonadi (-962 MiB closure).
 28. **Packaged `beellama.cpp` and Purged Nixpkgs `llama-cpp-vulkan` (`pkgs/beellama`):**
     - Created in-tree derivation wrapping local build, cutting 87.3 MiB.
 29. **Created Dedicated `suite-ai-local` & Configured 64k `snc8` Disk Cache:**
@@ -59,6 +58,9 @@ When working on active subsystems, consult these authoritative references:
 31. **Enabled Wire Tooltips in Digital (`modules/users/nnon/desktop.nix`):**
     - Declared `<entry><string>wireToolTips</string><boolean>true</boolean></entry>` in `home.file.".digital.cfg"`.
     - Overcame read-only nix store symlink limitation in Home Manager.
+32. **Routine Flake Inputs Update (`flake.lock`):**
+    - Bumped `nixpkgs` (2026-10-08 -> 2026-10-10), `home-manager`, `antigravity-nix`, `bedrock-on-linux`.
+    - Activated Generation 109 (+10.6 MiB net diff; KDE Gear 26.08.2, Brave 1.97, Obsidian 1.14, Telegram 7.2.9).
 
 ---
 
