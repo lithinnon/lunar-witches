@@ -83,3 +83,4 @@ Immutable historical migration records and preparatory RFCs.
 - [`2026-09-30-fedora-to-nixos-migration.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-09-30-fedora-to-nixos-migration.md): Original migration journey from Fedora 44 to NixOS 26.11 on ASUS TUF Gaming A14 hardware.
 - [`2026-10-09-amd-xdna-npu-readiness-rfc.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-09-amd-xdna-npu-readiness-rfc.md): Initial exploratory RFC on AMD XDNA NPU architecture and system readiness.
 - [`2026-10-09-rocm-loom-hrx-architecture-rfc.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-09-rocm-loom-hrx-architecture-rfc.md): Initial exploratory RFC on ROCm Loom compiler and HRX system architecture.
+- [`2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md): Archived session ledger (items 1–31) graduated from `HANDOFF.md` covering ROCm 10.1, XDNA NPU, Loom, beellama, and Digital tooltips.

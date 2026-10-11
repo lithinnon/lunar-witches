@@ -204,24 +204,53 @@ nh clean all --keep 3
 
 ---
 
-## 7. Multi-Agent Handover Protocol (Antigravity ↔ Pi / MiMo v2.6)
+## 7. Multi-Agent & Multi-Session Continuity Architecture (Antigravity ↔ Pi)
 
-When collaborating across different AI coding environments (**Google Antigravity** and **Earendil Pi / MiMo v2.6**), all agents must synchronize their state and context using [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) located at the repository root.
+To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **Earendil Pi / MiMo v2.6**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
+
+```
+Tier 1: Active Chat Context Window (Ephemeral, volatile, bounded ~0-100k tokens)
+   │
+   ▼ (Session Compaction / Rotation)
+Tier 2: Active Working Register (HANDOFF.md — sliding window strictly capped at ~100 lines)
+   │
+   ├─► Tier 3: Domain Knowledge Base (retrospects/ indexed via retrospects/README.md)
+   │
+   ▼ (Milestone Graduation)
+Tier 4: Archival Ledgers & Raw Forensics (retrospects/history/ & raw .jsonl session logs)
+```
+
+### Raw Forensics & Transcript Paths (Tier 4)
+When an edge-case requires inspecting the raw commands, compiler traces, or discussions from a prior session, query the on-disk transcript logs rather than loading them into working context:
+- **Antigravity Traces:**  
+  `~/.gemini/antigravity-cli/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
+- **Pi Traces:**  
+  `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/<session-id>.jsonl`
+
+### The Sliding-Window Rule (`HANDOFF.md`)
+- `HANDOFF.md` is an **active register**, not a permanent log. It must never exceed ~100–120 lines (~1.2k tokens).
+- When a task is verified and closed, graduate its checklist items to [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md).
+- Keep only the last 3–5 milestone deltas in `HANDOFF.md`.
 
 ### Swap & Handover Invariants
 
-1. **Orientation (On Session Start / Swap In):**
+1. **Orientation (Cold-Start on Turn 1 in ANY Session):**
    - Check `git status` and `git log -n 3 --oneline` to understand recent commits.
    - Read [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to inspect:
-     - Who was active last (`Antigravity` or `Pi / MiMo v2.6`).
-     - What tasks were completed and what remains in-flight.
-     - Known quirks, obstacles, or instructions left by the previous agent.
-2. **Handover (On Session Yield / Swap Out):**
-   - Before handing control back to the user or when the user indicates a switch to the other tool, update [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md).
-   - If a feature or fix is working, commit it with a conventional commit message.
-   - If work is in progress (WIP) and uncommitted, explicitly list all dirty files and the reasoning in `HANDOFF.md`.
-   - Update the **Active State** header (agent name, timestamp, active Git commit, and live NixOS generation).
+     - Who was active last (`Antigravity` or `Pi / MiMo v2.6`) and the session lineage IDs.
+     - What the immediate in-flight task is and any blockers.
+     - Active subsystem pointers (e.g. AI stack, desktop, networking).
+   - If the task touches an unfamiliar or existing domain, look up its authoritative ADR or living manual in [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md).
+2. **Session Rotation & Compaction Ceremony (On Session Yield / Large Context):**
+   - When a chat context grows large or work is handed over:
+     1. **Repository Cleanliness:** Commit working code with a conventional commit, or catalog all dirty WIP files and rationale in `HANDOFF.md`.
+     2. **Knowledge Crystallization:** Externalize any newly discovered hardware quirks, decisions, or stack rules into `retrospects/` (never leave architectural truths buried in chat).
+     3. **Ledger Compaction:** Move older completed items from `HANDOFF.md` into `retrospects/history/`.
+     4. **State Snapshot:** Update the **Active State** header in `HANDOFF.md` (active agent, timestamp, commit, generation, and session IDs).
+     5. **Handover Prompt:** Provide the user with a 1-line prompt to bootstrap the new session:  
+        `"Resume from HANDOFF.md: <objective>"`
 3. **Division of Labor & Tool Strengths:**
    - **Antigravity:** Excels at high-level architectural refactors, multi-agent decomposition, multimodal UI verification (analyzing GUI logs/screenshots), and complex Flake module creation.
    - **Pi (MiMo v2.6):** Excels at rapid terminal iterations, localized module adjustments, interactive CLI debugging, and swift parameter tweaking.
+
 
