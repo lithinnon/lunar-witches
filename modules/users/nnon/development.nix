@@ -100,6 +100,12 @@
     maxCacheTtl = 86400;
   };
 
+  # Cross-harness agent-skills CLI (SKILL.md installer) — nixpkgs `skills`
+  # (vercel-labs/skills): `skills add owner/repo`, `skills use`, `skills init`.
+  home.packages = with pkgs; [
+    skills
+  ];
+
   # MCP server registry at ~/.config/mcp/mcp.json — the "generic global"
   # source read by pi's mcp-adapter (and other MCP-aware clients). The
   # `mcp-nixos` binary itself ships via suite-ai-antigravity (pkgs.mcp-nixos).
