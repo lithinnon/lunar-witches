@@ -32,7 +32,7 @@
 
               settings = {
                 defaultProvider = lib.mkDefault "xiaomi-token-plan-sgp";
-                defaultModel = lib.mkDefault "mimo-v2.6-flash";
+                defaultModel = lib.mkDefault "mimo-v2.6-pro";
                 showCacheMissNotices = lib.mkDefault true;
                 packages = [
                   "npm:pi-xiaomi-mimo-provider"
