@@ -83,8 +83,17 @@
                         --cache-reuse 256 \
                         --reasoning-format deepseek \
                         --reasoning on \
+                        --reasoning-budget 2304 \
                         --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
-                        --no-reasoning-preserve
+                        --reasoning-loop-check-interval 32 \
+                        --reasoning-loop-interventions 1 \
+                        --no-reasoning-preserve \
+                        --temp 1.00 \
+                        --top-k 64 \
+                        --repeat-penalty 1.06 \
+                        --repeat-last-n 128 \
+                        --dry-multiplier 0.80 \
+                        --dry-penalty-last-n 256
                   '';
                 };
               };
