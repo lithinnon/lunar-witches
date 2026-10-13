@@ -115,3 +115,28 @@ During the migration and post-install configuration, several notable edge cases 
   - Inject `theme.conf.user` into `share/sddm/themes/breeze/` via `pkgs.writeTextDir`, which `buildEnv` automatically merges into the system environment.
   - Add `pkgs.kdePackages.qtimageformats` to `services.displayManager.sddm.extraPackages`.
   - Store the wallpaper in `hosts/<hostname>/assets/` and assign it in `hosts/<hostname>/default.nix`.
+
+---
+
+## 12. OpenSSH Empty `SSH_ASKPASS` Execution Failure with Encrypted Keys
+- **Symptom:**
+  ```text
+  $ ssh -T git@github.com
+  ssh_askpass: exec(): No such file or directory
+  git@github.com: Permission denied (publickey).
+  ```
+- **Cause:**
+  1. NixOS upstream `programs.ssh` defines:
+     ```nix
+     environment.variables.SSH_ASKPASS = lib.optionalString cfg.enableAskPassword cfg.askPassword;
+     ```
+  2. Because `programs.ssh.enableAskPassword` defaults to `false`, `lib.optionalString false ...` evaluates to `""`.
+  3. NixOS exports all attributes defined in `environment.variables` into `/etc/set-environment`, creating:
+     ```bash
+     export SSH_ASKPASS=""
+     ```
+  4. When combined with `SSH_ASKPASS_REQUIRE="prefer"`, OpenSSH inspects `getenv("SSH_ASKPASS")`. Because the variable exists with length 0, it calls `execve("", ...)`, failing immediately with `ENOENT` (`ssh_askpass: exec(): No such file or directory`) before a passphrase can be entered for encrypted keys.
+- **Resolution:**
+  - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/ksshaskpass";` in [`modules/suites/desktop/plasma.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/plasma.nix).
+  - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix).
+
