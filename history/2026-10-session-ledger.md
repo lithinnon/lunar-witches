@@ -11,6 +11,8 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **2026-10-05 – 2026-10-09** | Pi | Kimi K2.6 / MiMo | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-05T05-18-09-818Z_01a10a7f-7d9a-753c-9b68-372aa214bb10.jsonl` |
 | **2026-09-30 – 2026-10-10** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/f73d4a6a-84c7-4614-9114-d72055951b42/.system_generated/logs/transcript.jsonl` |
+| **2026-10-11 – 2026-10-13** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/463892eb-7168-495e-bac8-3611a3078d13/.system_generated/logs/transcript.jsonl` |
+| **2026-10-13** | Pi | MiMo v2.6 | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-13T07-21-01-325Z_01a13422-d88c-70d1-a404-d738cde6a7e2.jsonl` |
 
 ---
 
@@ -106,3 +108,14 @@
 26. **Enabled Wire Tooltips in Digital (`modules/users/nnon/desktop.nix`):**
     - Declared `<entry><string>wireToolTips</string><boolean>true</boolean></entry>` in `home.file.".digital.cfg"`.
     - Solved read-only nix store symlink limitation in Home Manager.
+
+---
+
+## 4. Recently Graduated from `HANDOFF.md` (Window Rotation 2026-10-13)
+
+> HANDOFF sliding-window items 29–30 rotated out by Pi (MiMo v2.6); deep detail already captured in items 23–25 above.
+
+27. **Boulesis Local-Inference Stack (HANDOFF items 29–30; see 23–25 in depth):**
+    - Decoupled `beellama` into `modules/suites/ai/local.nix` (`suite-ai-local`).
+    - Boulesis 26B A4B in `llama-swap`: 64k context, `snc8`/`snc8` KV cache, 1024 `bf16` tail tokens, 0-RAM with 16 GiB NVMe radix disk tier.
+    - Switched `beellama.cpp` to native standard ROCm HIP (`backend ? "rocm"` in `pkgs/beellama`, `suites.ai.local.backend`).
