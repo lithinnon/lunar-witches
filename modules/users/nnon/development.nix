@@ -66,6 +66,14 @@
     };
   };
 
+  programs.gh = {
+    enable = true;
+    settings = {
+      git_protocol = "ssh";
+      prompt = "enabled";
+    };
+  };
+
   programs.gpg = {
     enable = true;
     mutableKeys = true;

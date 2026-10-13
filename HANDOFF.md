@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-13 19:44 +07:00
+- **Timestamp:** 2026-10-13 19:54 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `0fd1f87` (fix(ssh): resolve empty SSH_ASKPASS exec failure via ksshaskpass)
+- **Active Git Commit:** `9d0684d` (feat(dev): declare programs.gh with ssh git protocol in Home Manager)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 116 (Activated; 32.0 GiB closure, 2,823 store paths)
+- **Live NixOS Generation:** Generation 117 (Activated; 32.0 GiB closure, 2,826 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,7 +24,8 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Fixed empty `SSH_ASKPASS` exec failure and switched to Generation 116.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Declared `programs.gh` with `git_protocol: ssh` and switched to Generation 117.
+- [x] Declared `programs.gh` in Home Manager (`modules/users/nnon/development.nix`): configured `git_protocol = "ssh"`, automatic fish completions, and `gitCredentialHelper`. Activated Generation 117.
 - [x] Fixed OpenSSH `SSH_ASKPASS` empty string execution bug (`modules/suites/desktop/plasma.nix`, `modules/users/nnon/shell.nix`): enabled `programs.ssh.enableAskPassword = true;`, pointed `askPassword` to `/run/current-system/sw/bin/ksshaskpass`, and declared `home.sessionVariables.SSH_ASKPASS`. Activated Generation 116.
 - [x] Boulesis `llama-swap` tuning (`modules/suites/ai/prose.nix`, `023deae`): reasoning loop guards and sampling set; live since Gen 112.
 - [x] Declared `pkgs.skills` in `home.packages` (`modules/users/nnon/development.nix`, `206c2e3`); activated Generation 115.
@@ -44,9 +45,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-32. **Routine Flake Inputs Update (`flake.lock`):**
-    - Bumped `nixpkgs` (2026-10-08 -> 2026-10-10), `home-manager`, `antigravity-nix`, `bedrock-on-linux`.
-    - Activated Generation 109 (+10.6 MiB net diff; KDE Gear 26.08.2, Brave 1.97, Obsidian 1.14, Telegram 7.2.9).
 33. **Integrated ArtCraft Apps (`nix-craftapps`, `suite-desktop-apps`):**
     - Added `olafkfreund/nix-craftapps` flake input, configured PhotoCraft, FilmCraft, PdfCraft with `linkFonts = true`.
 34. **Committed Boulesis Reasoning & Sampling Tuning (`023deae`, `modules/suites/ai/prose.nix`):**
@@ -55,8 +53,10 @@ When working on active subsystems, consult these authoritative references:
     - `pkgs.skills` (vercel-labs/skills 1.7.1) in `home.packages`; activated Generation 115.
 36. **Resolved OpenSSH Empty `SSH_ASKPASS` Bug (`plasma.nix`, `shell.nix`):**
     - Enabled `programs.ssh.enableAskPassword = true;` and set `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass"`.
-    - Fixed `ssh_askpass: exec(): No such file or directory` failure on encrypted SSH keys.
-    - Activated Generation 116.
+    - Fixed `ssh_askpass: exec(): No such file or directory` failure on encrypted SSH keys; activated Gen 116.
+37. **Declared GitHub CLI `programs.gh` (`modules/users/nnon/development.nix`):**
+    - Configured `programs.gh` with `git_protocol: "ssh"`, fish completions, and git credential helper integration.
+    - Activated Generation 117.
 
 ---
 
