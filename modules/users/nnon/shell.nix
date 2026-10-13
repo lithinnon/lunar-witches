@@ -8,6 +8,7 @@
 
   home.sessionVariables = {
     NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+    SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
     SSH_ASKPASS_REQUIRE = "prefer";
   };
 

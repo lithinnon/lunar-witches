@@ -44,7 +44,10 @@
         };
         security.pam.services.login.kwallet.enable = true;
 
-        programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+        programs.ssh = {
+          enableAskPassword = true;
+          askPassword = "/run/current-system/sw/bin/ksshaskpass";
+        };
 
         environment.sessionVariables = {
           SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
