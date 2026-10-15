@@ -39,11 +39,15 @@
       # Reusable command generator for llama-server instances.
       # Extracts redundant hardware, cache tier, batching, and reasoning flags
       # shared across models on the Strix Halo Radeon 8060S (ROCm gfx1151).
+      # Supports symmetric (`cacheTypeKV`) or asymmetric (`cacheTypeK` / `cacheTypeV`)
+      # KV cache quantization (e.g. snc4 key + snc8 value).
       mkServerCmd =
         {
           hfRepo,
           ctxSize,
-          cacheTypeKV,
+          cacheTypeKV ? null,
+          cacheTypeK ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
+          cacheTypeV ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
           kvTailTokens,
           reasoningPreserve,
           extraFlags ? [ ],
@@ -54,8 +58,8 @@
               --batch-size 2048 \
               --ubatch-size 512 \
               --flash-attn on \
-              --cache-type-k ${cacheTypeKV} \
-              --cache-type-v ${cacheTypeKV} \
+              --cache-type-k ${cacheTypeK} \
+              --cache-type-v ${cacheTypeV} \
               --kv-tail-tokens ${toString kvTailTokens} \
               --kv-tail-type bf16 \
               --cache-ram 0 \
@@ -124,7 +128,8 @@
                   cmd = mkServerCmd {
                     hfRepo = "LiquidAI/LFM2.5-24B-A2B-GGUF:QAD-Q4_0";
                     ctxSize = 196608; # 192k
-                    cacheTypeKV = "snc4";
+                    cacheTypeK = "snc4";
+                    cacheTypeV = "snc4";
                     kvTailTokens = 256;
                     reasoningPreserve = true;
                     extraFlags = [
