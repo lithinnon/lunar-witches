@@ -72,15 +72,26 @@
           Version=1.5
         ''} $out/share/applications/digital.desktop
       '')
-      # Digital++ — digital-egro via `nix run`, sharing Digital's icon
-      (pkgs.runCommand "digital-egro-desktop" { } ''
+      # Digital++ — digital-egro
+      (pkgs.runCommand "digital-egro" { } ''
+        mkdir -p $out/bin $out/share/applications $out/share
+        ln -s ${
+          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
+        }/bin/digital $out/bin/digital-egro
+        ln -s ${
+          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
+        }/bin/digital $out/bin/digital++
+        cp -r ${
+          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
+        }/share/icons $out/share/ 2>/dev/null || true
         install -Dm644 ${pkgs.writeText "digital-egro.desktop" ''
           [Desktop Entry]
           Categories=Education;Electronics;
           Comment=Digital logic circuits (digital-egro)
-          Exec=nix run github:MiniHarinn/digital-egro
+          Exec=digital-egro %F
           Icon=digital
           Keywords=digital;egro;circuit;
+          MimeType=application/x-digital;text/x-digital;application/x-digital-testcase;
           Name=Digital++
           Terminal=false
           Type=Application

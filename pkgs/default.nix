@@ -12,6 +12,8 @@
       app = pkgs.callPackage ./app { };
       xrt-amdxdna = pkgs.callPackage ./xrt-amdxdna { };
       beellama = pkgs.callPackage ./beellama { };
+      radeon-developer-tool-suite = pkgs.callPackage ./radeon-developer-tool-suite { };
+      rgp = pkgs.callPackage ./radeon-developer-tool-suite { };
     };
   };
 
@@ -27,5 +29,9 @@
     rocm-therock = final.callPackage ./rocm-therock;
     xrt-amdxdna = final.callPackage ./xrt-amdxdna { };
     beellama = final.callPackage ./beellama { };
+    radeon-developer-tool-suite = final.callPackage ./radeon-developer-tool-suite { };
+    rdts = final.radeon-developer-tool-suite;
+    rgp = final.radeon-developer-tool-suite;
+    radeon-gpu-profiler = final.radeon-developer-tool-suite;
   };
 }

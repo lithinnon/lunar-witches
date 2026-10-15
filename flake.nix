@@ -43,6 +43,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    digital-egro = {
+      url = "github:MiniHarinn/digital-egro";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-craftapps = {
       url = "github:olafkfreund/nix-craftapps";
       inputs.nixpkgs.follows = "nixpkgs";

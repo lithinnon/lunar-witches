@@ -28,6 +28,7 @@
         jnoortheen.nix-ide
         vscode-icons-team.vscode-icons
         usernamehw.errorlens
+        ms-vscode.cpptools
       ];
     };
   };
