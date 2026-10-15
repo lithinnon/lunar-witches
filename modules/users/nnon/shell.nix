@@ -13,7 +13,6 @@
   };
 
   home.shellAliases = {
-    amdgpu-reset = "sudo -A cat /sys/kernel/debug/dri/1/amdgpu_gpu_recover";
     mesa-vk-trace = "touch /tmp/mesa_vk_trace_trigger; sleep 0.5; rm -f /tmp/mesa_vk_trace_trigger";
     plasma-menu-restart = "systemctl --user restart plasma-plasmashell.service";
     ".." = "cd ..";

@@ -78,6 +78,8 @@
           disableDcIps = true; # Fix sleep/suspend issues with newer AMD CPU Display Core IPS
         };
 
+        hardware.amdgpu.development.enable = true;
+
         services.amdgpu-boost = {
           enable = true;
           card = "card1";
