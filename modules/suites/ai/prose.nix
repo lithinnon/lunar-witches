@@ -96,6 +96,39 @@
                         --dry-penalty-last-n 256
                   '';
                 };
+                "agentic/lfm2.5-24b-a2b" = {
+                  ttl = 1200; # 20 minutes
+                  cmd = ''
+                    ${pkgs.beellama}/bin/llama-server \
+                        --ctx-size 131072 \
+                        --batch-size 2048 \
+                        --ubatch-size 512 \
+                        --flash-attn on \
+                        --cache-type-k snc4 \
+                        --cache-type-v snc4 \
+                        --kv-tail-tokens 1024 \
+                        --kv-tail-type bf16 \
+                        --cache-ram 0 \
+                        --cache-disk 16384 \
+                        --device ROCm0 \
+                        --n-gpu-layers all \
+                        --hf-repo LiquidAI/LFM2.5-24B-A2B-GGUF:QAD-Q4_0 \
+                        --no-mmproj \
+                        --port ''${PORT} \
+                        --no-webui \
+                        --cache-reuse 256 \
+                        --jinja \
+                        --reasoning-format deepseek \
+                        --reasoning on \
+                        --reasoning-loop-check-interval 32 \
+                        --reasoning-loop-interventions 1 \
+                        --no-reasoning-preserve \
+                        --temp 0.10 \
+                        --top-k 50 \
+                        --repeat-penalty 1.05 \
+                        --repeat-last-n 128
+                  '';
+                };
               };
             }
           );
