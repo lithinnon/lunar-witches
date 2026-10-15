@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 10:30 +07:00
+- **Timestamp:** 2026-10-15 10:43 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `287e0fa` (feat(desktop): integrate digital-egro as Digital++, add ms-vscode.cpptools, and rgp)
+- **Active Git Commit:** `e897bad` (feat(dev): declare rgp in suite-development systemPackages)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 121 (Activated; 33.3 GiB closure, 2,838 store paths)
+- **Live NixOS Generation:** Generation 122 (Activated; 34.5 GiB closure, 2,840 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,8 +24,9 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Digital++ integration, ms-vscode.cpptools, and Radeon Developer Tool Suite (Gen 121).
-- [x] Added `ms-vscode.cpptools` to VS Code extensions (`modules/users/nnon/development.nix`). Activated Generation 121.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Installed `rgp` into `environment.systemPackages` and activated Gen 122.
+- [x] Declared `pkgs.rgp` in `suite-development.environment.systemPackages` ([`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix)); activated Generation 122.
+- [x] Added `ms-vscode.cpptools` to VS Code extensions ([`modules/users/nnon/development.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/development.nix)); activated Generation 121.
 - [x] Integrated `digital-egro` as `Digital++` (`flake.nix`, `modules/suites/desktop/apps.nix`): replaces ad-hoc `nix run` script with pinned flake input, native CLI wrapper (`digital++`, `digital-egro`), and `Digital++` `.desktop` entry. Activated Generation 121.
 - [x] Packaged AMD Radeon Developer Tool Suite (RGP, RMV, RRA, RDP, RGA) in `pkgs/radeon-developer-tool-suite` with RDNA 3.5 APU support; exported to overlays.
 - [x] Declared `programs.gh` in Home Manager (`modules/users/nnon/development.nix`); activated Generation 117.
