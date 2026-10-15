@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 11:18 +07:00
+- **Timestamp:** 2026-10-15 11:22 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `bde5133` (tune(ai): adjust agentic/lfm2.5-24b-a2b ttl to 10m, enable reasoning preservation, set 256-token kv tail)
+- **Active Git Commit:** `594fadc` (refactor(ai): extract mkServerCmd helper and expand agentic/lfm2.5-24b-a2b to 192k context)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 125 (Activated; 34.5 GiB closure, 2,840 store paths)
+- **Live NixOS Generation:** Generation 126 (Activated; 34.5 GiB closure, 2,840 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,12 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Tuned `agentic/lfm2.5-24b-a2b` (Gen 125).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Refactored `prose.nix` with `mkServerCmd` & set 192k context (Gen 126).
+- [x] Refactored `llama-swap` with `mkServerCmd` generator and configured 192k context (`196608`) for `agentic/lfm2.5-24b-a2b` in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 126.
 - [x] Tuned `agentic/lfm2.5-24b-a2b`: 10m TTL, `--reasoning-preserve`, and 256-token KV tail in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 125.
 - [x] Declared `agentic/lfm2.5-24b-a2b` with `snc4/snc4` KV cache, 131k context, and Jinja reasoning in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 124.
 - [x] Declared `RADV_THREAD_TRACE_BUFFER_SIZE = "134217728"` (128 MiB) in [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix); activated Generation 123.
 - [x] Updated `mesa-vk-trace` to momentary auto-cleanup alias in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix); activated Generation 123.
-- [x] Added `ms-vscode.cpptools` to VS Code extensions ([`modules/users/nnon/development.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/development.nix)); activated Generation 121.
 
 ---
 
@@ -46,8 +46,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-35. **Declared `skills` CLI (`206c2e3`, `modules/users/nnon/development.nix`):**
-    - `pkgs.skills` (vercel-labs/skills 1.7.1) in `home.packages`; activated Generation 115.
 36. **Resolved OpenSSH Empty `SSH_ASKPASS` Bug (`plasma.nix`, `shell.nix`):**
     - Enabled `programs.ssh.enableAskPassword = true;` and set `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass"`.
     - Fixed `ssh_askpass: exec(): No such file or directory` failure on encrypted SSH keys; activated Gen 116.
@@ -60,6 +58,10 @@ When working on active subsystems, consult these authoritative references:
 39. **Tuned `agentic/lfm2.5-24b-a2b` Configuration (`bde5133`, `modules/suites/ai/prose.nix`):**
     - Set 10-minute TTL (`ttl = 600`), enabled reasoning preservation (`--reasoning-preserve`), and adjusted exact KV tail to 256 tokens (`--kv-tail-tokens 256`).
     - Activated Generation 125.
+40. **Refactored `llama-swap` with `mkServerCmd` & Set 192k Context (`594fadc`, `modules/suites/ai/prose.nix`):**
+    - Extracted 16 shared ROCm/Strix Halo flags into reusable `mkServerCmd` generator (DRY refactor).
+    - Set `agentic/lfm2.5-24b-a2b` context size to 192k (`--ctx-size 196608`), requiring ~1.06 GiB KV cache in `snc4`.
+    - Activated Generation 126.
 
 ---
 
