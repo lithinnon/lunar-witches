@@ -9,10 +9,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 11:22 +07:00
+- **Timestamp:** 2026-10-15 12:00 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `594fadc` (refactor(ai): extract mkServerCmd helper and expand agentic/lfm2.5-24b-a2b to 192k context)
+- **Active Git Commit:** `231bc94` (feat(ai): separate cacheTypeK and cacheTypeV in mkServerCmd for asymmetric SNC quant)
 - **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 126 (Activated; 34.5 GiB closure, 2,840 store paths)
 
@@ -24,12 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Refactored `prose.nix` with `mkServerCmd` & set 192k context (Gen 126).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Supported asymmetric `cacheTypeK` / `cacheTypeV` in `mkServerCmd`.
+- [x] Separated `cacheTypeK` and `cacheTypeV` in `mkServerCmd` generator in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix) to support asymmetric SNC quantization (e.g. `snc4`/`snc8`).
 - [x] Refactored `llama-swap` with `mkServerCmd` generator and configured 192k context (`196608`) for `agentic/lfm2.5-24b-a2b` in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 126.
 - [x] Tuned `agentic/lfm2.5-24b-a2b`: 10m TTL, `--reasoning-preserve`, and 256-token KV tail in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 125.
 - [x] Declared `agentic/lfm2.5-24b-a2b` with `snc4/snc4` KV cache, 131k context, and Jinja reasoning in [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix); activated Generation 124.
 - [x] Declared `RADV_THREAD_TRACE_BUFFER_SIZE = "134217728"` (128 MiB) in [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix); activated Generation 123.
-- [x] Updated `mesa-vk-trace` to momentary auto-cleanup alias in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix); activated Generation 123.
 
 ---
 
@@ -46,9 +46,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-36. **Resolved OpenSSH Empty `SSH_ASKPASS` Bug (`plasma.nix`, `shell.nix`):**
-    - Enabled `programs.ssh.enableAskPassword = true;` and set `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass"`.
-    - Fixed `ssh_askpass: exec(): No such file or directory` failure on encrypted SSH keys; activated Gen 116.
 37. **Declared GitHub CLI `programs.gh` (`modules/users/nnon/development.nix`):**
     - Configured `programs.gh` with `git_protocol: "ssh"`, fish completions, and git credential helper integration.
     - Activated Generation 117.
@@ -62,6 +59,9 @@ When working on active subsystems, consult these authoritative references:
     - Extracted 16 shared ROCm/Strix Halo flags into reusable `mkServerCmd` generator (DRY refactor).
     - Set `agentic/lfm2.5-24b-a2b` context size to 192k (`--ctx-size 196608`), requiring ~1.06 GiB KV cache in `snc4`.
     - Activated Generation 126.
+41. **Decoupled `cacheTypeK` & `cacheTypeV` in `mkServerCmd` (`231bc94`, `modules/suites/ai/prose.nix`):**
+    - Supported independent Key and Value quantization in `mkServerCmd` generator with fallback to `cacheTypeKV`.
+    - Prepared infrastructure for asymmetric SNC quantization (`snc4` Key + `snc8` Value).
 
 ---
 
