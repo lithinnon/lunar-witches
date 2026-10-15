@@ -63,41 +63,42 @@
                 "creative/boulesis-v2.1-headtune" = {
                   ttl = 1200; # 20 minutes
                   cmd = ''
-                    ${pkgs.beellama}/bin/llama-server \
-                        --ctx-size 65536 \
-                        --batch-size 2048 \
-                        --ubatch-size 512 \
-                        --flash-attn on \
-                        --cache-type-k snc8 \
-                        --cache-type-v snc8 \
-                        --kv-tail-tokens 1024 \
-                        --kv-tail-type bf16 \
-                        --cache-ram 0 \
-                        --cache-disk 16384 \
-                        --device ROCm0 \
-                        --n-gpu-layers all \
-                        --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
-                        --no-mmproj \
-                        --port ''${PORT} \
-                        --no-webui \
-                        --cache-reuse 256 \
-                        --reasoning-format deepseek \
-                        --reasoning on \
-                        --reasoning-budget 2304 \
-                        --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
-                        --reasoning-loop-check-interval 32 \
-                        --reasoning-loop-interventions 1 \
-                        --no-reasoning-preserve \
-                        --temp 1.00 \
-                        --top-k 64 \
-                        --repeat-penalty 1.06 \
-                        --repeat-last-n 128 \
-                        --dry-multiplier 0.80 \
-                        --dry-penalty-last-n 256
+                                        ${pkgs.beellama}/bin/llama-server \
+                                            --ctx-size 65536 \
+                                            --batch-size 2048 \
+                                            --ubatch-size 512 \
+                                            --flash-attn on \
+                                            --cache-type-k snc8 \
+                                            --cache-type-v snc8 \
+                                            --kv-tail-tokens 1024 \
+                                            --kv-tail-type bf16 \
+                                            --cache-ram 0 \
+                                            --cache-disk 16384 \
+                                            --device ROCm0 \
+                                            --n-gpu-layers all \
+                                            --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
+                                            --no-mmproj \
+                                            --port ''${PORT} \
+                                            --no-webui \
+                                            --cache-reuse 256 \
+                    			--jinja \
+                                            --reasoning-format deepseek \
+                                            --reasoning on \
+                                            --reasoning-budget 2304 \
+                                            --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
+                                            --reasoning-loop-check-interval 32 \
+                                            --reasoning-loop-interventions 1 \
+                                            --no-reasoning-preserve \
+                                            --temp 1.00 \
+                                            --top-k 64 \
+                                            --repeat-penalty 1.06 \
+                                            --repeat-last-n 128 \
+                                            --dry-multiplier 0.80 \
+                                            --dry-penalty-last-n 256
                   '';
                 };
                 "agentic/lfm2.5-24b-a2b" = {
-                  ttl = 1200; # 20 minutes
+                  ttl = 600; # 10 minutes
                   cmd = ''
                     ${pkgs.beellama}/bin/llama-server \
                         --ctx-size 131072 \
@@ -106,7 +107,7 @@
                         --flash-attn on \
                         --cache-type-k snc4 \
                         --cache-type-v snc4 \
-                        --kv-tail-tokens 1024 \
+                        --kv-tail-tokens 256 \
                         --kv-tail-type bf16 \
                         --cache-ram 0 \
                         --cache-disk 16384 \
@@ -122,7 +123,7 @@
                         --reasoning on \
                         --reasoning-loop-check-interval 32 \
                         --reasoning-loop-interventions 1 \
-                        --no-reasoning-preserve \
+                        --reasoning-preserve \
                         --temp 0.10 \
                         --top-k 50 \
                         --repeat-penalty 1.05 \
