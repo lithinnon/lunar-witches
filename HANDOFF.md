@@ -9,22 +9,23 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 13:25 +07:00
+- **Timestamp:** 2026-10-15 20:00 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `c4ea763` (feat(ai): hook pi update --models and --extensions into home activation)
+- **Active Git Commit:** `72c702c` (feat(desktop): add foliate epub reader and configure mime associations)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 128 (Activated; 34.5 GiB closure, 2,841 store paths)
+- **Live NixOS Generation:** Generation 129 (Activated; 34.8 GiB closure, 2,846 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `8325d2db-a1c0-486a-a517-ffea4b9620ed` (current), Antigravity `fcf40119-8d7e-4929-8d8b-37114c983a90`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `1e53cd57-002a-45f4-b9cf-b5af10c2f946` (current), Antigravity `8325d2db-a1c0-486a-a517-ffea4b9620ed`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Hooked `pi update --models` and `--extensions` into Home Manager activation (Gen 128).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Added Foliate EPUB reader and configured EPUB MIME associations (Gen 129).
+- [x] Declared `pkgs.foliate` in [`modules/suites/desktop/apps.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/apps.nix) (`suite-desktop-apps`) and associated `application/epub+zip` MIME type in system and Home Manager; updated inputs via `nix flake update` and activated Generation 129.
 - [x] Hooked `home.activation.updatePi` into [`modules/suites/ai/pi-coding-agent.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/pi-coding-agent.nix) to run `pi update --models` and `pi update --extensions` on system switch; activated Generation 128.
 - [x] Migrated `llama-swap`, `mkServerCmd`, and local model configs to [`modules/suites/ai/local.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/local.nix); streamlined [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix).
 - [x] Extracted `hardware.amdgpu.development` option in [`modules/hardware/gpu/amd.nix`](file:///home/nnon/lunar-witches/modules/hardware/gpu/amd.nix) for `rgp` and RADV trace variables; purged vendor leaks from [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix).
@@ -39,15 +40,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–29):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–30):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-39. **Tuned `agentic/lfm2.5-24b-a2b` Configuration (`bde5133`, `modules/suites/ai/prose.nix`):**
-    - Set 10-minute TTL (`ttl = 600`), enabled reasoning preservation (`--reasoning-preserve`), and adjusted exact KV tail to 256 tokens (`--kv-tail-tokens 256`).
-    - Activated Generation 125.
 40. **Refactored `llama-swap` with `mkServerCmd` & Set 192k Context (`594fadc`, `modules/suites/ai/prose.nix`):**
     - Extracted 16 shared ROCm/Strix Halo flags into reusable `mkServerCmd` generator (DRY refactor).
     - Set `agentic/lfm2.5-24b-a2b` context size to 192k (`--ctx-size 196608`), requiring ~1.06 GiB KV cache in `snc4`.
@@ -65,6 +63,10 @@ When working on active subsystems, consult these authoritative references:
     - Added `home.activation.updatePi` DAG hook to run `pi update --models` and `pi update --extensions` during Home Manager activation.
     - Preserved resilience with `|| true` and wrapped PATH with `extraPackages` (`nodejs`, `bun`).
     - Activated Generation 128.
+44. **Added Foliate EPUB Reader & MIME Associations (`72c702c`, `suite-desktop-apps`):**
+    - Classified Foliate as a daily desktop application under `flake.nixosModules.suite-desktop-apps` ([`modules/suites/desktop/apps.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/apps.nix)).
+    - Registered `application/epub+zip` association to `com.github.johnfactotum.Foliate.desktop` at system-level and in Home Manager ([`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix)).
+    - Ran `nix flake update` and switched to Generation 129.
 
 ---
 
