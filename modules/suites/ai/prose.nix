@@ -35,6 +35,46 @@
       # backed): the llama-swap config below is written as a Nix attrset and
       # rendered to YAML at build time.
       llamaSwapFormat = pkgs.formats.yaml { };
+
+      # Reusable command generator for llama-server instances.
+      # Extracts redundant hardware, cache tier, batching, and reasoning flags
+      # shared across models on the Strix Halo Radeon 8060S (ROCm gfx1151).
+      mkServerCmd =
+        {
+          hfRepo,
+          ctxSize,
+          cacheTypeKV,
+          kvTailTokens,
+          reasoningPreserve,
+          extraFlags ? [ ],
+        }:
+        ''
+          ${pkgs.beellama}/bin/llama-server \
+              --ctx-size ${toString ctxSize} \
+              --batch-size 2048 \
+              --ubatch-size 512 \
+              --flash-attn on \
+              --cache-type-k ${cacheTypeKV} \
+              --cache-type-v ${cacheTypeKV} \
+              --kv-tail-tokens ${toString kvTailTokens} \
+              --kv-tail-type bf16 \
+              --cache-ram 0 \
+              --cache-disk 16384 \
+              --device ROCm0 \
+              --n-gpu-layers all \
+              --hf-repo ${hfRepo} \
+              --no-mmproj \
+              --port ''${PORT} \
+              --no-webui \
+              --cache-reuse 256 \
+              --reasoning-format deepseek \
+              --reasoning on \
+              --reasoning-loop-check-interval 32 \
+              --reasoning-loop-interventions 1 \
+              ${if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve"} \
+              --repeat-last-n 128 \
+              ${lib.concatStringsSep " \\\n    " extraFlags}
+        '';
     in
     {
       environment.systemPackages = [
@@ -62,73 +102,38 @@
               models = {
                 "creative/boulesis-v2.1-headtune" = {
                   ttl = 1200; # 20 minutes
-                  cmd = ''
-                                        ${pkgs.beellama}/bin/llama-server \
-                                            --ctx-size 65536 \
-                                            --batch-size 2048 \
-                                            --ubatch-size 512 \
-                                            --flash-attn on \
-                                            --cache-type-k snc8 \
-                                            --cache-type-v snc8 \
-                                            --kv-tail-tokens 1024 \
-                                            --kv-tail-type bf16 \
-                                            --cache-ram 0 \
-                                            --cache-disk 16384 \
-                                            --device ROCm0 \
-                                            --n-gpu-layers all \
-                                            --hf-repo mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS \
-                                            --no-mmproj \
-                                            --port ''${PORT} \
-                                            --no-webui \
-                                            --cache-reuse 256 \
-                    			--jinja \
-                                            --reasoning-format deepseek \
-                                            --reasoning on \
-                                            --reasoning-budget 2304 \
-                                            --reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n" \
-                                            --reasoning-loop-check-interval 32 \
-                                            --reasoning-loop-interventions 1 \
-                                            --no-reasoning-preserve \
-                                            --temp 1.00 \
-                                            --top-k 64 \
-                                            --repeat-penalty 1.06 \
-                                            --repeat-last-n 128 \
-                                            --dry-multiplier 0.80 \
-                                            --dry-penalty-last-n 256
-                  '';
+                  cmd = mkServerCmd {
+                    hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
+                    ctxSize = 65536;
+                    cacheTypeKV = "snc8";
+                    kvTailTokens = 1024;
+                    reasoningPreserve = false;
+                    extraFlags = [
+                      "--reasoning-budget 2304"
+                      ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
+                      "--temp 1.00"
+                      "--top-k 64"
+                      "--repeat-penalty 1.06"
+                      "--dry-multiplier 0.80"
+                      "--dry-penalty-last-n 256"
+                    ];
+                  };
                 };
                 "agentic/lfm2.5-24b-a2b" = {
                   ttl = 600; # 10 minutes
-                  cmd = ''
-                    ${pkgs.beellama}/bin/llama-server \
-                        --ctx-size 131072 \
-                        --batch-size 2048 \
-                        --ubatch-size 512 \
-                        --flash-attn on \
-                        --cache-type-k snc4 \
-                        --cache-type-v snc4 \
-                        --kv-tail-tokens 256 \
-                        --kv-tail-type bf16 \
-                        --cache-ram 0 \
-                        --cache-disk 16384 \
-                        --device ROCm0 \
-                        --n-gpu-layers all \
-                        --hf-repo LiquidAI/LFM2.5-24B-A2B-GGUF:QAD-Q4_0 \
-                        --no-mmproj \
-                        --port ''${PORT} \
-                        --no-webui \
-                        --cache-reuse 256 \
-                        --jinja \
-                        --reasoning-format deepseek \
-                        --reasoning on \
-                        --reasoning-loop-check-interval 32 \
-                        --reasoning-loop-interventions 1 \
-                        --reasoning-preserve \
-                        --temp 0.10 \
-                        --top-k 50 \
-                        --repeat-penalty 1.05 \
-                        --repeat-last-n 128
-                  '';
+                  cmd = mkServerCmd {
+                    hfRepo = "LiquidAI/LFM2.5-24B-A2B-GGUF:QAD-Q4_0";
+                    ctxSize = 196608; # 192k
+                    cacheTypeKV = "snc4";
+                    kvTailTokens = 256;
+                    reasoningPreserve = true;
+                    extraFlags = [
+                      "--jinja"
+                      "--temp 0.10"
+                      "--top-k 50"
+                      "--repeat-penalty 1.05"
+                    ];
+                  };
                 };
               };
             }
