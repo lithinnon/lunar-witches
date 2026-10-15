@@ -125,3 +125,7 @@
 29. **Declared `agentic/lfm2.5-24b-a2b` in `llama-swap` (`7f8a92e`, `modules/suites/ai/prose.nix`):**
     - Configured Liquid AI LFM2.5-24B-A2B QAD-Q4_0 checkpoint with 131k context (`--ctx-size 131072`), `snc4/snc4` KV cache quantization, 1024 `bf16` tail tokens, 16 GiB persistent NVMe radix tier, Flash Attention, Jinja chat templating (`--jinja`), and DeepSeek-format reasoning extraction.
     - Activated Generation 124; verified via `curl http://127.0.0.1:8080/v1/models`.
+30. **Tuned `agentic/lfm2.5-24b-a2b` Configuration (`bde5133`, `modules/suites/ai/prose.nix`):**
+    - Set 10-minute TTL (`ttl = 600`), enabled reasoning preservation (`--reasoning-preserve`), and adjusted exact KV tail to 256 tokens (`--kv-tail-tokens 256`).
+    - Activated Generation 125.
+
