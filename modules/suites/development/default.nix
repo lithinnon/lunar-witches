@@ -56,6 +56,7 @@
       eza
       bat
       codex # OpenAI Codex terminal coding agent
+      rgp # AMD Radeon GPU Profiler & Developer Tool Suite
     ];
   };
 }
