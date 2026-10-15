@@ -144,6 +144,7 @@
       # only AppImages whose libs the base env provides will run.
       appimage-run
       kdePackages.kcalc
+      foliate
     ];
 
     xdg.mime = {
@@ -152,11 +153,13 @@
         "application/x-digital" = "digital.desktop";
         "text/x-digital" = "digital.desktop";
         "application/vnd.appimage" = "appimage-handler.desktop";
+        "application/epub+zip" = "com.github.johnfactotum.Foliate.desktop";
       };
       addedAssociations = {
         "application/x-digital" = "digital.desktop";
         "text/x-digital" = "digital.desktop";
         "application/vnd.appimage" = "appimage-handler.desktop";
+        "application/epub+zip" = "com.github.johnfactotum.Foliate.desktop";
       };
     };
   };

@@ -147,6 +147,7 @@
       "x-scheme-handler/sgdb" = "com.steamgriddb.SGDBoop.desktop";
       "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
       "x-scheme-handler/tonsite" = "org.telegram.desktop.desktop";
+      "application/epub+zip" = "com.github.johnfactotum.Foliate.desktop";
     };
   };
 
