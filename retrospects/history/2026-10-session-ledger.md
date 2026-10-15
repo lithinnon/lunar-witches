@@ -119,3 +119,6 @@
     - Decoupled `beellama` into `modules/suites/ai/local.nix` (`suite-ai-local`).
     - Boulesis 26B A4B in `llama-swap`: 64k context, `snc8`/`snc8` KV cache, 1024 `bf16` tail tokens, 0-RAM with 16 GiB NVMe radix disk tier.
     - Switched `beellama.cpp` to native standard ROCm HIP (`backend ? "rocm"` in `pkgs/beellama`, `suites.ai.local.backend`).
+28. **Declared GitHub CLI `programs.gh` (`modules/users/nnon/development.nix`):**
+    - Configured `programs.gh` with `git_protocol: "ssh"`, fish completions, and git credential helper integration.
+    - Activated Generation 117.
