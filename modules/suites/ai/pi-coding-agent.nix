@@ -19,6 +19,9 @@
             pkgs,
             ...
           }:
+          let
+            cfg = config.programs.pi-coding-agent;
+          in
           {
             programs.pi-coding-agent = {
               enable = lib.mkDefault true;
@@ -45,6 +48,29 @@
                 ];
               };
             };
+
+            home.activation.updatePi = lib.mkIf cfg.enable (
+              lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                PI_BIN=""
+                if [ -x "/etc/profiles/per-user/$USER/bin/pi" ]; then
+                  PI_BIN="/etc/profiles/per-user/$USER/bin/pi"
+                elif [ -x "$HOME/.nix-profile/bin/pi" ]; then
+                  PI_BIN="$HOME/.nix-profile/bin/pi"
+                elif command -v pi >/dev/null 2>&1; then
+                  PI_BIN="$(command -v pi)"
+                elif [ -x "${cfg.package}/bin/pi" ]; then
+                  PI_BIN="${cfg.package}/bin/pi"
+                fi
+
+                if [ -n "$PI_BIN" ]; then
+                  export PI_CODING_AGENT_DIR="${cfg.configDir}"
+                  export PATH="${lib.makeBinPath cfg.extraPackages}:$PATH"
+                  echo "Updating Pi Coding Agent model catalogs and extensions..."
+                  $DRY_RUN_CMD "$PI_BIN" update --models || true
+                  $DRY_RUN_CMD "$PI_BIN" update --extensions || true
+                fi
+              ''
+            );
           }
         )
       ];
