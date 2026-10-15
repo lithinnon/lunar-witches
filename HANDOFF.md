@@ -9,26 +9,26 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-13 19:54 +07:00
+- **Timestamp:** 2026-10-15 10:30 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `9d0684d` (feat(dev): declare programs.gh with ssh git protocol in Home Manager)
+- **Active Git Commit:** `287e0fa` (feat(desktop): integrate digital-egro as Digital++, add ms-vscode.cpptools, and rgp)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 117 (Activated; 32.0 GiB closure, 2,826 store paths)
+- **Live NixOS Generation:** Generation 121 (Activated; 33.3 GiB closure, 2,838 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `30dbfe1b-a3e7-4125-bf93-699888b8302a` (current), Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`, Pi `01a10a7f-7d9a-753c-9b68-372aa214bb10`, Antigravity `463892eb-7168-495e-bac8-3611a3078d13`.
+- **Cold Forensic Traces:** Antigravity `e7f26cc6-0a0d-4875-9c75-0490311e76bd` (current), Antigravity `30dbfe1b-a3e7-4125-bf93-699888b8302a`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Declared `programs.gh` with `git_protocol: ssh` and switched to Generation 117.
-- [x] Declared `programs.gh` in Home Manager (`modules/users/nnon/development.nix`): configured `git_protocol = "ssh"`, automatic fish completions, and `gitCredentialHelper`. Activated Generation 117.
-- [x] Fixed OpenSSH `SSH_ASKPASS` empty string execution bug (`modules/suites/desktop/plasma.nix`, `modules/users/nnon/shell.nix`): enabled `programs.ssh.enableAskPassword = true;`, pointed `askPassword` to `/run/current-system/sw/bin/ksshaskpass`, and declared `home.sessionVariables.SSH_ASKPASS`. Activated Generation 116.
-- [x] Boulesis `llama-swap` tuning (`modules/suites/ai/prose.nix`, `023deae`): reasoning loop guards and sampling set; live since Gen 112.
-- [x] Declared `pkgs.skills` in `home.packages` (`modules/users/nnon/development.nix`, `206c2e3`); activated Generation 115.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Digital++ integration, ms-vscode.cpptools, and Radeon Developer Tool Suite (Gen 121).
+- [x] Added `ms-vscode.cpptools` to VS Code extensions (`modules/users/nnon/development.nix`). Activated Generation 121.
+- [x] Integrated `digital-egro` as `Digital++` (`flake.nix`, `modules/suites/desktop/apps.nix`): replaces ad-hoc `nix run` script with pinned flake input, native CLI wrapper (`digital++`, `digital-egro`), and `Digital++` `.desktop` entry. Activated Generation 121.
+- [x] Packaged AMD Radeon Developer Tool Suite (RGP, RMV, RRA, RDP, RGA) in `pkgs/radeon-developer-tool-suite` with RDNA 3.5 APU support; exported to overlays.
+- [x] Declared `programs.gh` in Home Manager (`modules/users/nnon/development.nix`); activated Generation 117.
 
 ---
 
