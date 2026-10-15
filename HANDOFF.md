@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 13:15 +07:00
+- **Timestamp:** 2026-10-15 13:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `61377de` (refactor(arch): decouple llama-swap to ai/local, isolate amd devtools, and add dynamic amdgpu-reset)
+- **Active Git Commit:** `c4ea763` (feat(ai): hook pi update --models and --extensions into home activation)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 127 (Activated; 34.5 GiB closure, 2,841 store paths)
+- **Live NixOS Generation:** Generation 128 (Activated; 34.5 GiB closure, 2,841 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,11 +24,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Decoupled llama-swap to `ai/local.nix`, isolated AMD devtools, and added dynamic `amdgpu-reset` (Gen 127).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Hooked `pi update --models` and `--extensions` into Home Manager activation (Gen 128).
+- [x] Hooked `home.activation.updatePi` into [`modules/suites/ai/pi-coding-agent.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/pi-coding-agent.nix) to run `pi update --models` and `pi update --extensions` on system switch; activated Generation 128.
 - [x] Migrated `llama-swap`, `mkServerCmd`, and local model configs to [`modules/suites/ai/local.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/local.nix); streamlined [`modules/suites/ai/prose.nix`](file:///home/nnon/lunar-witches/modules/suites/ai/prose.nix).
 - [x] Extracted `hardware.amdgpu.development` option in [`modules/hardware/gpu/amd.nix`](file:///home/nnon/lunar-witches/modules/hardware/gpu/amd.nix) for `rgp` and RADV trace variables; purged vendor leaks from [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix).
 - [x] Provisioned dynamic, self-elevating `amdgpu-reset` system utility in `hw-gpu-amd` and removed hardcoded alias from [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix).
-- [x] Ran `nix flake update` and activated Generation 127.
 
 ---
 
@@ -39,15 +39,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–28):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–29):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-38. **Declared `agentic/lfm2.5-24b-a2b` in `llama-swap` (`7f8a92e`, `modules/suites/ai/prose.nix`):**
-    - Configured Liquid AI LFM2.5-24B-A2B QAD-Q4_0 checkpoint with 131k context (`--ctx-size 131072`), `snc4/snc4` KV cache quantization, 1024 `bf16` tail tokens, 16 GiB persistent NVMe radix tier, Flash Attention, Jinja chat templating (`--jinja`), and DeepSeek-format reasoning extraction.
-    - Activated Generation 124; verified via `curl http://127.0.0.1:8080/v1/models`.
 39. **Tuned `agentic/lfm2.5-24b-a2b` Configuration (`bde5133`, `modules/suites/ai/prose.nix`):**
     - Set 10-minute TTL (`ttl = 600`), enabled reasoning preservation (`--reasoning-preserve`), and adjusted exact KV tail to 256 tokens (`--kv-tail-tokens 256`).
     - Activated Generation 125.
@@ -64,6 +61,10 @@ When working on active subsystems, consult these authoritative references:
     - Added `hardware.amdgpu.development` option in [`modules/hardware/gpu/amd.nix`](file:///home/nnon/lunar-witches/modules/hardware/gpu/amd.nix) for `rgp` and RADV trace variables; purged vendor leaks from [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix).
     - Added dynamic, self-elevating `amdgpu-reset` system utility in `hw-gpu-amd` and removed hardcoded DRI alias from [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix).
     - Ran `nix flake update` and activated Generation 127.
+43. **Automated Pi Extension & Model Updates on Activation (`c4ea763`, `modules/suites/ai/pi-coding-agent.nix`):**
+    - Added `home.activation.updatePi` DAG hook to run `pi update --models` and `pi update --extensions` during Home Manager activation.
+    - Preserved resilience with `|| true` and wrapped PATH with `extraPackages` (`nodejs`, `bun`).
+    - Activated Generation 128.
 
 ---
 

@@ -122,3 +122,6 @@
 28. **Declared GitHub CLI `programs.gh` (`modules/users/nnon/development.nix`):**
     - Configured `programs.gh` with `git_protocol: "ssh"`, fish completions, and git credential helper integration.
     - Activated Generation 117.
+29. **Declared `agentic/lfm2.5-24b-a2b` in `llama-swap` (`7f8a92e`, `modules/suites/ai/prose.nix`):**
+    - Configured Liquid AI LFM2.5-24B-A2B QAD-Q4_0 checkpoint with 131k context (`--ctx-size 131072`), `snc4/snc4` KV cache quantization, 1024 `bf16` tail tokens, 16 GiB persistent NVMe radix tier, Flash Attention, Jinja chat templating (`--jinja`), and DeepSeek-format reasoning extraction.
+    - Activated Generation 124; verified via `curl http://127.0.0.1:8080/v1/models`.
