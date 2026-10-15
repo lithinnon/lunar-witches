@@ -45,6 +45,7 @@
 
     environment.sessionVariables = {
       MESA_VK_TRACE_TRIGGER = "/tmp/mesa_vk_trace_trigger";
+      RADV_THREAD_TRACE_BUFFER_SIZE = "134217728"; # 128 MiB buffer for RGP/SQTT captures
     };
 
     # Core CLI developer utilities & coding agents
