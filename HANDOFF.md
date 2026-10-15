@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-15 10:43 +07:00
+- **Timestamp:** 2026-10-15 10:50 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `e897bad` (feat(dev): declare rgp in suite-development systemPackages)
+- **Active Git Commit:** `d8dece2` (feat(dev): declare 128MB RADV_THREAD_TRACE_BUFFER_SIZE and momentary mesa-vk-trace alias)
 - **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 122 (Activated; 34.5 GiB closure, 2,840 store paths)
+- **Live NixOS Generation:** Generation 123 (Activated; 34.5 GiB closure, 2,840 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,8 +24,9 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Installed `rgp` into `environment.systemPackages` and activated Gen 122.
-- [x] Declared `pkgs.rgp` in `suite-development.environment.systemPackages` ([`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix)); activated Generation 122.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Configured 128MB RADV trace buffer and momentary trigger alias (Gen 123).
+- [x] Declared `RADV_THREAD_TRACE_BUFFER_SIZE = "134217728"` (128 MiB) in [`modules/suites/development/default.nix`](file:///home/nnon/lunar-witches/modules/suites/development/default.nix); activated Generation 123.
+- [x] Updated `mesa-vk-trace` to momentary auto-cleanup alias in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix); activated Generation 123.
 - [x] Added `ms-vscode.cpptools` to VS Code extensions ([`modules/users/nnon/development.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/development.nix)); activated Generation 121.
 - [x] Integrated `digital-egro` as `Digital++` (`flake.nix`, `modules/suites/desktop/apps.nix`): replaces ad-hoc `nix run` script with pinned flake input, native CLI wrapper (`digital++`, `digital-egro`), and `Digital++` `.desktop` entry. Activated Generation 121.
 - [x] Packaged AMD Radeon Developer Tool Suite (RGP, RMV, RRA, RDP, RGA) in `pkgs/radeon-developer-tool-suite` with RDNA 3.5 APU support; exported to overlays.
