@@ -32,20 +32,9 @@
   programs.fish = {
     enable = true;
     shellInit = ''
-      # Load unmanaged user secrets if present (supports KEY=VALUE and export KEY=VALUE)
-      set -l secrets_file "$HOME/.config/secrets.env"
-      if set -q XDG_CONFIG_HOME; and test -n "$XDG_CONFIG_HOME"
-        set secrets_file "$XDG_CONFIG_HOME/secrets.env"
-      end
-      if test -f "$secrets_file"
-        for line in (cat "$secrets_file" | string match -r "^(export\\s+)?[^#\\s=]+=[^\\n]*")
-          set -l clean (string replace -r "^export\\s+" "" $line)
-          set -l kv (string split -m 1 = $clean)
-          if test (count $kv) -eq 2
-            set -l val (string trim -c "\"'" "$kv[2]")
-            set -gx $kv[1] $val
-          end
-        end
+      # Load managed sops secrets
+      if test -f /run/secrets/hf_token
+        set -gx HF_TOKEN (cat /run/secrets/hf_token)
       end
     '';
     interactiveShellInit = ''
@@ -56,12 +45,9 @@
   programs.bash = {
     enable = true;
     initExtra = ''
-      # Load unmanaged user secrets if present
-      secrets_file="''${XDG_CONFIG_HOME:-$HOME/.config}/secrets.env"
-      if [ -f "$secrets_file" ]; then
-        set -a
-        source "$secrets_file"
-        set +a
+      # Load managed sops secrets
+      if [ -f /run/secrets/hf_token ]; then
+        export HF_TOKEN="$(cat /run/secrets/hf_token)"
       fi
     '';
   };

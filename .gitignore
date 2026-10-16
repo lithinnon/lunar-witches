@@ -42,6 +42,9 @@
 
 !/.vscode/nixd-lsp.sh
 /.secrets/**
+secrets/*.dec
+secrets/*.bak
+secrets/*.tmp
 /tmp/**
 .user_setup_prompt.md
 result

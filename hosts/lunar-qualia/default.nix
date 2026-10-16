@@ -36,6 +36,7 @@
       self.nixosModules.feature-syncthing
       self.nixosModules.feature-chulawifi
       self.nixosModules.feature-openssh
+      self.nixosModules.feature-sops
 
       # 6. Workload Suites
       self.nixosModules.suite-desktop-plasma
@@ -97,6 +98,11 @@
         };
 
         suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;
+        sops.defaultSopsFile = ../../secrets/secrets.yaml;
+        sops.secrets."hf_token" = {
+          owner = "nnon";
+          mode = "0400";
+        };
       })
     ];
   };
