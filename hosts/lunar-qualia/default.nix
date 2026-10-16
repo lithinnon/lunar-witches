@@ -52,13 +52,15 @@
       inputs.home-manager.nixosModules.home-manager
       self.nixosModules.user-nnon
 
-      # 8. Host-Specific Overrides & Arbitrary Parameters
-      ({ ... }: {
+      # 8. External Infrastructure (Chaotic Nyx)
+      inputs.chaotic.nixosModules.default
+
+      # 9. Host-Specific Overrides & Arbitrary Parameters
+      ({ pkgs, ... }: {
         networking.hostName = "lunar-qualia";
 
-        # Optimized CachyOS BORE Kernel with Zen 4 microarchitecture tuning
-        boot.kernelPackages =
-          inputs.nix-cachyos-kernel.legacyPackages.x86_64-linux.linuxPackages-cachyos-bore-zen4;
+        # Optimized CachyOS BORE Kernel via Chaotic Nyx
+        boot.kernelPackages = pkgs.linuxPackages_cachyos-bore;
 
         nixpkgs.config.allowUnfree = true;
         nixpkgs.overlays = [ self.overlays.default ];

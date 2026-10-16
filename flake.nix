@@ -8,12 +8,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-cachyos-kernel = {
-      url = "github:xddxdd/nix-cachyos-kernel/release";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        flake-parts.follows = "flake-parts";
-      };
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     };
 
     antigravity-nix = {
