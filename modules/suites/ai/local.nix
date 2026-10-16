@@ -57,7 +57,6 @@
               --no-mmproj \
               --port ''${PORT} \
               --no-webui \
-              --cache-reuse 256 \
               --reasoning-format deepseek \
               --reasoning on \
               --reasoning-loop-check-interval 32 \
@@ -74,7 +73,10 @@
         };
 
         backend = lib.mkOption {
-          type = lib.types.enum [ "rocm" "hrx" ];
+          type = lib.types.enum [
+            "rocm"
+            "hrx"
+          ];
           default = "rocm";
           description = "ROCm runtime backend for beellama: 'rocm' (native ROCm HIP) or 'hrx' (HIP Runtime Extended).";
         };
