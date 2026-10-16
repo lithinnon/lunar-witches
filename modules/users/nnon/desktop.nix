@@ -197,7 +197,7 @@
           {
             id = "sillytavern.service";
             name = "SillyTavern";
-            scope = "system";
+            scope = "user";
           }
           {
             id = "llama-swap.service";
