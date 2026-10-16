@@ -12,8 +12,8 @@
 - **Timestamp:** 2026-10-16 18:37 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `2b02c5f`
-- **Working Tree:** Dirty (`shells/` WIP) (activated Generation 135)
+- **Active Git Commit:** `b256b4a`
+- **Working Tree:** Clean (activated Generation 135)
 - **Live NixOS Generation:** Generation 135 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,848 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
@@ -63,6 +63,8 @@ When working on active subsystems, consult these authoritative references:
 48. **Purged Obsolete `--cache-reuse` Flag from `llama-swap` Runner (`2b02c5f`, `modules/suites/ai/local.nix`):**
     - Removed obsolete `--cache-reuse 256` flag following `beellama.cpp` argument parser refactor (`7db0738a`).
     - Verified all flags against live recompiled `llama-server` binary; activated Generation 135 and restarted `llama-swap.service`.
+49. **Added `pkgs.openssl` to AI DevShells (`b256b4a`, `shells/loom.nix`, `shells/rocm.nix`):**
+    - Added OpenSSL headers/libraries to both package sets and runtime `LD_LIBRARY_PATH` in `torch-dev` and `loom-dev`.
 
 
 ---
