@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-16 11:56 +07:00
+- **Timestamp:** 2026-10-16 12:03 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `b840914` (refactor(kernel): migrate from compromised nix-cachyos-kernel to chaotic-nyx)
-- **Working Tree:** Clean
-- **Live NixOS Generation:** Generation 130 (Activated; Linux 7.2.10-cachyos-bore, 34.8 GiB closure, 2,847 store paths)
+- **Active Git Commit:** `60ffe5c` (pending commit for znver4 kernel switch)
+- **Working Tree:** Clean (activating Generation 131)
+- **Live NixOS Generation:** Generation 131 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,847 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,13 +24,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Migrated CachyOS BORE kernel to Chaotic-Nyx (`pkgs.linuxPackages_cachyos-bore`) and activated Generation 130.
-- [x] Removed compromised `xddxdd/nix-cachyos-kernel` and dead `attic.xuyh0120.win/lantian` cache.
-- [x] Integrated `chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"` and `inputs.chaotic.nixosModules.default`.
-- [x] Set `boot.kernelPackages = pkgs.linuxPackages_cachyos-bore` in [`hosts/lunar-qualia/default.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/default.nix).
-- [x] Configured `nyx-cache.chaotic.cx` and `@wheel` in `nix.settings.trusted-users` in [`modules/core/default.nix`](file:///home/nnon/lunar-witches/modules/core/default.nix).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Switched to Zen 4 Clang ThinLTO CachyOS kernel (`pkgs.linuxPackages_cachyos-lto-znver4`) and activated Generation 131.
+- [x] Switched `boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4` in [`hosts/lunar-qualia/default.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/default.nix).
+- [x] Verified binary cache substitution from `nyx-cache.chaotic.cx` with zero compilation.
 - [x] Updated [ADR 0002](file:///home/nnon/lunar-witches/retrospects/adr/0002-cachyos-bore-kernel.md).
-- [x] Activated Generation 130 with pre-built Chaotic-Nyx kernel; verified 0s build cache hits.
+- [x] Activated Generation 131 on live system.
 
 ---
 
@@ -47,8 +45,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-41. **Decoupled `cacheTypeK` & `cacheTypeV` in `mkServerCmd` (`231bc94`, `modules/suites/ai/prose.nix`):**
-    - Supported independent Key and Value quantization in `mkServerCmd` generator with fallback to `cacheTypeKV`.
 42. **Decoupled Local AI Serving, Isolated AMD Devtools & Dynamic GPU Reset (`61377de`):**
     - Migrated `llama-swap`, `mkServerCmd`, and local models from `suite-ai-prose` to `suite-ai-local`.
     - Added `hardware.amdgpu.development` option and dynamic `amdgpu-reset` system utility.
@@ -56,11 +52,13 @@ When working on active subsystems, consult these authoritative references:
     - Hooked `home.activation.updatePi` DAG hook to run `pi update --models` and `pi update --extensions`.
 44. **Added Foliate EPUB Reader & MIME Associations (`72c702c`, `suite-desktop-apps`):**
     - Declared Foliate and registered `application/epub+zip` MIME associations.
-45. **Migrated from Compromised `nix-cachyos-kernel` to Chaotic-Nyx (`chaotic-cx/nyx`):**
+45. **Migrated from Compromised `nix-cachyos-kernel` to Chaotic-Nyx (`b840914`):**
     - Replaced `xddxdd/nix-cachyos-kernel` with `chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"`.
-    - Switched `boot.kernelPackages` to `pkgs.linuxPackages_cachyos-bore`.
     - Purged dead Attic server and trusted `nyx-cache.chaotic.cx` + `@wheel` in `modules/core/default.nix`.
-    - Updated [ADR 0002](file:///home/nnon/lunar-witches/retrospects/adr/0002-cachyos-bore-kernel.md).
+    - Activated Generation 130.
+46. **Adopted Zen 4 Clang ThinLTO CachyOS Kernel (`pkgs.linuxPackages_cachyos-lto-znver4`):**
+    - Switched `boot.kernelPackages` to `pkgs.linuxPackages_cachyos-lto-znver4` for Strix Halo silicon instruction tuning.
+    - Verified instantaneous cache downloads from `nyx-cache.chaotic.cx`; activated Generation 131.
 
 ---
 

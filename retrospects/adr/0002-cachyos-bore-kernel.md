@@ -14,9 +14,9 @@ The primary target device (`lunar-qualia`) features high-density Zen 5 CPU cores
 ## 2. Decision
 
 1. **Kernel Selection & Packaging (`chaotic-cx/nyx`):**
-   - Adopted the CachyOS BORE kernel with Zen instruction tuning and the BORE (Burst-Oriented Response Enhancer) CPU scheduler.
-   - Sourced via pre-compiled binary cache from Chaotic-Nyx (`chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"`, package `pkgs.linuxPackages_cachyos-bore`, cache `https://nyx-cache.chaotic.cx`).
-   - *(Note: Migrated on 2026-10-16 from the decommissioned `xddxdd/nix-cachyos-kernel` repository following the maintainer's infrastructure breach and server shutdown).*
+   - Adopted the CachyOS Zen 4 kernel with Clang ThinLTO (`-march=znver4`, AVX-512, BMI2, Full Preemption at 1000Hz).
+   - Sourced via pre-compiled binary cache from Chaotic-Nyx (`chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"`, package `pkgs.linuxPackages_cachyos-lto-znver4`, cache `https://nyx-cache.chaotic.cx`).
+   - *(Note: Migrated on 2026-10-16 from the decommissioned `xddxdd/nix-cachyos-kernel` repository following the maintainer's infrastructure breach and server shutdown; selected `linuxPackages_cachyos-lto-znver4` for hardware silicon instruction set alignment on Strix Halo)*.
    - Leverages native `/dev/ntsync` for low-overhead Wine synchronization.
 2. **BTRFS Subvolume Layout:**
    - Partitioned target NVMe with compression: `@`, `@home`, `@nix`, `@snapshots`, and `@log` use `compress=zstd:1` and `noatime` for optimal NVMe lifespan and read throughput.

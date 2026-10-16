@@ -59,8 +59,8 @@
       ({ pkgs, ... }: {
         networking.hostName = "lunar-qualia";
 
-        # Optimized CachyOS BORE Kernel via Chaotic Nyx
-        boot.kernelPackages = pkgs.linuxPackages_cachyos-bore;
+        # Optimized CachyOS Zen 4 Kernel with Clang ThinLTO via Chaotic Nyx
+        boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
         nixpkgs.config.allowUnfree = true;
         nixpkgs.overlays = [ self.overlays.default ];
