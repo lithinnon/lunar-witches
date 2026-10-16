@@ -9,27 +9,26 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-16 12:19 +07:00
+- **Timestamp:** 2026-10-16 18:37 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `bd99dc0`
-- **Working Tree:** Clean (activated Generation 132)
-- **Live NixOS Generation:** Generation 132 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,848 store paths)
+- **Active Git Commit:** `2b02c5f`
+- **Working Tree:** Dirty (`shells/` WIP) (activated Generation 135)
+- **Live NixOS Generation:** Generation 135 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,848 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `e48b2d84-6643-419f-9db1-c9915189afd7` (current), Antigravity `ff8537d6-877f-425d-b3b8-9df3e661484b`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `f8ca63e7-586c-411f-beed-207ca745e382` (current), Antigravity `e48b2d84-6643-419f-9db1-c9915189afd7`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Resolved Waterfox (Flatpak) CJK font rendering failure.
-- [x] Diagnosed missing `/nix/store` access causing broken font symlinks in `/run/host/fonts`.
-- [x] Declaratively exposed `/nix/store:ro` via `/var/lib/flatpak/overrides/global` using `systemd.tmpfiles.rules`.
-- [x] Configured `fonts.fontconfig.defaultFonts` with CJK JP/SC/KR fallbacks in `suite-desktop-fonts`.
-- [x] Documented resolution in [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md).
-- [x] Built and activated Generation 132; verified 1,205 fonts and CJK font matching inside container.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Purged obsolete `--cache-reuse` flag from `llama-swap` runner following `beellama.cpp` argument parser refactor.
+- [x] Identified `--cache-reuse` removed in `beellama.cpp` commit `7db0738a` (fails CLI parsing).
+- [x] Removed `--cache-reuse 256` from `mkServerCmd` in `modules/suites/ai/local.nix`.
+- [x] Formatted and dry-built configuration; verified rendered `~/.config/llama-swap.yml`.
+- [x] Activated Generation 135 via `nh os switch` and restarted `llama-swap.service`.
 
 ---
 
@@ -61,6 +60,10 @@ When working on active subsystems, consult these authoritative references:
     - Declaratively provisioned `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` (`modules/suites/desktop/apps.nix`) granting `/nix/store:ro` to resolve `/run/host/fonts` symlinks.
     - Defined explicit CJK fallback prioritization (`fonts.fontconfig.defaultFonts`) in `modules/suites/desktop/fonts.nix`.
     - Activated Generation 132.
+48. **Purged Obsolete `--cache-reuse` Flag from `llama-swap` Runner (`2b02c5f`, `modules/suites/ai/local.nix`):**
+    - Removed obsolete `--cache-reuse 256` flag following `beellama.cpp` argument parser refactor (`7db0738a`).
+    - Verified all flags against live recompiled `llama-server` binary; activated Generation 135 and restarted `llama-swap.service`.
+
 
 ---
 
