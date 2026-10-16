@@ -140,3 +140,27 @@ During the migration and post-install configuration, several notable edge cases 
   - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/ksshaskpass";` in [`modules/suites/desktop/plasma.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/plasma.nix).
   - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix).
 
+---
+
+## 13. Flatpak Sandboxed Apps Missing Host Fonts (CJK "Tofu" / Dangling Symlinks)
+- **Symptom:** Flatpak applications (e.g. Waterfox) fail to render Chinese, Japanese, or Korean characters properly, showing empty boxes ("tofu") or falling back to generic Western fonts despite `noto-fonts-cjk-sans` / `noto-fonts-cjk-serif` being installed on NixOS.
+- **Cause:**
+  1. Flatpak's Bubblewrap container isolates the host filesystem and bind-mounts host fonts from `/run/current-system/sw/share/X11/fonts` into `/run/host/fonts`.
+  2. On NixOS, `/run/current-system/sw/share/X11/fonts` consists entirely of symlinks pointing to individual package paths under `/nix/store/...`.
+  3. By default, `/nix/store` is not exposed inside Flatpak sandboxes (except for specific portal-exported application assets).
+  4. Consequently, every symlink in `/run/host/fonts` becomes a dangling/broken link inside the sandbox, forcing Fontconfig to fall back to the minimal Western fonts bundled in the Freedesktop runtime (DejaVu, FreeSans, Liberation).
+- **Resolution:**
+  - Declaratively create `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` in [`modules/suites/desktop/apps.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/apps.nix):
+    ```nix
+    systemd.tmpfiles.rules = [
+      "d /var/lib/flatpak/overrides 0755 root root -"
+      "L+ /var/lib/flatpak/overrides/global - - - - ${pkgs.writeText "flatpak-global-override" ''
+        [Context]
+        filesystems=/nix/store:ro;
+      ''}"
+    ];
+    ```
+  - Define explicit font fallback priorities in [`modules/suites/desktop/fonts.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/fonts.nix) using `fonts.fontconfig.defaultFonts` to ensure `Noto Sans CJK JP/SC/KR` are prioritized when generic `sans-serif` or `serif` is requested.
+  - Rebuilt Flatpak Fontconfig cache via `flatpak run --command=fc-cache <APP_ID> -r`.
+
+
