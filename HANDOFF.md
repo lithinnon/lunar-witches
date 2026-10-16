@@ -9,26 +9,27 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-16 12:03 +07:00
+- **Timestamp:** 2026-10-16 12:19 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `60ffe5c` (pending commit for znver4 kernel switch)
-- **Working Tree:** Clean (activating Generation 131)
-- **Live NixOS Generation:** Generation 131 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,847 store paths)
+- **Active Git Commit:** `bd99dc0`
+- **Working Tree:** Clean (activated Generation 132)
+- **Live NixOS Generation:** Generation 132 (Activated; Linux 7.2.10-cachyos-lto-znver4, 34.8 GiB closure, 2,848 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `ff8537d6-877f-425d-b3b8-9df3e661484b` (current), Antigravity `1e53cd57-002a-45f4-b9cf-b5af10c2f946`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `e48b2d84-6643-419f-9db1-c9915189afd7` (current), Antigravity `ff8537d6-877f-425d-b3b8-9df3e661484b`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Switched to Zen 4 Clang ThinLTO CachyOS kernel (`pkgs.linuxPackages_cachyos-lto-znver4`) and activated Generation 131.
-- [x] Switched `boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4` in [`hosts/lunar-qualia/default.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/default.nix).
-- [x] Verified binary cache substitution from `nyx-cache.chaotic.cx` with zero compilation.
-- [x] Updated [ADR 0002](file:///home/nnon/lunar-witches/retrospects/adr/0002-cachyos-bore-kernel.md).
-- [x] Activated Generation 131 on live system.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Resolved Waterfox (Flatpak) CJK font rendering failure.
+- [x] Diagnosed missing `/nix/store` access causing broken font symlinks in `/run/host/fonts`.
+- [x] Declaratively exposed `/nix/store:ro` via `/var/lib/flatpak/overrides/global` using `systemd.tmpfiles.rules`.
+- [x] Configured `fonts.fontconfig.defaultFonts` with CJK JP/SC/KR fallbacks in `suite-desktop-fonts`.
+- [x] Documented resolution in [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md).
+- [x] Built and activated Generation 132; verified 1,205 fonts and CJK font matching inside container.
 
 ---
 
@@ -45,9 +46,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-42. **Decoupled Local AI Serving, Isolated AMD Devtools & Dynamic GPU Reset (`61377de`):**
-    - Migrated `llama-swap`, `mkServerCmd`, and local models from `suite-ai-prose` to `suite-ai-local`.
-    - Added `hardware.amdgpu.development` option and dynamic `amdgpu-reset` system utility.
 43. **Automated Pi Extension & Model Updates on Activation (`c4ea763`, `modules/suites/ai/pi-coding-agent.nix`):**
     - Hooked `home.activation.updatePi` DAG hook to run `pi update --models` and `pi update --extensions`.
 44. **Added Foliate EPUB Reader & MIME Associations (`72c702c`, `suite-desktop-apps`):**
@@ -56,9 +54,13 @@ When working on active subsystems, consult these authoritative references:
     - Replaced `xddxdd/nix-cachyos-kernel` with `chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"`.
     - Purged dead Attic server and trusted `nyx-cache.chaotic.cx` + `@wheel` in `modules/core/default.nix`.
     - Activated Generation 130.
-46. **Adopted Zen 4 Clang ThinLTO CachyOS Kernel (`pkgs.linuxPackages_cachyos-lto-znver4`):**
+46. **Adopted Zen 4 Clang ThinLTO CachyOS Kernel (`pkgs.linuxPackages_cachyos-lto-znver4`, `b236829`):**
     - Switched `boot.kernelPackages` to `pkgs.linuxPackages_cachyos-lto-znver4` for Strix Halo silicon instruction tuning.
     - Verified instantaneous cache downloads from `nyx-cache.chaotic.cx`; activated Generation 131.
+47. **Resolved Flatpak CJK Font Rendering & Dangling Symlinks (`9a74358`, `bd99dc0`):**
+    - Declaratively provisioned `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` (`modules/suites/desktop/apps.nix`) granting `/nix/store:ro` to resolve `/run/host/fonts` symlinks.
+    - Defined explicit CJK fallback prioritization (`fonts.fontconfig.defaultFonts`) in `modules/suites/desktop/fonts.nix`.
+    - Activated Generation 132.
 
 ---
 
