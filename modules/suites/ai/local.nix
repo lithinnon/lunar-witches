@@ -37,10 +37,12 @@
           cacheTypeV ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
           kvTailTokens,
           reasoningPreserve,
+          parallel ? 1,
           extraFlags ? [ ],
         }:
         ''
           ${cfg.package}/bin/llama-server \
+              --parallel ${toString parallel} \
               --ctx-size ${toString ctxSize} \
               --batch-size 2048 \
               --ubatch-size 512 \

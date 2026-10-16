@@ -8,9 +8,9 @@
   # Path to the compiled beellama.cpp build directory
   beellamaDir ?
     if backend == "hrx" then
-      "/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build-hrx"
+      "/home/nnon/Projects/github.com/lithinnon/triellama.cpp/build-hrx"
     else
-      "/home/nnon/Projects/github.com/lithinnon/beellama.cpp/build",
+      "/home/nnon/Projects/github.com/lithinnon/triellama.cpp/build",
 }:
 
 let
@@ -54,7 +54,7 @@ stdenvNoCC.mkDerivation {
       export LD_LIBRARY_PATH="${beellamaDir}/lib:${beellamaDir}/bin''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       if [ ! -x "${beellamaDir}/bin/${bin}" ]; then
         echo "Error: ${bin} not found at ${beellamaDir}/bin/${bin}" >&2
-        echo "Run '${buildScript}' in ${beellamaDir}/.. to compile beellama.cpp" >&2
+        echo "Run '${buildScript}' in ${beellamaDir}/.. to compile triellama.cpp" >&2
         exit 1
       fi
       exec "${beellamaDir}/bin/${bin}" "$@"
