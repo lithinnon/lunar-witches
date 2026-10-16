@@ -128,4 +128,13 @@
 30. **Tuned `agentic/lfm2.5-24b-a2b` Configuration (`bde5133`, `modules/suites/ai/prose.nix`):**
     - Set 10-minute TTL (`ttl = 600`), enabled reasoning preservation (`--reasoning-preserve`), and adjusted exact KV tail to 256 tokens (`--kv-tail-tokens 256`).
     - Activated Generation 125.
+31. **Automated Pi Extension & Model Updates on Activation (`c4ea763`, `modules/suites/ai/pi-coding-agent.nix`):**
+    - Hooked `home.activation.updatePi` DAG hook to run `pi update --models` and `pi update --extensions`.
+32. **Added Foliate EPUB Reader & MIME Associations (`72c702c`, `modules/suites/desktop/apps.nix`):**
+    - Declared Foliate and registered `application/epub+zip` MIME associations.
+33. **Migrated from Compromised `nix-cachyos-kernel` to Chaotic-Nyx (`b840914`):**
+    - Replaced `xddxdd/nix-cachyos-kernel` with `chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"`.
+    - Purged dead Attic server and trusted `nyx-cache.chaotic.cx` + `@wheel` in `modules/core/default.nix`.
+    - Activated Generation 130.
+
 
