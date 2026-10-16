@@ -11,5 +11,27 @@
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
     ];
+
+    fonts.fontconfig = {
+      defaultFonts = {
+        serif = [
+          "Noto Serif"
+          "Noto Serif CJK JP"
+          "Noto Serif CJK SC"
+          "Noto Serif CJK KR"
+        ];
+        sansSerif = [
+          "Noto Sans"
+          "Noto Sans CJK JP"
+          "Noto Sans CJK SC"
+          "Noto Sans CJK KR"
+        ];
+        monospace = [
+          "JetBrainsMono Nerd Font"
+          "Noto Sans Mono CJK JP"
+        ];
+        emoji = [ "Noto Color Emoji" ];
+      };
+    };
   };
 }

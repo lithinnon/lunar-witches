@@ -16,6 +16,15 @@
 
     services.flatpak.enable = true;
 
+    # Expose /nix/store to Flatpak containers so font symlinks in /run/host/fonts resolve properly
+    systemd.tmpfiles.rules = [
+      "d /var/lib/flatpak/overrides 0755 root root -"
+      "L+ /var/lib/flatpak/overrides/global - - - - ${pkgs.writeText "flatpak-global-override" ''
+        [Context]
+        filesystems=/nix/store:ro;
+      ''}"
+    ];
+
     programs.localsend = {
       enable = true;
       openFirewall = true;
