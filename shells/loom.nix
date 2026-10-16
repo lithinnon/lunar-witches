@@ -291,6 +291,7 @@ let
           pkgs.ruff
           # System libraries & drivers
           pkgs.zlib
+          pkgs.openssl
           pkgs.pciutils
           pkgs.libdrm
           pkgs.numactl
@@ -335,6 +336,7 @@ let
               pkgs.stdenv.cc.cc.lib
               rocmPkg
               pkgs.zlib
+              pkgs.openssl
               pkgs.libdrm
               pkgs.numactl
               pkgs.elfutils

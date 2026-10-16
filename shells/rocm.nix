@@ -143,7 +143,12 @@ let
           HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg ]}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${
+            lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              rocmPkg
+            ]
+          }:$LD_LIBRARY_PATH"
           echo "=========================================================="
           echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Runtime (${gfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
@@ -173,6 +178,7 @@ let
           pkgs.python3Packages.virtualenv
           pkgs.uv
           pkgs.zlib
+          pkgs.openssl
           pkgs.libdrm
           pkgs.numactl
           pkgs.elfutils
@@ -217,7 +223,19 @@ let
           UV_CONSTRAINT = "${constraintsFile}";
         };
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${xrtPkg}/lib:${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib rocmPkg xrtPkg pkgs.zlib pkgs.libdrm pkgs.numactl pkgs.elfutils pkgs.util-linux.lib ]}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${xrtPkg}/lib:${
+            lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              rocmPkg
+              xrtPkg
+              pkgs.zlib
+              pkgs.openssl
+              pkgs.libdrm
+              pkgs.numactl
+              pkgs.elfutils
+              pkgs.util-linux.lib
+            ]
+          }:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:${xrtPkg}/bin:$PATH"
 
           GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
