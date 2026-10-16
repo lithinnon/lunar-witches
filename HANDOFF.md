@@ -9,27 +9,28 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-16 21:33 +07:00
+- **Timestamp:** 2026-10-17 01:05 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `c0dfcc1`
-- **Working Tree:** Clean (activated Generation 137)
-- **Live NixOS Generation:** Generation 137 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
+- **Active Git Commit:** `236a884`
+- **Working Tree:** Clean (activated Generation 138)
+- **Live NixOS Generation:** Generation 138 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `433164ee-129a-4175-a59a-01ec42156f61` (current), Antigravity `8d76ad0a-4bc9-454b-8a45-7e8ab17b1f3e`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `cbae2d67-98dd-4370-9c9a-84b2abf37b08` (current), Antigravity `433164ee-129a-4175-a59a-01ec42156f61`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Integrated `sops-nix` secret management, declared `/run/secrets/hf_token`, removed unmanaged `secrets.env` shell sourcing, and updated flake inputs.
-- [x] Declared `sops-nix` flake input and `self.nixosModules.feature-sops` trait.
-- [x] Configured `.sops.yaml` and encrypted `secrets/secrets.yaml` with dual-recipient age identities.
-- [x] Declared `sops.secrets."hf_token"` with mode `0400` owned by `nnon` in `hosts/lunar-qualia/default.nix`.
-- [x] Migrated Fish and Bash in `modules/users/nnon/shell.nix` to load `/run/secrets/hf_token` and purged unmanaged `secrets.env`.
-- [x] Switched and activated Generation 137 via `nh os switch`.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Migrated SillyTavern to user-level service (`sillytavern.service`) with state fully in `~/.local/share/SillyTavern`, updated Service Deck Plasma widget to user scope, and activated Generation 138.
+- [x] Migrated existing SillyTavern state (~66 MB) from `/var/lib/SillyTavern` to `~/.local/share/SillyTavern` with `nnon:users` ownership.
+- [x] Renamed legacy `/var/lib/SillyTavern` to `/var/lib/SillyTavern.bak`.
+- [x] Refactored `suite-ai-prose` (`modules/suites/ai/prose.nix`) to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
+- [x] Symlinked declarative `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
+- [x] Updated `modules/users/nnon/desktop.nix` Service Deck widget to `scope = "user"`, eliminating Polkit prompts.
+- [x] Switched and activated Generation 138 via `nh os switch`.
 
 ---
 
@@ -40,15 +41,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–34):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–35):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-47. **Resolved Flatpak CJK Font Rendering & Dangling Symlinks (`9a74358`, `bd99dc0`):**
-    - Provisioned `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` (`modules/suites/desktop/apps.nix`) granting `/nix/store:ro`.
-    - Defined explicit CJK fallback prioritization (`fonts.fontconfig.defaultFonts`) in `modules/suites/desktop/fonts.nix`; activated Generation 132.
 48. **Purged Obsolete `--cache-reuse` Flag from `llama-swap` Runner (`2b02c5f`, `modules/suites/ai/local.nix`):**
     - Removed obsolete `--cache-reuse 256` flag following `beellama.cpp` argument parser refactor (`7db0738a`); activated Generation 135.
 49. **Added `pkgs.openssl` to AI DevShells (`b256b4a`, `shells/loom.nix`, `shells/rocm.nix`):**
@@ -60,8 +58,13 @@ When working on active subsystems, consult these authoritative references:
     - Configured `.sops.yaml` with dual age recipients (`admin_nnon`, `admin_ssh`, and `host_lunar_qualia`).
     - Created `secrets/secrets.yaml` with encrypted `hf_token`, decrypted to `/run/secrets/hf_token` (`0400` owned by `nnon`).
     - Purged unmanaged `~/.config/secrets.env` logic from `fish.shellInit` and `bash.initExtra` in `modules/users/nnon/shell.nix`, migrating shells to read `/run/secrets/hf_token`.
-    - Updated flake inputs (`a64afa9`); fixed `age.keyFile = null` to prevent spurious `/var/lib/sops-nix/key.txt` activation failures (`c0dfcc1`).
     - Switched and activated Generation 137.
+52. **Migrated SillyTavern to User-Level Service and `~/.local/share/SillyTavern` (`236a884`, `modules/suites/ai/prose.nix`, `modules/users/nnon/desktop.nix`):**
+    - Migrated existing 66MB state from `/var/lib/SillyTavern` to `${XDG_DATA_HOME}/SillyTavern` (`~/.local/share/SillyTavern`), setting clean `nnon:users` ownership.
+    - Preserved legacy state at `/var/lib/SillyTavern.bak`.
+    - Refactored `suite-ai-prose` to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
+    - Linked declarative drift-checked `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
+    - Updated Service Deck Plasma widget to control SillyTavern under `scope = "user"`, enabling zero-privilege toggling; activated Generation 138.
 
 ---
 
