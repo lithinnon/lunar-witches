@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-16 11:45 +07:00
+- **Timestamp:** 2026-10-16 11:56 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `ab4185d` (pending switch for Chaotic-Nyx kernel migration)
-- **Working Tree:** Dirty (kernel migration staged)
-- **Live NixOS Generation:** Generation 129 (Generation 130 candidate ready)
+- **Active Git Commit:** `b840914` (refactor(kernel): migrate from compromised nix-cachyos-kernel to chaotic-nyx)
+- **Working Tree:** Clean
+- **Live NixOS Generation:** Generation 130 (Activated; Linux 7.2.10-cachyos-bore, 34.8 GiB closure, 2,847 store paths)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,13 +24,13 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Migrating CachyOS BORE kernel from compromised `xddxdd/nix-cachyos-kernel` to `chaotic-cx/nyx` (`pkgs.linuxPackages_cachyos-bore`).
+- **Current Focus:** Idle — awaiting next directive. Last closed: Migrated CachyOS BORE kernel to Chaotic-Nyx (`pkgs.linuxPackages_cachyos-bore`) and activated Generation 130.
 - [x] Removed compromised `xddxdd/nix-cachyos-kernel` and dead `attic.xuyh0120.win/lantian` cache.
 - [x] Integrated `chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable"` and `inputs.chaotic.nixosModules.default`.
 - [x] Set `boot.kernelPackages = pkgs.linuxPackages_cachyos-bore` in [`hosts/lunar-qualia/default.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/default.nix).
 - [x] Configured `nyx-cache.chaotic.cx` and `@wheel` in `nix.settings.trusted-users` in [`modules/core/default.nix`](file:///home/nnon/lunar-witches/modules/core/default.nix).
 - [x] Updated [ADR 0002](file:///home/nnon/lunar-witches/retrospects/adr/0002-cachyos-bore-kernel.md).
-- [ ] Execute `nh os switch` with graphical `ksshaskpass` to activate Generation 130.
+- [x] Activated Generation 130 with pre-built Chaotic-Nyx kernel; verified 0s build cache hits.
 
 ---
 
