@@ -9,28 +9,26 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-17 01:05 +07:00
+- **Timestamp:** 2026-10-17 11:32 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `e8e5abc`
-- **Working Tree:** Clean (activated Generation 138)
-- **Live NixOS Generation:** Generation 138 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
+- **Active Git Commit:** `16ef5d7`
+- **Working Tree:** Clean (activated Generation 140)
+- **Live NixOS Generation:** Generation 140 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `cbae2d67-98dd-4370-9c9a-84b2abf37b08` (current), Antigravity `433164ee-129a-4175-a59a-01ec42156f61`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `c7c91dd3-f90b-4585-8d1a-178f5b2302d4` (current), Antigravity `cbae2d67-98dd-4370-9c9a-84b2abf37b08`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Migrated SillyTavern to user-level service (`sillytavern.service`) with state fully in `~/.local/share/SillyTavern`, updated Service Deck Plasma widget to user scope, and activated Generation 138.
-- [x] Migrated existing SillyTavern state (~66 MB) from `/var/lib/SillyTavern` to `~/.local/share/SillyTavern` with `nnon:users` ownership.
-- [x] Renamed legacy `/var/lib/SillyTavern` to `/var/lib/SillyTavern.bak`.
-- [x] Refactored `suite-ai-prose` (`modules/suites/ai/prose.nix`) to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
-- [x] Symlinked declarative `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
-- [x] Updated `modules/users/nnon/desktop.nix` Service Deck widget to `scope = "user"`, eliminating Polkit prompts.
-- [x] Switched and activated Generation 138 via `nh os switch`.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Configured Boulesis (`creative/boulesis-v2.1-headtune`) KV cache quantization to asymmetric SNC (`snc4/snc8`), activated Generation 140, and restarted `llama-swap.service`.
+- [x] Changed `cacheTypeKV = "snc8"` to `cacheTypeK = "snc4"` and `cacheTypeV = "snc8"` in `modules/suites/ai/local.nix`.
+- [x] Evaluated and built generation via `nh os build /home/nnon/lunar-witches`.
+- [x] Switched and activated Generation 140 via `nh os switch`.
+- [x] Restarted `llama-swap.service` and verified active `--cache-type-k snc4` and `--cache-type-v snc8`.
 
 ---
 
@@ -41,14 +39,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–35):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–35, 48):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-48. **Purged Obsolete `--cache-reuse` Flag from `llama-swap` Runner (`2b02c5f`, `modules/suites/ai/local.nix`):**
-    - Removed obsolete `--cache-reuse 256` flag following `beellama.cpp` argument parser refactor (`7db0738a`); activated Generation 135.
 49. **Added `pkgs.openssl` to AI DevShells (`b256b4a`, `shells/loom.nix`, `shells/rocm.nix`):**
     - Added OpenSSL headers/libraries to both package sets and runtime `LD_LIBRARY_PATH` in `torch-dev` and `loom-dev`.
 50. **Added `vscode-clangd` Extension to VS Code Profile (`f6c9314`, `modules/users/nnon/development.nix`):**
@@ -65,6 +61,9 @@ When working on active subsystems, consult these authoritative references:
     - Refactored `suite-ai-prose` to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
     - Linked declarative drift-checked `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
     - Updated Service Deck Plasma widget to control SillyTavern under `scope = "user"`, enabling zero-privilege toggling; activated Generation 138.
+53. **Configured Asymmetric SNC KV Cache Quantization for Boulesis (`fd7a0e1`, `modules/suites/ai/local.nix`):**
+    - Changed `cacheTypeKV = "snc8"` to `cacheTypeK = "snc4"` and `cacheTypeV = "snc8"` (`snc4/snc8`) for `creative/boulesis-v2.1-headtune` in `llama-swap` runner.
+    - Switched and activated Generation 140; restarted `llama-swap.service`.
 
 ---
 
