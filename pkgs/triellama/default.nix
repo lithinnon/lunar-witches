@@ -1,12 +1,12 @@
-# In-tree derivation for beellama.cpp (custom llama.cpp fork with ROCm & HRX support)
+# In-tree derivation for triellama.cpp (custom llama.cpp fork with ROCm & HRX support)
 # Wraps the local build directory binaries into standard Nix package outputs
 {
   lib,
   stdenvNoCC,
   # Runtime backend: "rocm" (standard TheRock HIP) or "hrx" (HIP Runtime Extended)
   backend ? "rocm",
-  # Path to the compiled beellama.cpp build directory
-  beellamaDir ?
+  # Path to the compiled triellama.cpp build directory
+  triellamaDir ?
     if backend == "hrx" then
       "/home/nnon/Projects/github.com/lithinnon/triellama.cpp/build-hrx"
     else
@@ -41,8 +41,8 @@ let
   buildScript = if backend == "hrx" then "build-hrx.sh" else "build.sh";
 in
 stdenvNoCC.mkDerivation {
-  pname = "beellama";
-  version = "0.4.7";
+  pname = "triellama";
+  name = "triellama";
 
   dontUnpack = true;
 
@@ -51,21 +51,21 @@ stdenvNoCC.mkDerivation {
     ${lib.concatMapStringsSep "\n" (bin: ''
       cat << 'EOF' > "$out/bin/${bin}"
       #!/usr/bin/env bash
-      export LD_LIBRARY_PATH="${beellamaDir}/lib:${beellamaDir}/bin''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-      if [ ! -x "${beellamaDir}/bin/${bin}" ]; then
-        echo "Error: ${bin} not found at ${beellamaDir}/bin/${bin}" >&2
-        echo "Run '${buildScript}' in ${beellamaDir}/.. to compile triellama.cpp" >&2
+      export LD_LIBRARY_PATH="${triellamaDir}/lib:${triellamaDir}/bin''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+      if [ ! -x "${triellamaDir}/bin/${bin}" ]; then
+        echo "Error: ${bin} not found at ${triellamaDir}/bin/${bin}" >&2
+        echo "Run '${buildScript}' in ${triellamaDir}/.. to compile triellama.cpp" >&2
         exit 1
       fi
-      exec "${beellamaDir}/bin/${bin}" "$@"
+      exec "${triellamaDir}/bin/${bin}" "$@"
       EOF
       chmod +x "$out/bin/${bin}"
     '') binaries}
   '';
 
   meta = with lib; {
-    description = "beellama.cpp — custom llama.cpp fork for Strix Halo with ROCm/HRX acceleration";
-    homepage = "https://github.com/lithinnon/beellama.cpp";
+    description = "triellama.cpp — custom llama.cpp fork for Strix Halo with ROCm/HRX acceleration";
+    homepage = "https://github.com/lithinnon/triellama.cpp";
     platforms = platforms.linux;
     mainProgram = "llama-server";
   };

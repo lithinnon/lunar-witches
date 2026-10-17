@@ -11,7 +11,8 @@
       plasma-widget-amdgpuboost = pkgs.callPackage ./plasma-widget-amdgpuboost { };
       app = pkgs.callPackage ./app { };
       xrt-amdxdna = pkgs.callPackage ./xrt-amdxdna { };
-      beellama = pkgs.callPackage ./beellama { };
+      triellama = pkgs.callPackage ./triellama { };
+      beellama = pkgs.callPackage ./triellama { };
       radeon-developer-tool-suite = pkgs.callPackage ./radeon-developer-tool-suite { };
       rgp = pkgs.callPackage ./radeon-developer-tool-suite { };
     };
@@ -28,7 +29,8 @@
     app = final.callPackage ./app { };
     rocm-therock = final.callPackage ./rocm-therock;
     xrt-amdxdna = final.callPackage ./xrt-amdxdna { };
-    beellama = final.callPackage ./beellama { };
+    triellama = final.callPackage ./triellama { };
+    beellama = final.triellama;
     radeon-developer-tool-suite = final.callPackage ./radeon-developer-tool-suite { };
     rdts = final.radeon-developer-tool-suite;
     rgp = final.radeon-developer-tool-suite;

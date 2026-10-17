@@ -1,7 +1,7 @@
-# Capability suite: Local LLM inference engines (beellama / llama.cpp on ROCm & HRX)
+# Capability suite: Local LLM inference engines (triellama / llama.cpp on ROCm & HRX)
 #
 # Manages local inference infrastructure:
-#   * beellama (custom llama.cpp fork with ROCm/HRX support)
+#   * triellama (custom llama.cpp fork with ROCm/HRX support)
 #   * llama-swap user service running on 127.0.0.1:8080
 #   * On-demand model lifecycle (spawning llama-server per model with TTL)
 #   * hf CLI (huggingface-hub) for pulling GGUF models
@@ -70,7 +70,7 @@
     in
     {
       options.suites.ai.local = {
-        enable = lib.mkEnableOption "Local LLM inference suite (beellama with ROCm support)" // {
+        enable = lib.mkEnableOption "Local LLM inference suite (triellama with ROCm support)" // {
           default = true;
         };
 
@@ -80,13 +80,13 @@
             "hrx"
           ];
           default = "rocm";
-          description = "ROCm runtime backend for beellama: 'rocm' (native ROCm HIP) or 'hrx' (HIP Runtime Extended).";
+          description = "ROCm runtime backend for triellama: 'rocm' (native ROCm HIP) or 'hrx' (HIP Runtime Extended).";
         };
 
         package = lib.mkOption {
           type = lib.types.package;
-          default = pkgs.beellama.override { inherit (cfg) backend; };
-          description = "Configured beellama package.";
+          default = pkgs.triellama.override { inherit (cfg) backend; };
+          description = "Configured triellama package.";
         };
       };
 
@@ -118,9 +118,8 @@
                     ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
                       hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
-                      ctxSize = 98304;
-                      cacheTypeK = "snc4";
-                      cacheTypeV = "snc8";
+                      ctxSize = 65536;
+                      cacheTypeKV = "snc8";
                       kvTailTokens = 1024;
                       reasoningPreserve = false;
                       extraFlags = [
@@ -128,7 +127,6 @@
                         ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                         "--temp 1.00"
                         "--top-k 64"
-                        "--repeat-penalty 1.06"
                         "--dry-multiplier 0.80"
                         "--dry-penalty-last-n 256"
                       ];
@@ -150,6 +148,24 @@
                         "--repeat-penalty 1.05"
                       ];
                     };
+                  };
+                  "vector/embeddinggemma-2" = {
+                    ttl = 300; # 5 minutes
+                    cmd = ''
+                      ${cfg.package}/bin/llama-server \
+                          --hf-repo unsloth/embeddinggemma-2-GGUF:embeddinggemma-2-BF16.gguf \
+                          --embedding \
+                          --pooling mean \
+                          --embd-normalize 2 \
+                          --ctx-size 8192 \
+                          --batch-size 2048 \
+                          --ubatch-size 512 \
+                          --flash-attn on \
+                          --device ROCm0 \
+                          --n-gpu-layers all \
+                          --port ''${PORT} \
+                          --no-webui
+                    '';
                   };
                 };
               }
