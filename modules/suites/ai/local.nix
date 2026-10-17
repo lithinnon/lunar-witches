@@ -118,7 +118,7 @@
                     ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
                       hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
-                      ctxSize = 65536;
+                      ctxSize = 98304;
                       cacheTypeK = "snc4";
                       cacheTypeV = "snc8";
                       kvTailTokens = 1024;
