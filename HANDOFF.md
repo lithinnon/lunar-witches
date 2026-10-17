@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-17 11:32 +07:00
+- **Timestamp:** 2026-10-17 11:42 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `16ef5d7`
-- **Working Tree:** Clean (activated Generation 140)
-- **Live NixOS Generation:** Generation 140 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
+- **Active Git Commit:** `20f7367`
+- **Working Tree:** Clean (activated Generation 141)
+- **Live NixOS Generation:** Generation 141 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,11 +24,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Idle — awaiting next directive. Last closed: Configured Boulesis (`creative/boulesis-v2.1-headtune`) KV cache quantization to asymmetric SNC (`snc4/snc8`), activated Generation 140, and restarted `llama-swap.service`.
-- [x] Changed `cacheTypeKV = "snc8"` to `cacheTypeK = "snc4"` and `cacheTypeV = "snc8"` in `modules/suites/ai/local.nix`.
-- [x] Evaluated and built generation via `nh os build /home/nnon/lunar-witches`.
-- [x] Switched and activated Generation 140 via `nh os switch`.
-- [x] Restarted `llama-swap.service` and verified active `--cache-type-k snc4` and `--cache-type-v snc8`.
+- **Current Focus:** Idle — awaiting next directive. Last closed: Configured Boulesis context window to 96k (`ctxSize = 98304`, ~72k words) with `snc4/snc8` KV quant, activated Generation 141, and restarted `llama-swap.service`.
+- [x] Changed `cacheTypeKV = "snc8"` to `cacheTypeK = "snc4"` and `cacheTypeV = "snc8"` in `modules/suites/ai/local.nix` (Gen 140).
+- [x] Configured `ctxSize = 98304;` (96k) for `creative/boulesis-v2.1-headtune` in `modules/suites/ai/local.nix`.
+- [x] Evaluated, built, and activated Generation 141 via `nh os switch`.
+- [x] Restarted `llama-swap.service` and verified active `--ctx-size 98304` in `~/.config/llama-swap.yml`.
 
 ---
 
@@ -61,9 +61,10 @@ When working on active subsystems, consult these authoritative references:
     - Refactored `suite-ai-prose` to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
     - Linked declarative drift-checked `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
     - Updated Service Deck Plasma widget to control SillyTavern under `scope = "user"`, enabling zero-privilege toggling; activated Generation 138.
-53. **Configured Asymmetric SNC KV Cache Quantization for Boulesis (`fd7a0e1`, `modules/suites/ai/local.nix`):**
-    - Changed `cacheTypeKV = "snc8"` to `cacheTypeK = "snc4"` and `cacheTypeV = "snc8"` (`snc4/snc8`) for `creative/boulesis-v2.1-headtune` in `llama-swap` runner.
-    - Switched and activated Generation 140; restarted `llama-swap.service`.
+53. **Tuned Boulesis KV Cache Quantization & 96k Context Window (`fd7a0e1`, `6725e28`, `modules/suites/ai/local.nix`):**
+    - Configured asymmetric SNC quantization (`cacheTypeK = "snc4"`, `cacheTypeV = "snc8"`) with 1024 `bf16` tail tokens.
+    - Expanded context window from 64k to 96k (`ctxSize = 98304`, ~72,000 words) for balanced novel co-authoring capacity and high decode throughput.
+    - Switched and activated Generation 141; restarted `llama-swap.service`.
 
 ---
 
