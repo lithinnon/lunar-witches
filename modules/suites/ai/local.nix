@@ -121,7 +121,7 @@
                       ctxSize = 65536;
                       cacheTypeKV = "snc8";
                       kvTailTokens = 1024;
-                      reasoningPreserve = false;
+                      reasoningPreserve = true;
                       extraFlags = [
                         "--reasoning-budget 2304"
                         ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
@@ -153,19 +153,39 @@
                     ttl = 300; # 5 minutes
                     cmd = ''
                       ${cfg.package}/bin/llama-server \
-                          --hf-repo unsloth/embeddinggemma-2-GGUF:embeddinggemma-2-BF16.gguf \
+                          --hf-repo unsloth/embeddinggemma-2-GGUF:BF16 \
                           --embedding \
                           --pooling mean \
                           --embd-normalize 2 \
                           --ctx-size 8192 \
-                          --batch-size 2048 \
-                          --ubatch-size 512 \
+                          --batch-size 8192 \
+                          --ubatch-size 8192 \
                           --flash-attn on \
-                          --device ROCm0 \
-                          --n-gpu-layers all \
+                          --threads 12 \
+                          --n-gpu-layers 0 \
+                          --no-mmproj \
                           --port ''${PORT} \
                           --no-webui
                     '';
+                  };
+                };
+
+                groups = {
+                  chat = {
+                    swap = true;
+                    exclusive = false;
+                    members = [
+                      "creative/boulesis-v2.1-headtune"
+                      "agentic/lfm2.5-24b-a2b"
+                    ];
+                  };
+                  embeddings = {
+                    swap = false;
+                    exclusive = false;
+                    persistent = false;
+                    members = [
+                      "vector/embeddinggemma-2"
+                    ];
                   };
                 };
               }

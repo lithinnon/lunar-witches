@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-17 21:08 +07:00
+- **Timestamp:** 2026-10-17 22:08 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `c3b6586`
-- **Working Tree:** Clean (Generation 146 activated)
-- **Live NixOS Generation:** Generation 146 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
+- **Active Git Commit:** `4b98a3d`
+- **Working Tree:** Staged (Generation 148 activated)
+- **Live NixOS Generation:** Generation 148 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.0 GiB closure)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,11 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Renamed in-tree `beellama.cpp` to unversioned `triellama.cpp`, declared `vector/embeddinggemma-2` in `llama-swap`, switched to Generation 146. Awaiting `triellama.cpp` upstream backport of `gemma-embedding2` architecture.
-- [x] Renamed `pkgs/beellama` to `pkgs/triellama`, removed legacy release `0.4.7` versioning, added backward-compatible alias.
-- [x] Configured `vector/embeddinggemma-2` in `llama-swap` (`--embedding`, `--pooling mean`, `--embd-normalize 2`, 8k ctx, 2048 batch).
-- [x] Evaluated, built, and activated Generation 146 via `nh os switch`.
-- [x] Restarted `llama-swap.service` and verified active configuration in `~/.config/llama-swap.yml`.
+- **Current Focus:** Configured `groups` in `llama-swap` to prevent CPU embedding searches from evicting GPU generative models; enabled `--reasoning-preserve` for Boulesis; activated Generation 148. Awaiting `triellama.cpp` backport of `gemma-embedding2`.
+- [x] Declared `groups` in `llama-swap` (`chat` GPU swap pool vs `embeddings` CPU non-evicting pool).
+- [x] Configured `vector/embeddinggemma-2` on CPU (`--threads 12`, `--n-gpu-layers 0`, `--batch-size 8192`, `--no-mmproj`).
+- [x] Enabled `reasoningPreserve = true` for Boulesis in `modules/suites/ai/local.nix`.
+- [x] Switched and activated Generation 148 via `nh os switch`.
+- [x] Restarted `llama-swap.service` and validated configuration via `llama-swap -validate`.
 
 ---
 
@@ -45,8 +46,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 5 Milestones)
 
-50. **Added `vscode-clangd` Extension to VS Code Profile (`f6c9314`, `modules/users/nnon/development.nix`):**
-    - Declared `llvm-vs-code-extensions.vscode-clangd` in default VS Code extensions for C/C++ language server support; activated Generation 136.
 51. **Integrated `sops-nix` Declarative Secret Management (`2d43b1f`, `a64afa9`, `c0dfcc1`):**
     - Introduced `self.nixosModules.feature-sops` trait in `modules/features/sops.nix`, using host SSH ed25519 key (`/etc/ssh/ssh_host_ed25519_key`) converted to age via `ssh-to-age`.
     - Configured `.sops.yaml` with dual age recipients (`admin_nnon`, `admin_ssh`, and `host_lunar_qualia`).
@@ -65,8 +64,12 @@ When working on active subsystems, consult these authoritative references:
 54. **Renamed `beellama.cpp` to `triellama.cpp` & Added Vector Embedding Model (`pkgs/triellama`, `modules/suites/ai/local.nix`):**
     - Renamed in-tree derivation `pkgs/beellama` to `pkgs/triellama`, purging legacy `0.4.7` release versioning.
     - Maintained backward-compatible `beellama` alias in `pkgs/default.nix`.
-    - Configured `vector/embeddinggemma-2` in `llama-swap` (`--embedding`, `--pooling mean`, `--embd-normalize 2`, 8k ctx, 2048 batch size).
-    - Switched and activated Generation 146; restarted `llama-swap.service`.
+    - Configured `vector/embeddinggemma-2` in `llama-swap`; activated Generation 146.
+55. **Configured `llama-swap` Groups & CPU Offloading for Embeddings (`modules/suites/ai/local.nix`):**
+    - Declared `groups` in `llama-swap`: `chat` (GPU swap pool) and `embeddings` (CPU non-evicting pool).
+    - Offloaded `vector/embeddinggemma-2` to 12 CPU threads (`--n-gpu-layers 0 --batch-size 8192 --ubatch-size 8192 --no-mmproj`), eliminating GPU context switching and VRAM overhead.
+    - Enabled `--reasoning-preserve` for Boulesis (`creative/boulesis-v2.1-headtune`).
+    - Switched and activated Generation 148; restarted `llama-swap.service`.
 
 ---
 
