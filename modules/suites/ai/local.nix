@@ -38,8 +38,14 @@
           kvTailTokens,
           reasoningPreserve,
           parallel ? 1,
+          cacheRam ? null,
           extraFlags ? [ ],
         }:
+        let
+          hasCustomCacheRam =
+            cacheRam != null
+            || lib.any (f: lib.hasPrefix "-cram" f || lib.hasPrefix "--cache-ram" f) extraFlags;
+        in
         ''
           ${cfg.package}/bin/llama-server \
               --parallel ${toString parallel} \
@@ -51,8 +57,14 @@
               --cache-type-v ${cacheTypeV} \
               --kv-tail-tokens ${toString kvTailTokens} \
               --kv-tail-type bf16 \
-              --cache-ram 0 \
-              --cache-disk 16384 \
+              ${
+                if cacheRam != null then
+                  "--cache-ram ${toString cacheRam} \\\n    "
+                else if !hasCustomCacheRam then
+                  "--cache-ram 0 \\\n    "
+                else
+                  ""
+              }--cache-disk 16384 \
               --device ROCm0 \
               --n-gpu-layers all \
               --hf-repo ${hfRepo} \
@@ -123,6 +135,7 @@
                       kvTailTokens = 1024;
                       reasoningPreserve = true;
                       extraFlags = [
+                        "-cram 1024"
                         "--reasoning-budget 2304"
                         ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                         "--temp 1.00"
