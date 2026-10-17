@@ -119,7 +119,8 @@
                     cmd = mkServerCmd {
                       hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
                       ctxSize = 65536;
-                      cacheTypeKV = "snc8";
+                      cacheTypeK = "snc4";
+                      cacheTypeV = "snc8";
                       kvTailTokens = 1024;
                       reasoningPreserve = false;
                       extraFlags = [
