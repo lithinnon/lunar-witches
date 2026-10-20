@@ -54,6 +54,7 @@
 
   programs.git = {
     enable = true;
+    lfs.enable = true;
     signing = {
       key = osConfig.users.nnon.gitSigningKey;
       signByDefault = true;
@@ -65,6 +66,14 @@
       };
       init.defaultBranch = "master";
       safe.directory = "*";
+      lfs = {
+        concurrenttransfers = 8;
+      };
+      "lfs \"customtransfer.xet\"" = {
+        path = "git-xet";
+        args = "transfer";
+        concurrent = true;
+      };
     };
   };
 
@@ -113,6 +122,7 @@
   # Cross-harness agent-skills CLI (SKILL.md installer) — nixpkgs `skills`
   # (vercel-labs/skills): `skills add owner/repo`, `skills use`, `skills init`.
   home.packages = with pkgs; [
+    git-xet
     skills
   ];
 

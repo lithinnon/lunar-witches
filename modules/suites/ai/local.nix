@@ -131,15 +131,17 @@
                     cmd = mkServerCmd {
                       hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
                       ctxSize = 65536;
-                      cacheTypeKV = "snc8";
+                      cacheTypeK = "snc4";
+                      cacheTypeV = "snc8";
                       kvTailTokens = 1024;
                       reasoningPreserve = true;
                       extraFlags = [
-                        "-cram 1024"
+                        "-cram 1228"
                         "--reasoning-budget 2304"
                         ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                         "--temp 1.00"
                         "--top-k 64"
+                        "--repeat-penalty 1.06"
                         "--dry-multiplier 0.80"
                         "--dry-penalty-last-n 256"
                       ];

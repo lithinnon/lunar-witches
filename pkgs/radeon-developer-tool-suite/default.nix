@@ -32,6 +32,7 @@
   libtraceevent,
   libtracefs,
   libxml2_13,
+  patchelf,
   version ? "2026-10-02-1872",
   hash ? "sha256-FJZH18yvBPYzBlYIlp9MRCUOFeXth0RZeax4zsP58C0=",
 }:
@@ -66,6 +67,17 @@ let
     libtracefs
     libxml2_13
   ];
+  # patchelf >= 0.18.0 (including 0.19.2) crashes on RadeonGPUAnalyzer-bin with
+  # `Assertion 'splitIndex == -1' failed` in shiftFile due to overlapping LOAD segments.
+  # Pin to patchelf 0.15.2 for autoPatchelfHook.
+  patchelf_0_15 = patchelf.overrideAttrs (_old: rec {
+    version = "0.15.2";
+    src = fetchurl {
+      url = "https://github.com/NixOS/patchelf/releases/download/${version}/patchelf-${version}.tar.bz2";
+      hash = "sha256-F3RfVkFZyOIo/EEtplogSLhGxLa0Igt3y/IkFuAvLXw=";
+    };
+    doCheck = false;
+  });
 in
 stdenv.mkDerivation rec {
   pname = "radeon-developer-tool-suite";
@@ -77,6 +89,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
+    patchelf_0_15
     autoPatchelfHook
     makeWrapper
     copyDesktopItems
