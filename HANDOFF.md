@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-20 14:41 +07:00
+- **Timestamp:** 2026-10-20 14:47 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `7474f38`
-- **Working Tree:** Clean (Ready for nh os switch)
-- **Live NixOS Generation:** Generation 152 (Active; switching to Generation 153)
+- **Active Git Commit:** `fe878ff`
+- **Working Tree:** Clean (Generation 153 activated)
+- **Live NixOS Generation:** Generation 153 (Activated; Linux 7.2.11-cachyos-lto-znver4, 35.3 GiB closure)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,14 +24,14 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Integrated Hugging Face `git-xet` & Git LFS, updated flake inputs, fixed `radeon-developer-tool-suite` build with pinned patchelf 0.15.2, built and switching via `nh os switch`.
+- **Current Focus:** Completed declarative integration of Hugging Face `git-xet` & Git LFS, updated flake inputs, fixed RDTS patchelf pin, and activated Generation 153.
 - [x] Declared `programs.git.lfs.enable = true` and `lfs."customtransfer.xet"` in `modules/users/nnon/development.nix`.
 - [x] Added `pkgs.git-xet` to `home.packages`.
 - [x] Updated flake inputs via `nix flake update`.
 - [x] Fixed `radeon-developer-tool-suite` patchelf 0.19.2 assertion failure by pinning `patchelf 0.15.2` in `nativeBuildInputs`.
 - [x] Built Generation 153 candidate cleanly via `nh os build`.
-- [ ] Commit changes to Git `master`.
-- [ ] Activate Generation 153 via `nh os switch`.
+- [x] Committed changes to Git `master` (`fe878ff`).
+- [x] Activated Generation 153 via `nh os switch`.
 
 ---
 
