@@ -60,6 +60,7 @@ Reproducible lab runs, hardware traces, and validation benchmarks on physical si
 - [`2026-10-09-amd-xdna-iron-xrt-verification.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-amd-xdna-iron-xrt-verification.md): Physical AMD XDNA 2 AIE2p NPU execution proof using MLIR-AIE, IRON JIT compiler, and matched XRT 2.21.75 runtime on 4 tiles.
 - [`2026-10-09-rocm-loom-libamdf-silicon-execution.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-rocm-loom-libamdf-silicon-execution.md): Live GPU & NPU silicon execution proof using ROCm Loom compiler and `libamdf` direct Linux DRM runner (`/dev/accel/accel0`).
 - [`2026-10-09-pytorch-flash-attention-live-hrx-execution.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-pytorch-flash-attention-live-hrx-execution.md): Live PyTorch 2.12 autograd training & Flash Attention 2 execution proof on Radeon 8060S GPU running over HRX runtime (`libamdhip64.so`).
+- [`2026-10-25-qwen-26b-a4b-token-efficient-qad-proof.md`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-25-qwen-26b-a4b-token-efficient-qad-proof.md): Empirical proof of Token-Efficient High-Kurtosis Micro-Calibration (QAD, -12.5% PPL to 2.8789) and Native 1-layer MTP (`blk.40.nextn`, 73.8 t/s) on Radeon 8060S.
 
 ---
 
