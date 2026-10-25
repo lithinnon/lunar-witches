@@ -30,7 +30,10 @@
       # KV cache quantization (e.g. snc4 key + snc8 value).
       mkServerCmd =
         {
-          hfRepo,
+          hfRepo ? null,
+          model ? null,
+          mmproj ? null,
+          chatTemplate ? null,
           ctxSize,
           cacheTypeKV ? null,
           cacheTypeK ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
@@ -39,12 +42,63 @@
           reasoningPreserve,
           parallel ? 1,
           cacheRam ? null,
+          cacheDisk ? null,
           extraFlags ? [ ],
         }:
         let
           hasCustomCacheRam =
             cacheRam != null
             || lib.any (f: lib.hasPrefix "-cram" f || lib.hasPrefix "--cache-ram" f) extraFlags;
+          hasCustomCacheDisk =
+            cacheDisk != null
+            || lib.any (f: lib.hasPrefix "-cdisk" f || lib.hasPrefix "--cache-disk" f) extraFlags;
+
+          # Radix cache tier limits: multimodal projectors (mmproj) populate multimodal tokens
+          # (has_mtmd = true), which triellama's disk eviction tier cannot serialize without asserting.
+          # For multimodal models, reserve 2 GiB RAM cache and disable disk spill by default.
+          effectiveCacheRam =
+            if cacheRam != null then
+              cacheRam
+            else if hasCustomCacheRam then
+              null
+            else if mmproj != null then
+              2048
+            else
+              0;
+          effectiveCacheDisk =
+            if cacheDisk != null then
+              cacheDisk
+            else if hasCustomCacheDisk then
+              null
+            else if mmproj != null then
+              0
+            else
+              16384;
+
+          modelFlag =
+            if model != null then
+              "--model ${model}"
+            else if hfRepo != null then
+              "--hf-repo ${hfRepo}"
+            else
+              throw "mkServerCmd requires either 'model' or 'hfRepo'";
+          mmprojFlag = if mmproj != null then "--mmproj ${mmproj}" else "--no-mmproj";
+          chatTemplateFlag = if chatTemplate != null then "--chat-template-file ${chatTemplate}" else null;
+          serverFlags =
+            lib.filter (f: f != null) [
+              modelFlag
+              mmprojFlag
+              chatTemplateFlag
+              "--port \${PORT}"
+              "--no-webui"
+              "--reasoning-format deepseek"
+              "--reasoning on"
+              "--reasoning-loop-check-interval 32"
+              "--reasoning-loop-interventions 1"
+              (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
+              "--repeat-last-n 128"
+            ]
+            ++ extraFlags;
         in
         ''
           ${cfg.package}/bin/llama-server \
@@ -58,26 +112,14 @@
               --kv-tail-tokens ${toString kvTailTokens} \
               --kv-tail-type bf16 \
               ${
-                if cacheRam != null then
-                  "--cache-ram ${toString cacheRam} \\\n    "
-                else if !hasCustomCacheRam then
-                  "--cache-ram 0 \\\n    "
-                else
-                  ""
-              }--cache-disk 16384 \
-              --device ROCm0 \
+                lib.optionalString (effectiveCacheRam != null) "--cache-ram ${toString effectiveCacheRam} \\\n    "
+              }${
+                lib.optionalString (
+                  effectiveCacheDisk != null
+                ) "--cache-disk ${toString effectiveCacheDisk} \\\n    "
+              }--device ROCm0 \
               --n-gpu-layers all \
-              --hf-repo ${hfRepo} \
-              --no-mmproj \
-              --port ''${PORT} \
-              --no-webui \
-              --reasoning-format deepseek \
-              --reasoning on \
-              --reasoning-loop-check-interval 32 \
-              --reasoning-loop-interventions 1 \
-              ${if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve"} \
-              --repeat-last-n 128 \
-              ${lib.concatStringsSep " \\\n    " extraFlags}
+              ${lib.concatStringsSep " \\\n    " serverFlags}
         '';
     in
     {
@@ -147,19 +189,23 @@
                       ];
                     };
                   };
-                  "agentic/lfm2.5-24b-a2b" = {
-                    ttl = 600; # 10 minutes
+                  "reasoning/qwen3.8-26b-a4b" = {
+                    ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
-                      hfRepo = "LiquidAI/LFM2.5-24B-A2B-GGUF:QAD-Q4_0";
-                      ctxSize = 196608; # 192k
+                      model = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/Qwen3.8-26B-A4B.gguf";
+                      mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/mmproj-Qwen3.8-26B-A4B.gguf";
+                      chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/chat_template.jinja";
+                      ctxSize = 131072; # 128k
                       cacheTypeK = "snc4";
                       cacheTypeV = "snc4";
-                      kvTailTokens = 256;
+                      kvTailTokens = 512;
                       reasoningPreserve = true;
                       extraFlags = [
                         "--jinja"
-                        "--temp 0.10"
-                        "--top-k 50"
+                        "--spec-type draft-mtp"
+                        "--temp 0.55"
+                        "--min-p 0.05"
+                        "--top-p 0.90"
                         "--repeat-penalty 1.05"
                       ];
                     };
@@ -191,7 +237,7 @@
                     exclusive = false;
                     members = [
                       "creative/boulesis-v2.1-headtune"
-                      "agentic/lfm2.5-24b-a2b"
+                      "reasoning/qwen3.8-26b-a4b"
                     ];
                   };
                   embeddings = {
