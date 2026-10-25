@@ -40,7 +40,7 @@
                         name = "Qwen 3.8 26B A4B (Local)";
                         limit = {
                           context = 131072;
-                          output = 8192;
+                          output = 32768;
                         };
                       };
                       "creative/boulesis-v2.1-headtune" = {
@@ -61,9 +61,6 @@
                   "brave-search_*" = "allow";
                   "brave_*" = "allow";
                 };
-                skills = [
-                  "${config.home.homeDirectory}/.agents/skills"
-                ];
                 mcp = {
                   nixos = {
                     type = "local";
