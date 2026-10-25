@@ -76,6 +76,10 @@
               settings = {
                 defaultProvider = lib.mkDefault "llama-swap";
                 defaultModel = lib.mkDefault "reasoning/qwen3.8-26b-a4b";
+                defaultThinkingLevel = lib.mkDefault "high";
+                modelThinkingLevels = {
+                  "llama-swap/reasoning/qwen3.8-26b-a4b" = "xhigh";
+                };
                 showCacheMissNotices = lib.mkDefault true;
                 packages = [
                   "npm:pi-mcp-adapter"
@@ -87,7 +91,45 @@
                   "-builtin:llama.cpp"
                 ];
               };
+
+              appendSystem = ''
+                ## Anti-Looping & Search Invariants
+                - Never execute identical or alternating tool calls (e.g. repeated `read` or `grep`) with identical arguments if the previous result was empty or uninformative.
+                - If a search tool (`grep`, `find`) returns 0 matches, accept that the target does NOT exist in the repository. Do not repeat the search or re-read the same file expecting different output.
+                - Understand domain boundaries: application runtime settings (e.g. Pi settings `settings.json`, CLI flags, thinking levels) belong to Pi's own configuration (`~/.config/pi/agent/settings.json`) or upstream documentation, NOT to the target workspace codebase.
+                - If a search is inconclusive after 1 attempt, stop searching immediately and report your findings to the user.
+              '';
             };
+
+            home.file."${cfg.configDir}/extensions/loop-breaker.ts".text = ''
+              import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+              export default function (pi: ExtensionAPI) {
+                const history: string[] = [];
+                const WINDOW_SIZE = 6;
+
+                pi.on("tool_call", async (event) => {
+                  const signature = `''${event.toolName}:''${JSON.stringify(event.input ?? {})}`;
+                  const occurrences = history.filter((sig) => sig === signature).length;
+
+                  history.push(signature);
+                  if (history.length > WINDOW_SIZE) {
+                    history.shift();
+                  }
+
+                  if (occurrences >= 2) {
+                    return {
+                      block: true,
+                      reason: `Loop breaker triggered: You have executed "''${event.toolName}" with identical arguments multiple times recently with no new findings. Repeating this action is blocked. Try a completely different approach or answer the user with your current knowledge.`,
+                    };
+                  }
+                });
+
+                pi.on("agent_start", async () => {
+                  history.length = 0;
+                });
+              }
+            '';
 
             home.activation.updatePi = lib.mkIf cfg.enable (
               lib.hm.dag.entryAfter [ "writeBoundary" ] ''

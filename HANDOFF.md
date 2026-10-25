@@ -9,27 +9,26 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 20:54 +07:00
+- **Timestamp:** 2026-10-26 00:04 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `02287b2`
-- **Working Tree:** Clean (Switched and active)
+- **Active Git Commit:** `a587d4c`
+- **Working Tree:** Dirty (`modules/suites/ai/pi-coding-agent.nix`, `retrospects/history/2026-10-session-ledger.md`)
 - **Live NixOS Generation:** Generation 164 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `bc2bb3d8-6692-4246-9429-a36d41336f17` (current), Antigravity `c18639b1-a221-4c2b-9fb7-eedb5d22d0d3`, Antigravity `fad59a5a-831e-45a2-9d4d-0a784bde3aba`, Pi `01a13422-d88c-70d1-a404-d738cde6a7e2`.
+- **Cold Forensic Traces:** Antigravity `f22d1737-c8e0-48d5-b804-080941a37627` (current), Antigravity `bc2bb3d8-6692-4246-9429-a36d41336f17`, Pi `2026-10-25T16-36-02-307Z_01a173eb-4a83-773d-b7c5-097168627332`.
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Configured asymmetric SNC KV cache quantization for `reasoning/qwen3.8-26b-a4b` (`snc4` key + `snc8` value); activated Generation 164.
+- **Current Focus:** Configured high/xhigh thinking levels, system invariants, and loop breaker extension for Pi Coding Agent (`modules/suites/ai/pi-coding-agent.nix`).
 - [x] Formatted and checked syntax via `nix fmt`.
 - [x] Evaluated dry-run build via `nix build --dry-run`.
-- [x] Built candidate generation via `nh os build`.
-- [x] Switched and activated Generation 164 via `nh os switch`.
-- [x] Restarted `llama-swap.service` and validated live execution via `pi -p`.
+- [ ] Build and activate generation via `nh os switch`.
+- [ ] Validate live Pi configuration and thinking level startup.
 
 ---
 
@@ -40,30 +39,27 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–35, 48, 51–58):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–35, 48, 51–61):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 4 Milestones)
 
-59. **Conformed Shell & Toolchains to XDG Base Directory Specification (`modules/core/default.nix`, `modules/users/nnon/default.nix`, `modules/users/nnon/shell.nix`):**
-    - Configured system-level `nix.settings.use-xdg-base-directories = true;` to place Nix channels and defexpr under `$XDG_STATE_HOME`.
-    - Configured user-level `xdg.enable = true;`, standard XDG session variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`, `_JAVA_OPTIONS`), `sessionPath`, and `wget` alias.
-    - Migrated existing home dotfiles into their corresponding XDG destinations (including Digital circuit preferences to `~/.config/java/.userPrefs`).
-    - Provisioned declarative `xdg.configFile."xdg-ninja/ignore"` suppressing brittle/high-risk items (`.gnupg`, `.pulse-cookie`, `.zoom`) while keeping upstream-hardcoded Category C candidates visible.
-60. **Integrated Typst Toolchain & VS Code Extension (`f9d6876`, `modules/suites/development/default.nix`, `modules/users/nnon/development.nix`):**
-    - Added `typst` (0.15.1), `tinymist` (0.15.10 LSP), and `typstyle` (0.15.2 code formatter) to `suite-development`.
-    - Added `vscode-extensions.myriad-dreamin.tinymist` to user VS Code profile.
-    - Switched and activated Generation 158; verified PDF compilation.
 61. **Configured `reasoning/qwen3.8-26b-a4b` & Purged LFM 24B in `llama-swap` (`modules/suites/ai/local.nix`):**
     - Parameterized `mkServerCmd` for local weights (`model`), multimodal projectors (`mmproj`), Jinja chat templates (`chatTemplate`), and safe radix cache limits.
     - Declared `reasoning/qwen3.8-26b-a4b` with 128k context, symmetric `snc4` KV cache, 512 `bf16` tail tokens, and `--spec-type draft-mtp`.
     - Removed `agentic/lfm2.5-24b-a2b` from models and `groups.chat.members`; switched to Generation 161.
-62. **Migrated Pi Coding Agent to Local Qwen & Purged MiMo (`modules/suites/ai/pi-coding-agent.nix`, `AGENTS.md`):**
-    - Configured `programs.pi-coding-agent.models` pointing to `llama-swap` (`http://127.0.0.1:8080/v1`).
-    - Set `defaultProvider = "llama-swap"` and `defaultModel = "reasoning/qwen3.8-26b-a4b"`.
-    - Removed `pi-xiaomi-mimo-provider` extension and purged Xiaomi credentials from `auth.json`.
-    - Switched and activated Generation 162; verified default headless Pi invocation with zero flags.
+62. **Switch Qwen KV Cache to Asymmetric SNC8 Value (`a512b6a`, `modules/suites/ai/local.nix`):**
+    - Switched `cache_type_v` to `snc8` while keeping `cache_type_k` as `snc4` for higher numerical stability and fidelity.
+    - Switched and activated Generation 164.
+63. **Updated Qwen3.8-26B-A4B Model & Template Paths (`a587d4c`, `modules/suites/ai/local.nix`):**
+    - Updated model path from `qwen-3.8-26b-moe` to `qwen3.8-26b-a4b` directory.
+    - Updated chatTemplate path similarly for Jinja templates.
+    - Committed with `feat(ai): update qwen3.8-26b-a4b model and template paths`.
+64. **Configured Pi Thinking Levels, Anti-Loop Invariants & Loop Breaker (`modules/suites/ai/pi-coding-agent.nix`):**
+    - Added `defaultThinkingLevel = "high"` and `modelThinkingLevels."llama-swap/reasoning/qwen3.8-26b-a4b" = "xhigh"`.
+    - Added `appendSystem` cognitive invariants preventing repeated/alternating search commands on empty results.
+    - Provisioned deterministic sliding-window `loop-breaker.ts` extension intercepting repetitive tool cycles.
 
 ---
 
