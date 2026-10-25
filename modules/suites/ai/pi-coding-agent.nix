@@ -36,18 +36,17 @@
               models = {
                 providers = {
                   llama-swap = {
-                    name = "llama-swap (Local ROCm)";
+                    name = "triellama.cpp";
                     baseUrl = "http://127.0.0.1:8080/v1";
                     api = "openai-completions";
                     apiKey = "local";
                     models = [
                       {
                         id = "reasoning/qwen3.8-26b-a4b";
-                        name = "Qwen 3.8 26B A4B (Local Reasoning)";
+                        name = "Qwen 3.8 26B A4B (In-house)";
                         reasoning = true;
                         input = [ "text" ];
                         contextWindow = 131072;
-                        maxTokens = 16384;
                         cost = {
                           input = 0;
                           output = 0;

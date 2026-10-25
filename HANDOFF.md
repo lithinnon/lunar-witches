@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 20:25 +07:00
+- **Timestamp:** 2026-10-25 20:30 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `76248a3`
+- **Active Git Commit:** `07622b5`
 - **Working Tree:** Clean (Switched and active)
-- **Live NixOS Generation:** Generation 162 (Linux 7.3.0-cachyos)
+- **Live NixOS Generation:** Generation 163 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,12 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Migrated Pi Coding Agent from MiMo v2.6 to local `reasoning/qwen3.8-26b-a4b` via `llama-swap`; purged MiMo extension and credentials.
-- [x] Declared `programs.pi-coding-agent.models` with `llama-swap` provider (`http://127.0.0.1:8080/v1`) and Qwen/Boulesis models in `modules/suites/ai/pi-coding-agent.nix`.
-- [x] Removed `pi-xiaomi-mimo-provider` extension and purged Xiaomi/MiMo credentials from `auth.json`.
-- [x] Set `defaultProvider = "llama-swap"` and `defaultModel = "reasoning/qwen3.8-26b-a4b"`.
-- [x] Switched and activated Generation 162 via `nh os switch`.
-- [x] Validated Pi CLI default headless prompt invocation without CLI flags (`Qwen default active`).
+- **Current Focus:** Refined Pi provider name to `triellama.cpp` and model display name to `Qwen 3.8 26B A4B (In-house)`; activated Generation 163.
+- [x] Formatted and checked syntax via `nix fmt`.
+- [x] Evaluated dry-run build via `nix build --dry-run`.
+- [x] Built candidate generation via `nh os build`.
+- [x] Switched and activated Generation 163 via `nh os switch`.
+- [x] Verified `pi --list-models llama-swap` and executed test prompt with `pi -p`.
 
 ---
 
