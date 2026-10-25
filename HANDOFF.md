@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 11:10 +07:00
+- **Timestamp:** 2026-10-25 11:46 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `1848ec6`
-- **Working Tree:** Clean (Ready for activation)
-- **Live NixOS Generation:** Generation 153 (Linux 7.2.11-cachyos-lto-znver4)
+- **Active Git Commit:** `d104e2b`
+- **Working Tree:** Clean (Switched and active)
+- **Live NixOS Generation:** Generation 156 (Linux 7.2.11-cachyos-lto-znver4)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -31,7 +31,8 @@
 - [x] Safely migrated 9 existing home dotfiles into their corresponding XDG destinations.
 - [x] Validated with `xdg-ninja` that all Category A legacy dotfiles are cleared.
 - [x] Evaluated top-level system dry-run successfully (`nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run`).
-- [ ] Ready for live system activation (`nh os switch /home/nnon/lunar-witches`) at user's discretion.
+- [x] Activated Generation 156 via `nh os switch /home/nnon/lunar-witches`.
+- [ ] Investigate/configure `systemd.services.NetworkManager.restartIfChanged = false;` to prevent network drop during live switches.
 
 ---
 
