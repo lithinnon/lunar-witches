@@ -86,48 +86,114 @@
               };
             };
 
-            # Aider-style whitespace & indentation tolerant edit plugin
+            # Aider-style whitespace, typo-tolerant & cognitive guard plugin
             home.file."${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js".text = ''
               import fs from "node:fs/promises";
               import path from "node:path";
+
+              function levenshtein(a, b) {
+                if (a === b) return 0;
+                if (a.length === 0) return b.length;
+                if (b.length === 0) return a.length;
+                const matrix = [];
+                for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+                for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+                for (let i = 1; i <= b.length; i++) {
+                  for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                      matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                      matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                      );
+                    }
+                  }
+                }
+                return matrix[b.length][a.length];
+              }
 
               export default {
                 id: "fuzzy-edit",
                 setup: async () => {
                   return {
                     "tool.execute.before": async (input, output) => {
-                      if (input.tool !== "edit" || !output.args?.oldString) return;
-
-                      const { path: filePath, oldString, newString } = output.args;
-                      const fullPath = path.isAbsolute(filePath)
-                        ? filePath
-                        : path.join(process.cwd(), filePath);
-
-                      let content;
-                      try {
-                        content = await fs.readFile(fullPath, "utf8");
-                      } catch {
-                        return;
+                      // 1. Anti-Sed Guard: Block raw sed -i calls on source files to prevent line-arithmetic corruption
+                      if (input.tool === "bash") {
+                        const cmd = String(output.args?.command ?? "");
+                        if (
+                          /\bsed\s+-[a-zA-Z]*i\b/.test(cmd) &&
+                          !cmd.includes("/tmp") &&
+                          !cmd.includes("/dev/null")
+                        ) {
+                          throw new Error(
+                            "Agent-Guard: Modifying files via raw 'sed -i' is prohibited to prevent line-arithmetic corruption. Please use the 'edit' or 'write' tool instead."
+                          );
+                        }
                       }
 
-                      // If exact match succeeds, nothing to do
-                      if (content.includes(oldString)) return;
+                      // 2. Whitespace & Typo Tolerant Edit Tool (Aider-style relative indent + Levenshtein match)
+                      if (input.tool === "edit" && output.args?.oldString) {
+                        const { path: filePath, oldString, newString } = output.args;
+                        const fullPath = path.isAbsolute(filePath)
+                          ? filePath
+                          : path.join(process.cwd(), filePath);
 
-                      // Line-trimmed matching (Aider-style relative indentation)
-                      const fileLines = content.split("\n");
-                      const targetLines = oldString.split("\n").map((l) => l.trim());
+                        let content;
+                        try {
+                          content = await fs.readFile(fullPath, "utf8");
+                        } catch {
+                          return;
+                        }
 
-                      for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
-                        let match = true;
-                        for (let j = 0; j < targetLines.length; j++) {
-                          if (fileLines[i + j].trim() !== targetLines[j]) {
-                            match = false;
+                        // If exact match succeeds, nothing to do
+                        if (content.includes(oldString)) return;
+
+                        const fileLines = content.split("\n");
+                        const targetLines = oldString.split("\n").map((l) => l.trim());
+
+                        let matchIndex = -1;
+                        let isTypoMatch = false;
+
+                        // Pass 1: Line-trimmed match (ignores indentation discrepancies)
+                        for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
+                          let match = true;
+                          for (let j = 0; j < targetLines.length; j++) {
+                            if (fileLines[i + j].trim() !== targetLines[j]) {
+                              match = false;
+                              break;
+                            }
+                          }
+                          if (match) {
+                            matchIndex = i;
                             break;
                           }
                         }
 
-                        if (match) {
-                          const exactOldLines = fileLines.slice(i, i + targetLines.length);
+                        // Pass 2: Levenshtein typo match (catches perceptual slips like 'sites' vs 'suites')
+                        if (matchIndex === -1 && targetLines.length > 0) {
+                          for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
+                            let match = true;
+                            for (let j = 0; j < targetLines.length; j++) {
+                              const fLine = fileLines[i + j].trim();
+                              const tLine = targetLines[j];
+                              const maxDistance = Math.max(1, Math.floor(tLine.length * 0.15));
+                              if (levenshtein(fLine, tLine) > maxDistance) {
+                                match = false;
+                                break;
+                              }
+                            }
+                            if (match) {
+                              matchIndex = i;
+                              isTypoMatch = true;
+                              break;
+                            }
+                          }
+                        }
+
+                        if (matchIndex !== -1) {
+                          const exactOldLines = fileLines.slice(matchIndex, matchIndex + targetLines.length);
                           const exactOldString = exactOldLines.join("\n");
 
                           const actualIndent = exactOldLines[0].match(/^\s*/)[0];
@@ -146,9 +212,59 @@
                               .join("\n");
                           }
 
+                          // If typo match occurred, fix occurrences of typo'd anchor in adjustedNewString
+                          if (isTypoMatch) {
+                            const origOldLines = oldString.split("\n");
+                            for (let j = 0; j < origOldLines.length; j++) {
+                              const origOld = origOldLines[j].trim();
+                              const realFile = exactOldLines[j].trim();
+                              if (origOld !== realFile && adjustedNewString.includes(origOld)) {
+                                adjustedNewString = adjustedNewString.replaceAll(origOld, realFile);
+                              }
+                            }
+                          }
+
                           output.args.oldString = exactOldString;
                           output.args.newString = adjustedNewString;
-                          break;
+                        }
+                      }
+                    },
+
+                    "tool.execute.after": async (input, output) => {
+                      // 3. Negative-Proof Annotator: Halt infinite search loops when 0 matches are found
+                      const cmd = String(input.args?.command ?? "");
+                      const isSearch =
+                        input.tool === "grep" ||
+                        input.tool === "glob" ||
+                        cmd.includes("grep") ||
+                        cmd.includes("rg") ||
+                        cmd.includes("find");
+
+                      if (isSearch && output && output.content !== undefined) {
+                        const text =
+                          typeof output.content === "string"
+                            ? output.content
+                            : JSON.stringify(output.content ?? "");
+                        if (
+                          !text.trim() ||
+                          text.trim() === "(no output)" ||
+                          text.trim() === "[]" ||
+                          text.trim() === "\"\""
+                        ) {
+                          output.content =
+                            "(no output — 0 matches found. The target pattern does not exist in this search space. Do not repeat the same search; accept this negative proof and state your findings to the user.)";
+                        }
+                      }
+
+                      // 4. Ambiguous Tool Failures & Silent Exits: Prevent assuming success on failed commands
+                      if (input.tool === "bash" && output?.isError) {
+                        const text =
+                          typeof output.content === "string"
+                            ? output.content
+                            : JSON.stringify(output.content ?? "");
+                        if (!text.trim() || text.trim() === "(no output)" || text.trim() === "\"\"") {
+                          output.content =
+                            "[CRITICAL: Command exited with a non-zero failure code and produced no output. Do not assume success.]";
                         }
                       }
                     },

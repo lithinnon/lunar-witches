@@ -128,6 +128,15 @@ When adding new configurations or options, follow these boundary guidelines:
    - Invariants: Never embed passwords into Nix store files. Use NetworkManager's `ensureProfiles.environmentFiles` to substitute `$CHULA_WIFI_PASSWORD` / `$CHULA_WIFI_IDENTITY` into `/run/NetworkManager/system-connections/` at runtime (in RAM with 0600 permissions).
    - RADIUS Quirks: Enterprise networks relying on legacy RADIUS TLS 1.0 handshakes require `phase1-auth-flags = 32` (0x20) and `openssl-ciphers = "DEFAULT@SECLEVEL=0"`. chula-flake provides the latter (plus a pinned RADIUS CA); `feature-chulawifi` layers the former on both profiles — keep that quirk until upstream adds it.
    - Keyfile Quirk: NM keyfiles require `\` in values to be escaped as `\\`, but `envsubst` writes the password raw (and systemd's `EnvironmentFile=` collapses `\\`→`\`, so the env file can't carry the escaped form either). NM then rejects the value ("cannot be interpreted") and 802-1x auth fails every boot. `feature-chulawifi` re-escapes `password=` lines after profile generation and re-runs `nmcli connection reload`.
+7. **Full-Graph Dependency Convergence Invariant:**
+   - Architectural modifications (declaring options, refactoring traits, adding packages, or renaming interfaces) form a directed acyclic graph across three conceptual layers:
+     - **Definition Layer** (`modules/suites/`, `modules/hardware/`, `pkgs/`): Where options, derivations, and traits are declared and typed.
+     - **Aggregator Layer** (`modules/suites/default.nix`, `modules/roles/default.nix`, `flake.nix` exports): Where modules and traits are gathered and exported.
+     - **Consumer Layer** (`hosts/<hostname>/default.nix`, `modules/users/`, shell environments): Where options are assigned, suites are imported, and packages are consumed.
+   - An edit is never complete at the definition layer alone. Agents MUST trace the dependency graph across all three tiers, verify zero orphaned references or missing exports, and evaluate the system end-to-end (`nix build --dry-run`) before declaring a task complete. Never leave downstream aggregators or host manifests desynchronized.
+8. **Cognitive Guardrails & Safe File Editing:**
+   - NEVER use `sed`, `awk`, or manual line arithmetic to edit repository source code. Always use the dedicated `edit` or `write` tools with unique surrounding anchor blocks.
+   - Respect negative proofs: when search tools (`grep`, `glob`, `find`) return 0 matches, accept that the target does not exist rather than guessing undocumented flags or looping endlessly.
 
 ---
 
