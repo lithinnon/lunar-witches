@@ -77,9 +77,6 @@
                 defaultProvider = lib.mkDefault "llama-swap";
                 defaultModel = lib.mkDefault "reasoning/qwen3.8-26b-a4b";
                 defaultThinkingLevel = lib.mkDefault "high";
-                modelThinkingLevels = {
-                  "llama-swap/reasoning/qwen3.8-26b-a4b" = "xhigh";
-                };
                 showCacheMissNotices = lib.mkDefault true;
                 packages = [
                   "npm:pi-mcp-adapter"
