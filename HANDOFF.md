@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 20:05 +07:00
+- **Timestamp:** 2026-10-25 20:09 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `545f030`
+- **Active Git Commit:** `83456c7`
 - **Working Tree:** Clean (Switched and active)
-- **Live NixOS Generation:** Generation 160 (Linux 7.3.0-cachyos)
+- **Live NixOS Generation:** Generation 161 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,12 +24,13 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Configured custom `reasoning/qwen3.8-26b-a4b` in `llama-swap` with MTP speculative decoding; purged `agentic/lfm2.5-24b-a2b`.
-- [x] Extended `mkServerCmd` in `modules/suites/ai/local.nix` with `model`, `mmproj`, `chatTemplate`, and multimodal-safe radix cache tier limits (2 GiB RAM cache, zero disk spill to prevent `has_mtmd` assertion).
+- **Current Focus:** Configured custom `reasoning/qwen3.8-26b-a4b` in `llama-swap` with MTP speculative decoding, disk cache tier (`--cache-disk 16384 --cache-ram 0`), and purged `agentic/lfm2.5-24b-a2b`.
+- [x] Extended `mkServerCmd` in `modules/suites/ai/local.nix` with `model`, `mmproj`, `chatTemplate`, and parameterized radix cache tier limits.
+- [x] Commented out `mmproj` on `reasoning/qwen3.8-26b-a4b`, reverting to 0-RAM cache and 16 GiB NVMe radix disk tier.
 - [x] Declared `reasoning/qwen3.8-26b-a4b` with 128k context, symmetric `snc4` KV cache, 512 `bf16` tail tokens, preserved reasoning, and `--spec-type draft-mtp`.
 - [x] Purged `agentic/lfm2.5-24b-a2b` from `models` and `groups.chat.members`.
-- [x] Switched and activated Generation 160 via `nh os switch`.
-- [x] Validated live chat completions through `llama-swap` on `127.0.0.1:8080` (MTP draft acceptance 42/61, ~65 t/s decode).
+- [x] Switched and activated Generation 161 via `nh os switch`.
+- [x] Validated live chat completions through `llama-swap` on `127.0.0.1:8080` (MTP draft acceptance 41/63, ~60 t/s decode).
 
 ---
 
