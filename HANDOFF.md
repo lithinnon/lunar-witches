@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 20:30 +07:00
+- **Timestamp:** 2026-10-25 20:54 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `07622b5`
+- **Active Git Commit:** `02287b2`
 - **Working Tree:** Clean (Switched and active)
-- **Live NixOS Generation:** Generation 163 (Linux 7.3.0-cachyos)
+- **Live NixOS Generation:** Generation 164 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,12 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Refined Pi provider name to `triellama.cpp` and model display name to `Qwen 3.8 26B A4B (In-house)`; activated Generation 163.
+- **Current Focus:** Configured asymmetric SNC KV cache quantization for `reasoning/qwen3.8-26b-a4b` (`snc4` key + `snc8` value); activated Generation 164.
 - [x] Formatted and checked syntax via `nix fmt`.
 - [x] Evaluated dry-run build via `nix build --dry-run`.
 - [x] Built candidate generation via `nh os build`.
-- [x] Switched and activated Generation 163 via `nh os switch`.
-- [x] Verified `pi --list-models llama-swap` and executed test prompt with `pi -p`.
+- [x] Switched and activated Generation 164 via `nh os switch`.
+- [x] Restarted `llama-swap.service` and validated live execution via `pi -p`.
 
 ---
 

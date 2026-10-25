@@ -197,7 +197,7 @@
                       chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/chat_template.jinja";
                       ctxSize = 131072; # 128k
                       cacheTypeK = "snc4";
-                      cacheTypeV = "snc4";
+                      cacheTypeV = "snc8";
                       kvTailTokens = 512;
                       reasoningPreserve = true;
                       extraFlags = [
