@@ -161,6 +161,9 @@
 54. **Renamed `beellama.cpp` to `triellama.cpp` & Added Vector Embedding Model (`pkgs/triellama`, `modules/suites/ai/local.nix`):**
     - Renamed in-tree derivation `pkgs/beellama` to `pkgs/triellama`, maintaining backward-compatible alias.
     - Configured `vector/embeddinggemma-2` in `llama-swap`; activated Generation 146.
+55. **Configured `llama-swap` Groups & CPU Offloading for Embeddings (`07542e8`, `modules/suites/ai/local.nix`):**
+    - Declared `groups` in `llama-swap`: `chat` (GPU pool) and `embeddings` (CPU pool).
+    - Offloaded `vector/embeddinggemma-2` to 12 CPU threads; activated Generation 148.
 
 
 

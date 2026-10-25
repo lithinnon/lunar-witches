@@ -1,18 +1,30 @@
 # User shell and CLI environment: fish, bash, aliases, btop, fastfetch
-{ ... }:
+{ config, ... }:
 
 {
   home.sessionPath = [
     "$HOME/.local/bin"
+    "${config.xdg.dataHome}/cargo/bin"
   ];
 
   home.sessionVariables = {
     NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
     SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
     SSH_ASKPASS_REQUIRE = "prefer";
+
+    # XDG Base Directory conformances
+    CARGO_HOME = "${config.xdg.dataHome}/cargo";
+    DOTNET_CLI_HOME = "${config.xdg.dataHome}/dotnet";
+    CODEX_HOME = "${config.xdg.configHome}/codex";
+    TRITON_HOME = "${config.xdg.cacheHome}/triton";
+    PYTHON_HISTORY = "${config.xdg.stateHome}/python_history";
+    GTK2_RC_FILES = "${config.xdg.configHome}/gtk-2.0/gtkrc";
+    NPM_CONFIG_USERCONFIG = "${config.xdg.configHome}/npm/npmrc";
+    NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
   };
 
   home.shellAliases = {
+    wget = "wget --hsts-file=${config.xdg.dataHome}/wget-hsts";
     mesa-vk-trace = "touch /tmp/mesa_vk_trace_trigger; sleep 0.5; rm -f /tmp/mesa_vk_trace_trigger";
     plasma-menu-restart = "systemctl --user restart plasma-plasmashell.service";
     ".." = "cd ..";

@@ -9,10 +9,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 11:00 +07:00
+- **Timestamp:** 2026-10-25 11:10 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `98b9cee`
+- **Active Git Commit:** `26e20c7`
 - **Working Tree:** Clean (Ready for activation)
 - **Live NixOS Generation:** Generation 153 (Linux 7.2.11-cachyos-lto-znver4)
 
@@ -24,11 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Purged Goverlay definition and generated files, integrated `npm:pi-subagents`, updated flake inputs, fixed `mcp-nixos` overlay, and prepared commit.
-- [x] Purged `goverlay` from `modules/suites/gaming/default.nix` and deleted runtime files (`~/.config/{goverlay,Goverlay,MangoHud,vkBasalt,vkSumi}`, implicit Vulkan layers, and local lib binaries).
-- [x] Added `"npm:pi-subagents"` package to `modules/suites/ai/pi-coding-agent.nix`.
-- [x] Updated all flake inputs via `nix flake update`.
-- [x] Resolved upstream nixpkgs `fastmcp-slim` broken attribute error by overriding `mcp = pyFinal.mcp_1` in `pkgs/default.nix` for `mcp-nixos`.
+- **Current Focus:** Conformed system and user environments to XDG Base Directory specs and migrated legacy dotfiles.
+- [x] Declared system-level `nix.settings.use-xdg-base-directories = true;` in `modules/core/default.nix`.
+- [x] Declared user-level `xdg.enable = true;` in `modules/users/nnon/default.nix`.
+- [x] Declared XDG environment variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`), session path, and `wget` HSTS alias in `modules/users/nnon/shell.nix`.
+- [x] Safely migrated 9 existing home dotfiles into their corresponding XDG destinations.
+- [x] Validated with `xdg-ninja` that all Category A legacy dotfiles are cleared.
 - [x] Evaluated top-level system dry-run successfully (`nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run`).
 - [ ] Ready for live system activation (`nh os switch /home/nnon/lunar-witches`) at user's discretion.
 
@@ -41,15 +42,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–35, 48, 51–54):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–35, 48, 51–55):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 4 Milestones)
 
-55. **Configured `llama-swap` Groups & CPU Offloading for Embeddings (`07542e8`, `modules/suites/ai/local.nix`):**
-    - Declared `groups` in `llama-swap`: `chat` (GPU pool) and `embeddings` (CPU pool).
-    - Offloaded `vector/embeddinggemma-2` to 12 CPU threads; activated Generation 148.
 56. **Allocated 1024 MiB RAM Cache Specifically to Boulesis (`modules/suites/ai/local.nix`):**
     - Parameterized `cacheRam ? null` in `mkServerCmd`; added `-cram 1024` to Boulesis in `extraFlags`.
     - Switched and activated Generation 150; validated `llama-swap.service`.
@@ -58,11 +56,15 @@ When working on active subsystems, consult these authoritative references:
     - Added `pkgs.git-xet` to `home.packages`.
     - Fixed RDTS build failure under nixpkgs `patchelf 0.19.2` by pinning `patchelf 0.15.2` in `nativeBuildInputs`.
     - Switched and activated Generation 153.
-58. **Purged Goverlay, Added `npm:pi-subagents`, Updated Flake Inputs & Fixed `mcp-nixos` (`modules/suites/ai/pi-coding-agent.nix`, `pkgs/default.nix`, `flake.lock`):**
+58. **Purged Goverlay, Added `npm:pi-subagents`, Updated Flake Inputs & Fixed `mcp-nixos` (`312d52b`, `modules/suites/ai/pi-coding-agent.nix`, `pkgs/default.nix`, `flake.lock`):**
     - Removed `goverlay` and purged runtime directories (`~/.config/{goverlay,Goverlay,MangoHud,vkBasalt,vkSumi}`, `afmf-linux` implicit layer and libs).
     - Added `"npm:pi-subagents"` package to Pi coding agent suite.
     - Updated all flake inputs via `nix flake update`.
     - Overrode `fastmcp-slim` with `mcp = pyFinal.mcp_1` (1.29.0) in `pkgs/default.nix` to fix `mcp-nixos` evaluation with upstream nixpkgs 26.11 bumping `mcp` to 2.x.
+59. **Conformed Shell & Toolchains to XDG Base Directory Specification (`modules/core/default.nix`, `modules/users/nnon/default.nix`, `modules/users/nnon/shell.nix`):**
+    - Configured system-level `nix.settings.use-xdg-base-directories = true;` to place Nix channels and defexpr under `$XDG_STATE_HOME`.
+    - Configured user-level `xdg.enable = true;`, standard XDG session variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`), `sessionPath`, and `wget` alias.
+    - Migrated existing home dotfiles into their corresponding XDG destinations.
 
 ---
 

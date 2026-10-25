@@ -54,6 +54,8 @@
             ./plasma.nix
           ];
 
+          xdg.enable = true;
+
           home.username = "nnon";
           home.homeDirectory = "/home/nnon";
           home.stateVersion = "26.05";
