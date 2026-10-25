@@ -65,24 +65,24 @@
                   "brave_*" = "allow";
                 };
                 mcp = {
-                  servers = {
-                    nixos = {
-                      type = "local";
-                      command = [ "mcp-nixos" ];
-                      enabled = true;
+                  nixos = {
+                    type = "local";
+                    command = [
+                      "${pkgs.mcp-nixos}/bin/mcp-nixos"
+                    ];
+                    enabled = true;
+                  };
+                  brave-search = {
+                    type = "local";
+                    command = [
+                      "${pkgs.nodejs}/bin/npx"
+                      "-y"
+                      "@modelcontextprotocol/server-brave-search"
+                    ];
+                    environment = {
+                      BRAVE_API_KEY = "{file:/run/secrets/brave_api_key}";
                     };
-                    brave-search = {
-                      type = "local";
-                      command = [
-                        "npx"
-                        "-y"
-                        "@modelcontextprotocol/server-brave-search"
-                      ];
-                      environment = {
-                        BRAVE_API_KEY = "{file:/run/secrets/brave_api_key}";
-                      };
-                      enabled = true;
-                    };
+                    enabled = true;
                   };
                 };
               };
