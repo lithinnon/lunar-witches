@@ -23,6 +23,7 @@
             programs.opencode = {
               enable = lib.mkDefault true;
               package = lib.mkDefault pkgs.opencode;
+              extraPackages = [ pkgs.nodejs ];
 
               settings = {
                 model = "llama-swap/reasoning/qwen3.8-26b-a4b";
@@ -57,17 +58,25 @@
                   bash = "allow";
                   websearch = "allow";
                   webfetch = "allow";
+                  "brave-search_*" = "allow";
+                  "brave_*" = "allow";
                 };
-                instructions = [
-                  "${config.home.homeDirectory}/lunar-witches/AGENTS.md"
-                ];
                 skills = [
-                  "${config.home.homeDirectory}/.gemini/config/skills"
+                  "${config.home.homeDirectory}/.agents/skills"
                 ];
                 mcp = {
                   nixos = {
                     type = "local";
                     command = "mcp-nixos";
+                    enabled = true;
+                  };
+                  brave-search = {
+                    type = "local";
+                    command = "npx";
+                    args = [
+                      "-y"
+                      "@modelcontextprotocol/server-brave-search"
+                    ];
                     enabled = true;
                   };
                 };
