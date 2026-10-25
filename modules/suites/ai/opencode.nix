@@ -85,6 +85,77 @@
                 };
               };
             };
+
+            # Aider-style whitespace & indentation tolerant edit plugin
+            home.file."${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js".text = ''
+              import fs from "node:fs/promises";
+              import path from "node:path";
+
+              export default {
+                id: "fuzzy-edit",
+                setup: async () => {
+                  return {
+                    "tool.execute.before": async (input, output) => {
+                      if (input.tool !== "edit" || !output.args?.oldString) return;
+
+                      const { path: filePath, oldString, newString } = output.args;
+                      const fullPath = path.isAbsolute(filePath)
+                        ? filePath
+                        : path.join(process.cwd(), filePath);
+
+                      let content;
+                      try {
+                        content = await fs.readFile(fullPath, "utf8");
+                      } catch {
+                        return;
+                      }
+
+                      // If exact match succeeds, nothing to do
+                      if (content.includes(oldString)) return;
+
+                      // Line-trimmed matching (Aider-style relative indentation)
+                      const fileLines = content.split("\n");
+                      const targetLines = oldString.split("\n").map((l) => l.trim());
+
+                      for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
+                        let match = true;
+                        for (let j = 0; j < targetLines.length; j++) {
+                          if (fileLines[i + j].trim() !== targetLines[j]) {
+                            match = false;
+                            break;
+                          }
+                        }
+
+                        if (match) {
+                          const exactOldLines = fileLines.slice(i, i + targetLines.length);
+                          const exactOldString = exactOldLines.join("\n");
+
+                          const actualIndent = exactOldLines[0].match(/^\s*/)[0];
+                          const modelIndent = oldString.split("\n")[0].match(/^\s*/)[0];
+
+                          let adjustedNewString = newString;
+                          if (modelIndent !== actualIndent) {
+                            adjustedNewString = newString
+                              .split("\n")
+                              .map((line) => {
+                                if (line.startsWith(modelIndent)) {
+                                  return actualIndent + line.slice(modelIndent.length);
+                                }
+                                return line;
+                              })
+                              .join("\n");
+                          }
+
+                          output.args.oldString = exactOldString;
+                          output.args.newString = adjustedNewString;
+                          break;
+                        }
+                      }
+                    },
+                  };
+                },
+              };
+            '';
           }
         )
       ];
