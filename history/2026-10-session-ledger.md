@@ -164,6 +164,9 @@
 55. **Configured `llama-swap` Groups & CPU Offloading for Embeddings (`07542e8`, `modules/suites/ai/local.nix`):**
     - Declared `groups` in `llama-swap`: `chat` (GPU pool) and `embeddings` (CPU pool).
     - Offloaded `vector/embeddinggemma-2` to 12 CPU threads; activated Generation 148.
+56. **Allocated 1024 MiB RAM Cache Specifically to Boulesis (`modules/suites/ai/local.nix`):**
+    - Parameterized `cacheRam ? null` in `mkServerCmd`; added `-cram 1024` to Boulesis in `extraFlags`.
+    - Switched and activated Generation 150; validated `llama-swap.service`.
 
 
 
