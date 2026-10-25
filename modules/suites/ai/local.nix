@@ -40,6 +40,7 @@
           cacheTypeV ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
           kvTailTokens,
           reasoningPreserve,
+          reasoningBudget ? null,
           parallel ? 1,
           cacheRam ? null,
           cacheDisk ? null,
@@ -93,8 +94,11 @@
               "--no-webui"
               "--reasoning-format deepseek"
               "--reasoning on"
+              "--reasoning-loop-guard force-close"
               "--reasoning-loop-check-interval 32"
               "--reasoning-loop-interventions 1"
+              ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
+              (if reasoningBudget != null then "--reasoning-budget ${toString reasoningBudget}" else null)
               (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
               "--repeat-last-n 128"
             ]
@@ -177,10 +181,9 @@
                       cacheTypeV = "snc8";
                       kvTailTokens = 1024;
                       reasoningPreserve = true;
+                      reasoningBudget = 2304;
                       extraFlags = [
                         "-cram 1228"
-                        "--reasoning-budget 2304"
-                        ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                         "--temp 1.00"
                         "--top-k 64"
                         "--repeat-penalty 1.06"
@@ -196,10 +199,11 @@
                       # mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/mmproj-Qwen3.8-26B-A4B.gguf";
                       chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/chat_template.jinja";
                       ctxSize = 131072; # 128k
-                      cacheTypeK = "snc4";
+                      cacheTypeK = "snc8";
                       cacheTypeV = "snc8";
                       kvTailTokens = 512;
                       reasoningPreserve = true;
+                      reasoningBudget = 4096;
                       extraFlags = [
                         "--jinja"
                         "--spec-type draft-mtp"

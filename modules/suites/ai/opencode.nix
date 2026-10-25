@@ -43,7 +43,7 @@
                         name = "Qwen 3.8 26B A4B (Local)";
                         limit = {
                           context = 131072;
-                          output = 32768;
+                          output = 16384;
                         };
                       };
                       "creative/boulesis-v2.1-headtune" = {
@@ -67,13 +67,13 @@
                 mcp = {
                   nixos = {
                     type = "local";
-                    command = "mcp-nixos";
+                    command = [ "mcp-nixos" ];
                     enabled = true;
                   };
                   brave-search = {
                     type = "local";
-                    command = "npx";
-                    args = [
+                    command = [
+                      "npx"
                       "-y"
                       "@modelcontextprotocol/server-brave-search"
                     ];
