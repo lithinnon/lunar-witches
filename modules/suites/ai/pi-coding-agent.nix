@@ -41,6 +41,7 @@
                   "npm:pi-xiaomi-mimo-provider"
                   "npm:pi-mcp-adapter"
                   "npm:pi-web-access"
+                  "npm:pi-subagents"
                 ];
                 extensions = [
                   "-builtin:mcp"

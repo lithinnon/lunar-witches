@@ -155,6 +155,13 @@
     - Refactored `suite-ai-prose` to disable system `services.sillytavern` and provision `systemd.user.services.sillytavern` via Home Manager.
     - Linked declarative drift-checked `config.yaml` to `~/.local/share/SillyTavern/config.yaml` via `xdg.dataFile`.
     - Updated Service Deck Plasma widget to control SillyTavern under `scope = "user"`, enabling zero-privilege toggling; activated Generation 138.
+53. **Tuned Boulesis KV Cache Quantization & 96k Context Window (`fd7a0e1`, `6725e28`, `modules/suites/ai/local.nix`):**
+    - Configured asymmetric SNC quantization (`cacheTypeK = "snc4"`, `cacheTypeV = "snc8"`) with 1024 `bf16` tail tokens.
+    - Expanded context window from 64k to 96k (`ctxSize = 98304`, ~72,000 words); activated Generation 141.
+54. **Renamed `beellama.cpp` to `triellama.cpp` & Added Vector Embedding Model (`pkgs/triellama`, `modules/suites/ai/local.nix`):**
+    - Renamed in-tree derivation `pkgs/beellama` to `pkgs/triellama`, maintaining backward-compatible alias.
+    - Configured `vector/embeddinggemma-2` in `llama-swap`; activated Generation 146.
+
 
 
 

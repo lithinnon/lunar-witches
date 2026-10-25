@@ -35,5 +35,15 @@
     rdts = final.radeon-developer-tool-suite;
     rgp = final.radeon-developer-tool-suite;
     radeon-gpu-profiler = final.radeon-developer-tool-suite;
+
+    # Upstream nixpkgs unstable bumped mcp to 2.x where fastmcp-slim is marked broken.
+    # Override fastmcp-slim with nixpkgs's backwards-compatible mcp_1 (1.29.0).
+    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+      (pyFinal: pyPrev: {
+        fastmcp-slim = pyPrev.fastmcp-slim.override {
+          mcp = pyFinal.mcp_1;
+        };
+      })
+    ];
   };
 }
