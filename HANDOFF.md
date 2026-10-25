@@ -12,8 +12,8 @@
 - **Timestamp:** 2026-10-26 01:12 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `790ae41`
-- **Working Tree:** Dirty (`modules/suites/ai/opencode.nix`, `hosts/lunar-qualia/default.nix`, `modules/suites/default.nix`, `modules/users/nnon/shell.nix`, `AGENTS.md`, `retrospects/history/2026-10-session-ledger.md`)
+- **Active Git Commit:** `bffb09a`
+- **Working Tree:** Clean (`master`)
 - **Live NixOS Generation:** Generation 164 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
