@@ -24,6 +24,12 @@
     _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.configHome}/java";
   };
 
+  xdg.configFile."xdg-ninja/ignore".text = ''
+    .gnupg
+    .pulse-cookie
+    .zoom
+  '';
+
   home.shellAliases = {
     wget = "wget --hsts-file=${config.xdg.dataHome}/wget-hsts";
     mesa-vk-trace = "touch /tmp/mesa_vk_trace_trigger; sleep 0.5; rm -f /tmp/mesa_vk_trace_trigger";
