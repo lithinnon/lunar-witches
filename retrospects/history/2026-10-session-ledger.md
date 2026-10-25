@@ -190,6 +190,17 @@
     - Parameterized `mkServerCmd` for local weights (`model`), multimodal projectors (`mmproj`), Jinja chat templates (`chatTemplate`), and safe radix cache limits.
     - Declared `reasoning/qwen3.8-26b-a4b` with 128k context, symmetric `snc4` KV cache, 512 `bf16` tail tokens, and `--spec-type draft-mtp`.
     - Removed `agentic/lfm2.5-24b-a2b` from models and `groups.chat.members`; switched to Generation 161.
+62. **Switch Qwen KV Cache to Asymmetric SNC8 Value (`a512b6a`, `modules/suites/ai/local.nix`):**
+    - Switched `cache_type_v` to `snc8` while keeping `cache_type_k` as `snc4` for higher numerical stability and fidelity.
+    - Switched and activated Generation 164.
+63. **Updated Qwen3.8-26B-A4B Model & Template Paths (`a587d4c`, `modules/suites/ai/local.nix`):**
+    - Updated model path from `qwen-3.8-26b-moe` to `qwen3.8-26b-a4b` directory.
+    - Updated chatTemplate path similarly for Jinja templates.
+    - Committed with `feat(ai): update qwen3.8-26b-a4b model and template paths`.
+64. **Configured Pi Thinking Level (`high`), System Invariants & Agent Guard (`modules/suites/ai/pi-coding-agent.nix`):**
+    - Set `defaultThinkingLevel = "high"`, which maps directly to `xhigh` in upstream froggeric v22.5 chat template.
+    - Added `appendSystem` cognitive invariants (domain boundaries, targeted CLI probing, anti-looping).
+    - Provisioned `loop-breaker.ts` extension with tool-call cycle detection, output truncation (>100 lines/6KB), and empty-search annotation.
 
 
 

@@ -71,7 +71,7 @@ flowchart TD
         S1["suite-desktop-plasma (KDE 6 Wayland)"]
         S2["suite-desktop-apps (Brave, KeePassXC, Bottles, etc.)"]
         S3["suite-gaming (Steam, GameScope, Honkers, Bedrock)"]
-        S4["suite-ai-rocm, suite-ai-antigravity & suite-ai-pi-coding-agent"]
+        S4["suite-ai-rocm, suite-ai-antigravity & suite-ai-opencode"]
         S5["suite-development (Compilers, uv, git)"]
     end
 
@@ -98,7 +98,7 @@ flowchart TD
 | **`modules/roles/`** | `self.nixosModules.role-*` | Machine form-factor roles: `laptop.nix` (battery management, power-profiles-daemon), `desktop.nix` (stationary, sleep policies), `server.nix` (headless), `boot-systemd.nix`. |
 | **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-integrated`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
 | **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`, `openssh.nix`). |
-| **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `ai/pi-coding-agent.nix`, `ai/prose.nix`, `development/default.nix`. |
+| **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `ai/opencode.nix`, `ai/prose.nix`, `development/default.nix`. |
 | **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon/default.nix`, `shell.nix`, `development.nix`, `desktop.nix`, `plasma.nix`). |
 | **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |
 | **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`mem-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`, `app`, `plasma-widget-servicedeck`, `plasma-widget-amdgpuboost`). Built and exported to system overlays. |
@@ -204,9 +204,9 @@ nh clean all --keep 3
 
 ---
 
-## 7. Multi-Agent & Multi-Session Continuity Architecture (Antigravity ↔ Pi)
+## 7. Multi-Agent & Multi-Session Continuity Architecture (Antigravity ↔ OpenCode)
 
-To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **Earendil Pi / Qwen 3.8 26B-A4B**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
+To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **OpenCode / Qwen 3.8 26B-A4B**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
 
 ```
 Tier 1: Active Chat Context Window (Ephemeral, volatile, bounded ~0-100k tokens)
@@ -225,7 +225,9 @@ Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl ses
 - **Tier 4 Cold Forensics:** Multi-megabyte `.jsonl` transcript logs are retained on disk strictly as cold forensic artifacts for pinpoint verification of raw compiler traces or exact past commands:
   - **Antigravity Traces:**  
     `~/.gemini/antigravity-cli/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
-  - **Pi Traces:**  
+  - **OpenCode Traces:**  
+    `~/.local/share/opencode/` / project sessions
+  - **Pi Legacy Traces:**  
     `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/<session-id>.jsonl`
 
 ### The Sliding-Window Rule (`HANDOFF.md`)
@@ -238,7 +240,7 @@ Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl ses
 1. **Orientation (Cold-Start on Turn 1 in ANY Session):**
    - Check `git status` and `git log -n 3 --oneline` to understand recent commits.
    - Read [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to inspect:
-     - Who was active last (`Antigravity` or `Pi / Qwen 3.8 26B-A4B`) and the session lineage IDs.
+     - Who was active last (`Antigravity` or `OpenCode / Qwen 3.8 26B-A4B`) and the session lineage IDs.
      - What the immediate in-flight task is and any blockers.
      - Active subsystem pointers (e.g. AI stack, desktop, networking).
    - If the task touches an unfamiliar or existing domain, look up its authoritative ADR or living manual in [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md).
@@ -252,6 +254,6 @@ Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl ses
         `"Resume from HANDOFF.md: <objective>"`
 3. **Division of Labor & Tool Strengths:**
    - **Antigravity:** Excels at high-level architectural refactors, multi-agent decomposition, multimodal UI verification (analyzing GUI logs/screenshots), and complex Flake module creation.
-   - **Pi (Qwen 3.8 26B-A4B):** Excels at rapid terminal iterations, localized module adjustments, interactive CLI debugging, and swift parameter tweaking.
+   - **OpenCode (Qwen 3.8 26B-A4B):** Excels at rapid terminal iterations, localized module adjustments, interactive TUI workflows, subagent exploration, and swift parameter tweaking.
 
 
