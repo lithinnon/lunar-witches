@@ -24,10 +24,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Configured high/xhigh thinking levels, system invariants, and loop breaker extension for Pi Coding Agent (`modules/suites/ai/pi-coding-agent.nix`).
+- **Current Focus:** Configured high/xhigh thinking levels, system invariants, and agent guard extension (loop breaker + output truncator) for Pi Coding Agent (`modules/suites/ai/pi-coding-agent.nix`).
 - [x] Formatted and checked syntax via `nix fmt`.
 - [x] Evaluated dry-run build via `nix build --dry-run`.
-- [ ] Build and activate generation via `nh os switch`.
+- [ ] Build candidate generation via `nh os build`.
+- [ ] Activate generation via `nh os switch`.
 - [ ] Validate live Pi configuration and thinking level startup.
 
 ---
@@ -56,10 +57,10 @@ When working on active subsystems, consult these authoritative references:
     - Updated model path from `qwen-3.8-26b-moe` to `qwen3.8-26b-a4b` directory.
     - Updated chatTemplate path similarly for Jinja templates.
     - Committed with `feat(ai): update qwen3.8-26b-a4b model and template paths`.
-64. **Configured Pi Thinking Levels, Anti-Loop Invariants & Loop Breaker (`modules/suites/ai/pi-coding-agent.nix`):**
+64. **Configured Pi Thinking Levels, System Invariants & Agent Guard (`modules/suites/ai/pi-coding-agent.nix`):**
     - Added `defaultThinkingLevel = "high"` and `modelThinkingLevels."llama-swap/reasoning/qwen3.8-26b-a4b" = "xhigh"`.
-    - Added `appendSystem` cognitive invariants preventing repeated/alternating search commands on empty results.
-    - Provisioned deterministic sliding-window `loop-breaker.ts` extension intercepting repetitive tool cycles.
+    - Added `appendSystem` cognitive invariants (domain boundaries, targeted CLI probing, anti-looping).
+    - Provisioned `loop-breaker.ts` extension with tool-call cycle detection, output truncation (>100 lines/6KB), and empty-search annotation.
 
 ---
 

@@ -93,11 +93,11 @@
               };
 
               appendSystem = ''
-                ## Anti-Looping & Search Invariants
-                - Never execute identical or alternating tool calls (e.g. repeated `read` or `grep`) with identical arguments if the previous result was empty or uninformative.
-                - If a search tool (`grep`, `find`) returns 0 matches, accept that the target does NOT exist in the repository. Do not repeat the search or re-read the same file expecting different output.
-                - Understand domain boundaries: application runtime settings (e.g. Pi settings `settings.json`, CLI flags, thinking levels) belong to Pi's own configuration (`~/.config/pi/agent/settings.json`) or upstream documentation, NOT to the target workspace codebase.
-                - If a search is inconclusive after 1 attempt, stop searching immediately and report your findings to the user.
+                ## Cognitive & Tool Invariants
+                - Anti-Looping: Never execute identical or alternating tool calls (e.g. repeated `read` or `grep`) with identical arguments if the previous result was empty or uninformative.
+                - Search Invariant: If a search tool (`grep`, `find`) returns 0 matches, accept that the target does NOT exist in the repository. Do not repeat the search or re-read the same file expecting different output. If a search is inconclusive after 1 attempt, stop searching immediately and report your findings to the user.
+                - Domain Boundaries: Application runtime settings (e.g. Pi settings `settings.json`, CLI flags, thinking levels, or upstream daemon options) belong to the respective application configuration (`~/.config/pi/agent/settings.json`) or upstream documentation, NOT to the target workspace codebase. Do not grep workspace files for upstream CLI flags.
+                - Targeted Probing: Never dump raw help manuals or documentation into context. Always pipe large CLI help outputs (e.g. `command --help | grep -i <term>` or `head -n 40`) to inspect only targeted sections and keep context clean.
               '';
             };
 
@@ -108,6 +108,7 @@
                 const history: string[] = [];
                 const WINDOW_SIZE = 6;
 
+                // 1. Loop Breaker on tool_call
                 pi.on("tool_call", async (event) => {
                   const signature = `''${event.toolName}:''${JSON.stringify(event.input ?? {})}`;
                   const occurrences = history.filter((sig) => sig === signature).length;
@@ -122,6 +123,54 @@
                       block: true,
                       reason: `Loop breaker triggered: You have executed "''${event.toolName}" with identical arguments multiple times recently with no new findings. Repeating this action is blocked. Try a completely different approach or answer the user with your current knowledge.`,
                     };
+                  }
+                });
+
+                // 2. Output Guard on tool_result (truncates massive dumps and annotates empty searches)
+                pi.on("tool_result", async (event) => {
+                  if (!event.content || !Array.isArray(event.content)) return;
+
+                  let modified = false;
+                  const newContent = event.content.map((item) => {
+                    if (item.type !== "text") return item;
+
+                    const text = item.text ?? "";
+                    const trimmed = text.trim();
+
+                    // Annotate empty search results
+                    if (trimmed === "" || trimmed === "(no output)") {
+                      const cmd = String((event.input as any)?.command ?? "");
+                      const isSearch = event.toolName === "grep" || event.toolName === "find" || cmd.includes("grep") || cmd.includes("find");
+                      if (isSearch) {
+                        modified = true;
+                        return {
+                          ...item,
+                          text: "(no output — 0 matches found. The target pattern does not exist in this search space. Do not repeat the same search; accept this result or try an entirely different strategy.)",
+                        };
+                      }
+                    }
+
+                    // Truncate massive outputs (e.g. raw --help dumps, gigantic logs)
+                    const lines = text.split("\n");
+                    const MAX_LINES = 100;
+                    const MAX_CHARS = 6000;
+
+                    if (lines.length > MAX_LINES || text.length > MAX_CHARS) {
+                      modified = true;
+                      const head = lines.slice(0, 40).join("\n");
+                      const tail = lines.slice(-20).join("\n");
+                      const notice = `\n\n[Output truncated by agent-guard: ''${lines.length} lines (''${text.length} bytes). Massive unparsed dumps cause attention loss. To find specific flags or sections, run a filtered command such as 'command --help | grep -i <term>' or pipe through head/tail.]\n\n`;
+                      return {
+                        ...item,
+                        text: head + notice + tail,
+                      };
+                    }
+
+                    return item;
+                  });
+
+                  if (modified) {
+                    return { content: newContent };
                   }
                 });
 
