@@ -12,7 +12,7 @@
 - **Timestamp:** 2026-10-25 11:10 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `26e20c7`
+- **Active Git Commit:** `e72a224`
 - **Working Tree:** Clean (Ready for activation)
 - **Live NixOS Generation:** Generation 153 (Linux 7.2.11-cachyos-lto-znver4)
 
@@ -63,8 +63,8 @@ When working on active subsystems, consult these authoritative references:
     - Overrode `fastmcp-slim` with `mcp = pyFinal.mcp_1` (1.29.0) in `pkgs/default.nix` to fix `mcp-nixos` evaluation with upstream nixpkgs 26.11 bumping `mcp` to 2.x.
 59. **Conformed Shell & Toolchains to XDG Base Directory Specification (`modules/core/default.nix`, `modules/users/nnon/default.nix`, `modules/users/nnon/shell.nix`):**
     - Configured system-level `nix.settings.use-xdg-base-directories = true;` to place Nix channels and defexpr under `$XDG_STATE_HOME`.
-    - Configured user-level `xdg.enable = true;`, standard XDG session variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`), `sessionPath`, and `wget` alias.
-    - Migrated existing home dotfiles into their corresponding XDG destinations.
+    - Configured user-level `xdg.enable = true;`, standard XDG session variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`, `_JAVA_OPTIONS`), `sessionPath`, and `wget` alias.
+    - Migrated existing home dotfiles into their corresponding XDG destinations (including Digital circuit preferences to `~/.config/java/.userPrefs`).
 
 ---
 

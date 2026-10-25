@@ -21,6 +21,7 @@
     GTK2_RC_FILES = "${config.xdg.configHome}/gtk-2.0/gtkrc";
     NPM_CONFIG_USERCONFIG = "${config.xdg.configHome}/npm/npmrc";
     NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
+    _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.configHome}/java";
   };
 
   home.shellAliases = {
