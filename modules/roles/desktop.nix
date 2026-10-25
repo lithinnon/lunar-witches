@@ -18,5 +18,8 @@
           networkmanager-openvpn
         ];
       };
+
+      # Do not stop NetworkManager before activation; restart it atomically after activation finishes
+      systemd.services.NetworkManager.stopIfChanged = false;
     };
 }
