@@ -202,6 +202,19 @@
     - Added `appendSystem` cognitive invariants (domain boundaries, targeted CLI probing, anti-looping).
     - Provisioned `loop-breaker.ts` extension with tool-call cycle detection, output truncation (>100 lines/6KB), and empty-search annotation.
 
+65. **Fully Migrated from Pi to OpenCode Suite (`suite-ai-opencode`):**
+    - Created `modules/suites/ai/opencode.nix` with declarative `opencode.json` (pointing to `llama-swap` provider, `reasoning/qwen3.8-26b-a4b`, native MCP `nixos`, websearch/fetch, and `AGENTS.md` instructions).
+    - Configured `username = "nnon"`, `snapshots = true`, `formatter = true`, and SOPS `brave_api_key` integration for MCP Brave search.
+    - Removed `modules/suites/ai/pi-coding-agent.nix` and switched host leaf `lunar-qualia` composition.
+    - Updated shell aliases in `modules/users/nnon/shell.nix` (`nix-agent-opencode` / `nix-agent`).
+66. **OpenCode Aider-Style Fuzzy Replacer, Typo Tolerance & Cognitive Guard Suite (`4da6590`, `modules/suites/ai/opencode.nix`, `AGENTS.md`):**
+    - Implemented OpenCode plugin `${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js` with 4 multi-guard protections:
+      1. Pass 1 line-trimmed matching (ignoring indentation discrepancies) and relative indentation repair.
+      2. Pass 2 Levenshtein distance typo matching (up to 15% length tolerance to catch perceptual slips like `sites` vs `suites`) and anchor line repair.
+      3. Anti-`sed` guard blocking raw `sed -i` line-arithmetic modifications on source files.
+      4. Negative-proof annotator in `tool.execute.after` to halt infinite search loops on 0 matches, and silent failure annotator for non-zero exit codes.
+    - Documented Full-Graph Dependency Convergence Invariant and Cognitive Guardrails in `AGENTS.md`.
+
 
 
 
