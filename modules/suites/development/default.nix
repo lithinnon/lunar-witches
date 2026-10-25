@@ -52,6 +52,9 @@
       eza
       bat
       codex # OpenAI Codex terminal coding agent
+      typst
+      tinymist
+      typstyle
     ];
   };
 }

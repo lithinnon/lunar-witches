@@ -30,6 +30,7 @@
         usernamehw.errorlens
         ms-vscode.cpptools
         llvm-vs-code-extensions.vscode-clangd
+        myriad-dreamin.tinymist
       ];
     };
   };
