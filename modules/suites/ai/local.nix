@@ -192,9 +192,9 @@
                   "reasoning/qwen3.8-26b-a4b" = {
                     ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
-                      model = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/Qwen3.8-26B-A4B.gguf";
-                      # mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/mmproj-Qwen3.8-26B-A4B.gguf";
-                      chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen-3.8-26b-moe/chat_template.jinja";
+                      model = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/Qwen3.8-26B-A4B.gguf";
+                      # mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/mmproj-Qwen3.8-26B-A4B.gguf";
+                      chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/chat_template.jinja";
                       ctxSize = 131072; # 128k
                       cacheTypeK = "snc4";
                       cacheTypeV = "snc8";
