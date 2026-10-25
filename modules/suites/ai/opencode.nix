@@ -89,7 +89,7 @@
             };
 
             # Aider-style whitespace, typo-tolerant & cognitive guard plugin
-            home.file."${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js".text = ''
+            home.file."${config.xdg.configHome}/opencode/plugins/fuzzy-edit.js".text = ''
               import fs from "node:fs/promises";
               import path from "node:path";
 
