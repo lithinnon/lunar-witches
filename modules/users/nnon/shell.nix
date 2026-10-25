@@ -56,6 +56,9 @@
       if test -f /run/secrets/hf_token
         set -gx HF_TOKEN (cat /run/secrets/hf_token)
       end
+      if test -f /run/secrets/brave_api_key
+        set -gx BRAVE_API_KEY (cat /run/secrets/brave_api_key)
+      end
     '';
     interactiveShellInit = ''
       set -g fish_greeting
@@ -68,6 +71,9 @@
       # Load managed sops secrets
       if [ -f /run/secrets/hf_token ]; then
         export HF_TOKEN="$(cat /run/secrets/hf_token)"
+      fi
+      if [ -f /run/secrets/brave_api_key ]; then
+        export BRAVE_API_KEY="$(cat /run/secrets/brave_api_key)"
       fi
     '';
   };

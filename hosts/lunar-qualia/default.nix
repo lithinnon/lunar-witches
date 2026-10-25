@@ -103,6 +103,10 @@
           owner = "nnon";
           mode = "0400";
         };
+        sops.secrets."brave_api_key" = {
+          owner = "nnon";
+          mode = "0400";
+        };
       })
     ];
   };
