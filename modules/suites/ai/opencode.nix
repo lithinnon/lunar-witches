@@ -26,6 +26,9 @@
               extraPackages = [ pkgs.nodejs ];
 
               settings = {
+                username = "nnon";
+                snapshots = true;
+                formatter = true;
                 model = "llama-swap/reasoning/qwen3.8-26b-a4b";
                 provider = {
                   llama-swap = {
