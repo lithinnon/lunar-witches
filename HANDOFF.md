@@ -9,11 +9,11 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 11:46 +07:00
+- **Timestamp:** 2026-10-25 11:50 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `d104e2b`
-- **Working Tree:** Clean (Switched and active)
+- **Active Git Commit:** `e1d491c`
+- **Working Tree:** Clean
 - **Live NixOS Generation:** Generation 156 (Linux 7.2.11-cachyos-lto-znver4)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
@@ -24,15 +24,14 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Conformed system and user environments to XDG Base Directory specs and migrated legacy dotfiles.
+- **Current Focus:** Conformed system and user environments to XDG Base Directory specs and hardened switch network resilience.
 - [x] Declared system-level `nix.settings.use-xdg-base-directories = true;` in `modules/core/default.nix`.
 - [x] Declared user-level `xdg.enable = true;` in `modules/users/nnon/default.nix`.
-- [x] Declared XDG environment variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`), session path, and `wget` HSTS alias in `modules/users/nnon/shell.nix`.
+- [x] Declared XDG environment variables, session path, and `wget` HSTS alias in `modules/users/nnon/shell.nix`.
 - [x] Safely migrated 9 existing home dotfiles into their corresponding XDG destinations.
 - [x] Validated with `xdg-ninja` that all Category A legacy dotfiles are cleared.
-- [x] Evaluated top-level system dry-run successfully (`nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run`).
 - [x] Activated Generation 156 via `nh os switch /home/nnon/lunar-witches`.
-- [ ] Investigate/configure `systemd.services.NetworkManager.restartIfChanged = false;` to prevent network drop during live switches.
+- [x] Configured `systemd.services.NetworkManager.stopIfChanged = false;` in `modules/roles/{laptop,desktop}.nix` to prevent activation blackouts while allowing post-activation restarts.
 
 ---
 
