@@ -12,10 +12,10 @@
 - **Timestamp:** 2026-10-26 01:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `4da6590`
+- **Active Git Commit:** `2c13ca4`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 164 (Linux 7.3.0-cachyos)
-- **Candidate NixOS System:** `/nix/store/hzkyskj79zk3kxx7qa59zc4acxz4ch44-nixos-system-lunar-qualia-26.11.20261023.3ec6363` (Built & cached)
+- **Live NixOS Generation:** Generation 169 (Linux 7.3.0-cachyos)
+- **Active Agent Stack:** OpenCode v2.1.1 (via `nix-agent` / `nix-agent-opencode`) with `fuzzy-edit` guard suite active.
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
@@ -35,7 +35,7 @@
   - Negative-proof annotator (0 matches found banner) and silent failure exit banner.
 - [x] Documented Full-Graph Dependency Convergence Invariant and Cognitive Guardrails in `AGENTS.md`.
 - [x] Evaluated and built candidate system generation locally via `nh os build`.
-- [ ] Activate generation on live host via `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches`.
+- [x] Activated configuration on live host (**Generation 169** active).
 
 ---
 
