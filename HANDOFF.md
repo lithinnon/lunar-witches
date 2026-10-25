@@ -1,6 +1,6 @@
 # Multi-Agent Handover Ledger (`lunar-witches`)
 
-> **Contract:** Both **Antigravity** and **Pi (MiMo v2.6)** MUST read this file upon session start/swap-in, and update it before yielding control to the user. See [`AGENTS.md`](file:///home/nnon/lunar-witches/AGENTS.md#7-multi-agent-handover-protocol-antigravity--pi--mimo-v26) for the full protocol.
+> **Contract:** Both **Antigravity** and **Pi (Qwen 3.8 26B-A4B)** MUST read this file upon session start/swap-in, and update it before yielding control to the user. See [`AGENTS.md`](file:///home/nnon/lunar-witches/AGENTS.md#7-multi-agent-handover-protocol-antigravity--pi--qwen-38-26b-a4b) for the full protocol.
 >
 > **Sliding Window Rule:** Keep this ledger under ~100 lines. Older completed work graduates to [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md).
 
@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-25 20:09 +07:00
+- **Timestamp:** 2026-10-25 20:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `83456c7`
+- **Active Git Commit:** `76248a3`
 - **Working Tree:** Clean (Switched and active)
-- **Live NixOS Generation:** Generation 161 (Linux 7.3.0-cachyos)
+- **Live NixOS Generation:** Generation 162 (Linux 7.3.0-cachyos)
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi & Antigravity sessions).
@@ -24,13 +24,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Configured custom `reasoning/qwen3.8-26b-a4b` in `llama-swap` with MTP speculative decoding, disk cache tier (`--cache-disk 16384 --cache-ram 0`), and purged `agentic/lfm2.5-24b-a2b`.
-- [x] Extended `mkServerCmd` in `modules/suites/ai/local.nix` with `model`, `mmproj`, `chatTemplate`, and parameterized radix cache tier limits.
-- [x] Commented out `mmproj` on `reasoning/qwen3.8-26b-a4b`, reverting to 0-RAM cache and 16 GiB NVMe radix disk tier.
-- [x] Declared `reasoning/qwen3.8-26b-a4b` with 128k context, symmetric `snc4` KV cache, 512 `bf16` tail tokens, preserved reasoning, and `--spec-type draft-mtp`.
-- [x] Purged `agentic/lfm2.5-24b-a2b` from `models` and `groups.chat.members`.
-- [x] Switched and activated Generation 161 via `nh os switch`.
-- [x] Validated live chat completions through `llama-swap` on `127.0.0.1:8080` (MTP draft acceptance 41/63, ~60 t/s decode).
+- **Current Focus:** Migrated Pi Coding Agent from MiMo v2.6 to local `reasoning/qwen3.8-26b-a4b` via `llama-swap`; purged MiMo extension and credentials.
+- [x] Declared `programs.pi-coding-agent.models` with `llama-swap` provider (`http://127.0.0.1:8080/v1`) and Qwen/Boulesis models in `modules/suites/ai/pi-coding-agent.nix`.
+- [x] Removed `pi-xiaomi-mimo-provider` extension and purged Xiaomi/MiMo credentials from `auth.json`.
+- [x] Set `defaultProvider = "llama-swap"` and `defaultModel = "reasoning/qwen3.8-26b-a4b"`.
+- [x] Switched and activated Generation 162 via `nh os switch`.
+- [x] Validated Pi CLI default headless prompt invocation without CLI flags (`Qwen default active`).
 
 ---
 
@@ -41,17 +40,12 @@ When working on active subsystems, consult these authoritative references:
 - **AI Stack (ROCm, HRX, Loom, XRT, devshells):** [`retrospects/manuals/amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md) & [`modules/suites/ai/`](file:///home/nnon/lunar-witches/modules/suites/ai/)
 - **Desktop & Digital Logic Config:** [`modules/users/nnon/desktop.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/desktop.nix) & [`retrospects/troubleshooting/nixos-desktop-quirks.md`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md)
 - **Master Knowledge Index:** [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)
-- **Archived Milestones (Items 1–35, 48, 51–57):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
+- **Archived Milestones (Items 1–35, 48, 51–58):** [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md)
 
 ---
 
 ## 4. Recent Delta (Sliding Window: Last 4 Milestones)
 
-58. **Purged Goverlay, Added `npm:pi-subagents`, Updated Flake Inputs & Fixed `mcp-nixos` (`312d52b`, `modules/suites/ai/pi-coding-agent.nix`, `pkgs/default.nix`, `flake.lock`):**
-    - Removed `goverlay` and purged runtime directories (`~/.config/{goverlay,Goverlay,MangoHud,vkBasalt,vkSumi}`, `afmf-linux` implicit layer and libs).
-    - Added `"npm:pi-subagents"` package to Pi coding agent suite.
-    - Updated all flake inputs via `nix flake update`.
-    - Overrode `fastmcp-slim` with `mcp = pyFinal.mcp_1` (1.29.0) in `pkgs/default.nix` to fix `mcp-nixos` evaluation with upstream nixpkgs 26.11 bumping `mcp` to 2.x.
 59. **Conformed Shell & Toolchains to XDG Base Directory Specification (`modules/core/default.nix`, `modules/users/nnon/default.nix`, `modules/users/nnon/shell.nix`):**
     - Configured system-level `nix.settings.use-xdg-base-directories = true;` to place Nix channels and defexpr under `$XDG_STATE_HOME`.
     - Configured user-level `xdg.enable = true;`, standard XDG session variables (`CARGO_HOME`, `DOTNET_CLI_HOME`, `CODEX_HOME`, `TRITON_HOME`, `PYTHON_HISTORY`, `GTK2_RC_FILES`, `NPM_CONFIG_*`, `_JAVA_OPTIONS`), `sessionPath`, and `wget` alias.
@@ -64,8 +58,12 @@ When working on active subsystems, consult these authoritative references:
 61. **Configured `reasoning/qwen3.8-26b-a4b` & Purged LFM 24B in `llama-swap` (`modules/suites/ai/local.nix`):**
     - Parameterized `mkServerCmd` for local weights (`model`), multimodal projectors (`mmproj`), Jinja chat templates (`chatTemplate`), and safe radix cache limits.
     - Declared `reasoning/qwen3.8-26b-a4b` with 128k context, symmetric `snc4` KV cache, 512 `bf16` tail tokens, and `--spec-type draft-mtp`.
-    - Removed `agentic/lfm2.5-24b-a2b` from models and `groups.chat.members`.
-    - Switched and activated Generation 160; validated live completions with native MTP speculative drafting.
+    - Removed `agentic/lfm2.5-24b-a2b` from models and `groups.chat.members`; switched to Generation 161.
+62. **Migrated Pi Coding Agent to Local Qwen & Purged MiMo (`modules/suites/ai/pi-coding-agent.nix`, `AGENTS.md`):**
+    - Configured `programs.pi-coding-agent.models` pointing to `llama-swap` (`http://127.0.0.1:8080/v1`).
+    - Set `defaultProvider = "llama-swap"` and `defaultModel = "reasoning/qwen3.8-26b-a4b"`.
+    - Removed `pi-xiaomi-mimo-provider` extension and purged Xiaomi credentials from `auth.json`.
+    - Switched and activated Generation 162; verified default headless Pi invocation with zero flags.
 
 ---
 

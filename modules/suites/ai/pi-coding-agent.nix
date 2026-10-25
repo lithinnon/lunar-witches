@@ -33,12 +33,52 @@
                 pkgs.bun
               ];
 
+              models = {
+                providers = {
+                  llama-swap = {
+                    name = "llama-swap (Local ROCm)";
+                    baseUrl = "http://127.0.0.1:8080/v1";
+                    api = "openai-completions";
+                    apiKey = "local";
+                    models = [
+                      {
+                        id = "reasoning/qwen3.8-26b-a4b";
+                        name = "Qwen 3.8 26B A4B (Local Reasoning)";
+                        reasoning = true;
+                        input = [ "text" ];
+                        contextWindow = 131072;
+                        maxTokens = 16384;
+                        cost = {
+                          input = 0;
+                          output = 0;
+                          cacheRead = 0;
+                          cacheWrite = 0;
+                        };
+                      }
+                      {
+                        id = "creative/boulesis-v2.1-headtune";
+                        name = "Boulesis v2.1 26B A4B";
+                        reasoning = true;
+                        input = [ "text" ];
+                        contextWindow = 65536;
+                        maxTokens = 8192;
+                        cost = {
+                          input = 0;
+                          output = 0;
+                          cacheRead = 0;
+                          cacheWrite = 0;
+                        };
+                      }
+                    ];
+                  };
+                };
+              };
+
               settings = {
-                defaultProvider = lib.mkDefault "xiaomi-token-plan-sgp";
-                defaultModel = lib.mkDefault "mimo-v2.6-pro";
+                defaultProvider = lib.mkDefault "llama-swap";
+                defaultModel = lib.mkDefault "reasoning/qwen3.8-26b-a4b";
                 showCacheMissNotices = lib.mkDefault true;
                 packages = [
-                  "npm:pi-xiaomi-mimo-provider"
                   "npm:pi-mcp-adapter"
                   "npm:pi-web-access"
                   "npm:pi-subagents"

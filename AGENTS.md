@@ -206,7 +206,7 @@ nh clean all --keep 3
 
 ## 7. Multi-Agent & Multi-Session Continuity Architecture (Antigravity ↔ Pi)
 
-To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **Earendil Pi / MiMo v2.6**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
+To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **Earendil Pi / Qwen 3.8 26B-A4B**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
 
 ```
 Tier 1: Active Chat Context Window (Ephemeral, volatile, bounded ~0-100k tokens)
@@ -238,7 +238,7 @@ Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl ses
 1. **Orientation (Cold-Start on Turn 1 in ANY Session):**
    - Check `git status` and `git log -n 3 --oneline` to understand recent commits.
    - Read [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to inspect:
-     - Who was active last (`Antigravity` or `Pi / MiMo v2.6`) and the session lineage IDs.
+     - Who was active last (`Antigravity` or `Pi / Qwen 3.8 26B-A4B`) and the session lineage IDs.
      - What the immediate in-flight task is and any blockers.
      - Active subsystem pointers (e.g. AI stack, desktop, networking).
    - If the task touches an unfamiliar or existing domain, look up its authoritative ADR or living manual in [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md).
@@ -252,6 +252,6 @@ Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl ses
         `"Resume from HANDOFF.md: <objective>"`
 3. **Division of Labor & Tool Strengths:**
    - **Antigravity:** Excels at high-level architectural refactors, multi-agent decomposition, multimodal UI verification (analyzing GUI logs/screenshots), and complex Flake module creation.
-   - **Pi (MiMo v2.6):** Excels at rapid terminal iterations, localized module adjustments, interactive CLI debugging, and swift parameter tweaking.
+   - **Pi (Qwen 3.8 26B-A4B):** Excels at rapid terminal iterations, localized module adjustments, interactive CLI debugging, and swift parameter tweaking.
 
 
