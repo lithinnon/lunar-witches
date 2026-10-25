@@ -172,6 +172,12 @@
     - Added `pkgs.git-xet` to `home.packages`.
     - Fixed RDTS build failure under nixpkgs `patchelf 0.19.2` by pinning `patchelf 0.15.2` in `nativeBuildInputs`.
     - Switched and activated Generation 153.
+58. **Purged Goverlay, Added `npm:pi-subagents`, Updated Flake Inputs & Fixed `mcp-nixos` (`312d52b`, `modules/suites/ai/pi-coding-agent.nix`, `pkgs/default.nix`, `flake.lock`):**
+    - Removed `goverlay` and purged runtime directories (`~/.config/{goverlay,Goverlay,MangoHud,vkBasalt,vkSumi}`, `afmf-linux` implicit layer and libs).
+    - Added `"npm:pi-subagents"` package to Pi coding agent suite.
+    - Updated all flake inputs via `nix flake update`.
+    - Overrode `fastmcp-slim` with `mcp = pyFinal.mcp_1` (1.29.0) in `pkgs/default.nix` to fix `mcp-nixos` evaluation with upstream nixpkgs 26.11 bumping `mcp` to 2.x; activated Generation 156.
+
 
 
 
