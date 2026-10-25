@@ -41,7 +41,6 @@
 
     digital-egro = {
       url = "github:MiniHarinn/digital-egro";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-craftapps = {
