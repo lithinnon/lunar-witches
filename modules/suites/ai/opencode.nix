@@ -152,8 +152,22 @@
                         // If exact match succeeds, nothing to do
                         if (content.includes(oldString)) return;
 
+                        // Strip accidental outer markdown code fences (e.g. ```nix ... ```)
+                        let cleanOld = oldString
+                          .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
+                          .replace(/\r?\n?```\s*$/, "");
+                        let cleanNew = newString
+                          .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
+                          .replace(/\r?\n?```\s*$/, "");
+
+                        if (content.includes(cleanOld)) {
+                          output.args.oldString = cleanOld;
+                          output.args.newString = cleanNew;
+                          return;
+                        }
+
                         const fileLines = content.split("\n");
-                        const targetLines = oldString.split("\n").map((l) => l.trim());
+                        const targetLines = cleanOld.split("\n").map((l) => l.trim());
 
                         let matchIndex = -1;
                         let isTypoMatch = false;
@@ -199,11 +213,11 @@
                           const exactOldString = exactOldLines.join("\n");
 
                           const actualIndent = exactOldLines[0].match(/^\s*/)[0];
-                          const modelIndent = oldString.split("\n")[0].match(/^\s*/)[0];
+                          const modelIndent = cleanOld.split("\n")[0].match(/^\s*/)[0];
 
-                          let adjustedNewString = newString;
+                          let adjustedNewString = cleanNew;
                           if (modelIndent !== actualIndent) {
-                            adjustedNewString = newString
+                            adjustedNewString = cleanNew
                               .split("\n")
                               .map((line) => {
                                 if (line.startsWith(modelIndent)) {
@@ -216,7 +230,7 @@
 
                           // If typo match occurred, fix occurrences of typo'd anchor in adjustedNewString
                           if (isTypoMatch) {
-                            const origOldLines = oldString.split("\n");
+                            const origOldLines = cleanOld.split("\n");
                             for (let j = 0; j < origOldLines.length; j++) {
                               const origOld = origOldLines[j].trim();
                               const realFile = exactOldLines[j].trim();
