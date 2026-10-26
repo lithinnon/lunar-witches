@@ -9,13 +9,13 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-26 10:05 +07:00
+- **Timestamp:** 2026-10-26 10:30 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `4fe608f`
+- **Active Git Commit:** `9e2a094`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 179 (Linux 7.3.0-cachyos)
-- **Active Agent Stack:** OpenCode v2.1.1 (Modular suite with 8 universal context-agnostic cognitive invariants in `instructions.md`, pure JS plugin `plugins/fuzzy-edit.js`, 32k output limit, CodeMode disabled, MCP `nixos` & `brave-search` direct).
+- **Live NixOS Generation:** Generation 162 (Linux 7.3.0-cachyos)
+- **Active Agent Stack:** OpenCode v2.1.1 (Modularized plugins `fuzzy-edit.js` + `session-title.js`, background `title` agent disabled to prevent slot contention/cache evictions, in-band `set_session_title` native tool with 100% KV cache preservation, 32k output limit, CodeMode disabled).
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
@@ -52,15 +52,14 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-64. **Configured Pi Thinking Level (`high`), System Invariants & Agent Guard (`modules/suites/ai/pi-coding-agent.nix`):**
-    - Set `defaultThinkingLevel = "high"` (maps to `xhigh` in froggeric template).
-    - Added `appendSystem` cognitive invariants and `loop-breaker.ts` extension.
 65. **Fully Migrated from Pi to OpenCode Suite (`suite-ai-opencode`):**
     - Created `modules/suites/ai/opencode.nix` with declarative `opencode.json` (pointing to `llama-swap`, `reasoning/qwen3.8-26b-a4b`, native MCP `nixos`, SOPS `brave_api_key` for Brave search, `snapshots = true`, `formatter = true`).
-    - Purged `modules/suites/ai/pi-coding-agent.nix` and switched host leaf and aggregator imports.
-66. **OpenCode Aider-Style Fuzzy Replacer, Typo Tolerance & Cognitive Guard Suite (`4da6590`):**
-    - Built OpenCode plugin `${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js` featuring Pass 1 line-trimmed indent matching, Pass 2 Levenshtein typo tolerance (matching slips like `sites` vs `suites`), anti-`sed` guard, negative-proof halting annotator, and silent failure banner.
-    - Added Full-Graph Dependency Convergence Invariant and Cognitive Guardrails to `AGENTS.md`.
+66. **OpenCode Modularization & Cognitive Invariants (`8c3b904`):**
+    - Split inline JS strings into `modules/suites/ai/opencode/plugins/fuzzy-edit.js` and universal cognitive invariants in `instructions.md`.
+67. **In-Band Native Titler & Background Title Agent Disabling (`9e2a094`):**
+    - Created dedicated plugin `modules/suites/ai/opencode/plugins/session-title.js` registering native `set_session_title` tool (`codemode: false`).
+    - Disabled upstream concurrent title agent (`agent.title.disable = true`) eliminating llama-server slot contention and KV cache evictions.
+    - Added Cognitive Invariant Rule 9 in `instructions.md` directing 3–8 word session titling on Turn 1 with ~99.9% KV cache preservation.
 
 ---
 
