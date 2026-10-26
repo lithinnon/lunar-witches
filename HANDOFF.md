@@ -12,10 +12,10 @@
 - **Timestamp:** 2026-10-26 01:45 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `a743958`
+- **Active Git Commit:** `2d46534`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 173 (Linux 7.3.0-cachyos)
-- **Active Agent Stack:** OpenCode v2.1.1 (`fuzzy-edit.js` active & verified loaded in daemon logs, 16k output budget, `reasoningBudget = 4096`, `--reasoning-loop-guard force-close`, `snc8` KV cache, MCP `nixos` & `brave-search` connected).
+- **Live NixOS Generation:** Generation 174 (Linux 7.3.0-cachyos)
+- **Active Agent Stack:** OpenCode v2.1.1 (`fuzzy-edit.js` with fence stripping & typo matching active, 16k output budget, `reasoningBudget = 4096`, `--reasoning-loop-guard force-close`, `snc8` KV cache, MCP `nixos` & `brave-search` connected).
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
