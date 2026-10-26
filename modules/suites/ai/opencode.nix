@@ -126,173 +126,180 @@
 
               export default {
                 id: "fuzzy-edit",
-                setup: async () => {
-                  return {
-                    "tool.execute.before": async (input, output) => {
-                      // 1. Anti-Sed Guard: Block raw sed -i calls on source files to prevent line-arithmetic corruption
-                      if (input.tool === "bash") {
-                        const cmd = String(output.args?.command ?? "");
-                        if (
-                          /\bsed\s+-[a-zA-Z]*i\b/.test(cmd) &&
-                          !cmd.includes("/tmp") &&
-                          !cmd.includes("/dev/null")
-                        ) {
-                          throw new Error(
-                            "Agent-Guard: Modifying files via raw 'sed -i' is prohibited to prevent line-arithmetic corruption. Please use the 'edit' or 'write' tool instead."
-                          );
+                setup: async (api) => {
+                  // Register before-execution hook
+                  api.tool.hook("execute.before", async (event) => {
+                    // 1. Anti-Sed Guard: Block raw sed -i calls on source files to prevent line-arithmetic corruption
+                    if (event.tool === "bash") {
+                      const cmd = String(event.input?.command ?? "");
+                      if (
+                        /\bsed\s+-[a-zA-Z]*i\b/.test(cmd) &&
+                        !cmd.includes("/tmp") &&
+                        !cmd.includes("/dev/null")
+                      ) {
+                        throw new Error(
+                          "Agent-Guard: Modifying files via raw 'sed -i' is prohibited to prevent line-arithmetic corruption. Please use the 'edit' or 'write' tool instead."
+                        );
+                      }
+                    }
+
+                    // 2. Whitespace & Typo Tolerant Edit Tool (Aider-style relative indent + Levenshtein match)
+                    if (event.tool === "edit" && event.input?.oldString) {
+                      const { path: filePath, oldString, newString } = event.input;
+                      const fullPath = path.isAbsolute(filePath)
+                        ? filePath
+                        : path.join(process.cwd(), filePath);
+
+                      let content;
+                      try {
+                        content = await fs.readFile(fullPath, "utf8");
+                      } catch {
+                        return;
+                      }
+
+                      // If exact match succeeds, nothing to do
+                      if (content.includes(oldString)) return;
+
+                      // Strip accidental outer markdown code fences (e.g. ```nix ... ```)
+                      let cleanOld = oldString
+                        .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
+                        .replace(/\r?\n?```\s*$/, "");
+                      let cleanNew = newString
+                        .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
+                        .replace(/\r?\n?```\s*$/, "");
+
+                      if (content.includes(cleanOld)) {
+                        event.input.oldString = cleanOld;
+                        event.input.newString = cleanNew;
+                        return;
+                      }
+
+                      const fileLines = content.split("\n");
+                      const targetLines = cleanOld.split("\n").map((l) => l.trim());
+
+                      let matchIndex = -1;
+                      let isTypoMatch = false;
+
+                      // Pass 1: Line-trimmed match (ignores indentation discrepancies)
+                      for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
+                        let match = true;
+                        for (let j = 0; j < targetLines.length; j++) {
+                          if (fileLines[i + j].trim() !== targetLines[j]) {
+                            match = false;
+                            break;
+                          }
+                        }
+                        if (match) {
+                          matchIndex = i;
+                          break;
                         }
                       }
 
-                      // 2. Whitespace & Typo Tolerant Edit Tool (Aider-style relative indent + Levenshtein match)
-                      if (input.tool === "edit" && output.args?.oldString) {
-                        const { path: filePath, oldString, newString } = output.args;
-                        const fullPath = path.isAbsolute(filePath)
-                          ? filePath
-                          : path.join(process.cwd(), filePath);
-
-                        let content;
-                        try {
-                          content = await fs.readFile(fullPath, "utf8");
-                        } catch {
-                          return;
-                        }
-
-                        // If exact match succeeds, nothing to do
-                        if (content.includes(oldString)) return;
-
-                        // Strip accidental outer markdown code fences (e.g. ```nix ... ```)
-                        let cleanOld = oldString
-                          .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
-                          .replace(/\r?\n?```\s*$/, "");
-                        let cleanNew = newString
-                          .replace(/^```[a-zA-Z0-9_-]*\r?\n/, "")
-                          .replace(/\r?\n?```\s*$/, "");
-
-                        if (content.includes(cleanOld)) {
-                          output.args.oldString = cleanOld;
-                          output.args.newString = cleanNew;
-                          return;
-                        }
-
-                        const fileLines = content.split("\n");
-                        const targetLines = cleanOld.split("\n").map((l) => l.trim());
-
-                        let matchIndex = -1;
-                        let isTypoMatch = false;
-
-                        // Pass 1: Line-trimmed match (ignores indentation discrepancies)
+                      // Pass 2: Levenshtein typo match (catches perceptual slips like 'sites' vs 'suites')
+                      if (matchIndex === -1 && targetLines.length > 0) {
                         for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
                           let match = true;
                           for (let j = 0; j < targetLines.length; j++) {
-                            if (fileLines[i + j].trim() !== targetLines[j]) {
+                            const fLine = fileLines[i + j].trim();
+                            const tLine = targetLines[j];
+                            const maxDistance = Math.max(1, Math.floor(tLine.length * 0.15));
+                            if (levenshtein(fLine, tLine) > maxDistance) {
                               match = false;
                               break;
                             }
                           }
                           if (match) {
                             matchIndex = i;
+                            isTypoMatch = true;
                             break;
                           }
                         }
+                      }
 
-                        // Pass 2: Levenshtein typo match (catches perceptual slips like 'sites' vs 'suites')
-                        if (matchIndex === -1 && targetLines.length > 0) {
-                          for (let i = 0; i <= fileLines.length - targetLines.length; i++) {
-                            let match = true;
-                            for (let j = 0; j < targetLines.length; j++) {
-                              const fLine = fileLines[i + j].trim();
-                              const tLine = targetLines[j];
-                              const maxDistance = Math.max(1, Math.floor(tLine.length * 0.15));
-                              if (levenshtein(fLine, tLine) > maxDistance) {
-                                match = false;
-                                break;
+                      if (matchIndex !== -1) {
+                        const exactOldLines = fileLines.slice(matchIndex, matchIndex + targetLines.length);
+                        const exactOldString = exactOldLines.join("\n");
+
+                        const actualIndent = exactOldLines[0].match(/^\s*/)[0];
+                        const modelIndent = cleanOld.split("\n")[0].match(/^\s*/)[0];
+
+                        let adjustedNewString = cleanNew;
+                        if (modelIndent !== actualIndent) {
+                          adjustedNewString = cleanNew
+                            .split("\n")
+                            .map((line) => {
+                              if (line.startsWith(modelIndent)) {
+                                return actualIndent + line.slice(modelIndent.length);
                               }
-                            }
-                            if (match) {
-                              matchIndex = i;
-                              isTypoMatch = true;
-                              break;
-                            }
-                          }
+                              return line;
+                            })
+                            .join("\n");
                         }
 
-                        if (matchIndex !== -1) {
-                          const exactOldLines = fileLines.slice(matchIndex, matchIndex + targetLines.length);
-                          const exactOldString = exactOldLines.join("\n");
-
-                          const actualIndent = exactOldLines[0].match(/^\s*/)[0];
-                          const modelIndent = cleanOld.split("\n")[0].match(/^\s*/)[0];
-
-                          let adjustedNewString = cleanNew;
-                          if (modelIndent !== actualIndent) {
-                            adjustedNewString = cleanNew
-                              .split("\n")
-                              .map((line) => {
-                                if (line.startsWith(modelIndent)) {
-                                  return actualIndent + line.slice(modelIndent.length);
-                                }
-                                return line;
-                              })
-                              .join("\n");
-                          }
-
-                          // If typo match occurred, fix occurrences of typo'd anchor in adjustedNewString
-                          if (isTypoMatch) {
-                            const origOldLines = cleanOld.split("\n");
-                            for (let j = 0; j < origOldLines.length; j++) {
-                              const origOld = origOldLines[j].trim();
-                              const realFile = exactOldLines[j].trim();
-                              if (origOld !== realFile && adjustedNewString.includes(origOld)) {
-                                adjustedNewString = adjustedNewString.replaceAll(origOld, realFile);
-                              }
+                        // If typo match occurred, fix occurrences of typo'd anchor in adjustedNewString
+                        if (isTypoMatch) {
+                          const origOldLines = cleanOld.split("\n");
+                          for (let j = 0; j < origOldLines.length; j++) {
+                            const origOld = origOldLines[j].trim();
+                            const realFile = exactOldLines[j].trim();
+                            if (origOld !== realFile && adjustedNewString.includes(origOld)) {
+                              adjustedNewString = adjustedNewString.replaceAll(origOld, realFile);
                             }
                           }
-
-                          output.args.oldString = exactOldString;
-                          output.args.newString = adjustedNewString;
                         }
-                      }
-                    },
 
-                    "tool.execute.after": async (input, output) => {
-                      // 3. Negative-Proof Annotator: Halt infinite search loops when 0 matches are found
-                      const cmd = String(input.args?.command ?? "");
-                      const isSearch =
-                        input.tool === "grep" ||
-                        input.tool === "glob" ||
-                        cmd.includes("grep") ||
-                        cmd.includes("rg") ||
-                        cmd.includes("find");
-
-                      if (isSearch && output && output.content !== undefined) {
-                        const text =
-                          typeof output.content === "string"
-                            ? output.content
-                            : JSON.stringify(output.content ?? "");
-                        if (
-                          !text.trim() ||
-                          text.trim() === "(no output)" ||
-                          text.trim() === "[]" ||
-                          text.trim() === "\"\""
-                        ) {
-                          output.content =
-                            "(no output — 0 matches found. The target pattern does not exist in this search space. Do not repeat the same search; accept this negative proof and state your findings to the user.)";
-                        }
+                        event.input.oldString = exactOldString;
+                        event.input.newString = adjustedNewString;
                       }
+                    }
+                  });
 
-                      // 4. Ambiguous Tool Failures & Silent Exits: Prevent assuming success on failed commands
-                      if (input.tool === "bash" && output?.isError) {
-                        const text =
-                          typeof output.content === "string"
-                            ? output.content
-                            : JSON.stringify(output.content ?? "");
-                        if (!text.trim() || text.trim() === "(no output)" || text.trim() === "\"\"") {
-                          output.content =
-                            "[CRITICAL: Command exited with a non-zero failure code and produced no output. Do not assume success.]";
-                        }
+                  // Register after-execution hook
+                  api.tool.hook("execute.after", async (event) => {
+                    // 3. Negative-Proof Annotator: Halt infinite search loops when 0 matches are found
+                    const cmd = String(event.input?.command ?? "");
+                    const isSearch =
+                      event.tool === "grep" ||
+                      event.tool === "glob" ||
+                      cmd.includes("grep") ||
+                      cmd.includes("rg") ||
+                      cmd.includes("find");
+
+                    if (isSearch && event.result) {
+                      const contentArr = event.result.content;
+                      const totalText = Array.isArray(contentArr)
+                        ? contentArr.map((c) => c.text ?? "").join("\n")
+                        : String(event.result.output ?? "");
+
+                      if (
+                        !totalText.trim() ||
+                        totalText.trim() === "(no output)" ||
+                        totalText.trim() === "[]" ||
+                        totalText.trim() === "\"\"" ||
+                        totalText.includes("Found 0 matches")
+                      ) {
+                        event.result.content = [
+                          {
+                            type: "text",
+                            text: "(no output — 0 matches found. The target pattern does not exist in this search space. Do not repeat the same search; accept this negative proof and state your findings to the user.)",
+                          },
+                        ];
                       }
-                    },
-                  };
+                    }
+
+                    // 4. Ambiguous Tool Failures & Silent Exits: Prevent assuming success on failed commands
+                    if (event.tool === "bash" && event.status === "error") {
+                      if (!event.result?.content || event.result.content.length === 0) {
+                        event.result = event.result ?? {};
+                        event.result.content = [
+                          {
+                            type: "text",
+                            text: "[CRITICAL: Command exited with a non-zero failure code and produced no output. Do not assume success.]",
+                          },
+                        ];
+                      }
+                    }
+                  });
                 },
               };
             '';
