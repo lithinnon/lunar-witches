@@ -117,6 +117,13 @@
             # Native in-band session title tool (zero background LLM concurrency & preserves KV cache)
             home.file."${config.xdg.configHome}/opencode/plugins/session-title.js".source =
               ./opencode/plugins/session-title.js;
+
+            # Upstream OpenCode completion bug: strip trailing stray 'c' command from fish completions
+            home.file."${config.xdg.configHome}/fish/completions/opencode.fish".text =
+              builtins.replaceStrings
+                [ "-l no-remote -d 'Disable remote'\nc" ]
+                [ "-l no-remote -d 'Disable remote'" ]
+                (builtins.readFile "${pkgs.opencode}/share/fish/vendor_completions.d/opencode.fish");
           }
         )
       ];

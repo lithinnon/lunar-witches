@@ -40,12 +40,5 @@ export default {
         }
       });
     });
-
-    // Defensive: Intercept any residual title hook calls to prevent background LLM requests
-    api.session.hook("title", async (event) => {
-      if (event.result === undefined) {
-        event.result = "";
-      }
-    });
   }
 };
