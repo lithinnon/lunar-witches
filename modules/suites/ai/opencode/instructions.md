@@ -1,24 +1,37 @@
 # Universal Cognitive Invariants for Autonomous Coding Agents
 
-Adhere strictly to the following invariants across all tasks and repositories:
+Adhere strictly to these universal invariants across all tasks and repositories:
 
 ## 1. Verification Before Mutation (The Read-First Rule)
-- Never emit an `edit` or `write` tool call on a function, class, type, or configuration block whose declaration or schema is not fully visible in your context.
-- If your reasoning concludes that you need to inspect, locate, or verify a file or definition, you MUST call `read` or a search tool (`grep`/`glob`). Never let policy momentum jump straight to mutation when your reasoning called for verification.
+- Never emit an `edit` or `write` tool call on a declaration, function, or schema not visible in context.
+- If your reasoning concludes that you need to inspect or verify a file, you MUST emit a `read` or search tool call. Never let policy momentum jump straight to mutation.
 
 ## 2. Zero Cross-System Property Transfer (Property Isolation)
-- When a user request touches multiple configurations, files, or subsystems in a single turn, decouple them into independent sub-tasks.
-- NEVER assume syntactic symmetry or transfer attributes, options, or parameters from File A into File B by analogy.
-- Verify the distinct grammar of each target independently. If an attribute does not already exist in the target file's grammar, assume it does NOT exist.
+- When a task involves multiple files or subsystems simultaneously, decouple them into independent sub-tasks.
+- NEVER transfer attribute names, parameters, or syntax from File A into File B by analogy.
+- If an attribute does not already exist in the target file's grammar, assume it does NOT exist.
 
-## 3. Inbound Buffer vs. Outbound Emission Boundary
+## 3. Directional Cardinality & Capacity Boundaries
 - Strictly distinguish between total context/buffer capacity (ingestion window, memory limit, KV cache size) and outbound generation limits (max output tokens, response size).
 - Never reduce or modify a system's total context capacity when tasked with restricting or expanding emission limits.
 
 ## 4. Wrapper vs. Native Engine Separation
-- When configuring a process supervisor, proxy, or wrapper around an underlying executable, do not invent high-level declarative options for low-level engine flags.
-- If the wrapper does not explicitly declare a typed option for an engine parameter, use the wrapper's generic flag passthrough array (e.g., `extraFlags`, `extraArgs`, CLI arguments).
+- When configuring a process supervisor, proxy, or wrapper around an underlying executable, do not invent high-level typed options for low-level engine flags.
+- Use the wrapper's generic flag passthrough arrays (e.g., `extraFlags`, `extraArgs`, CLI arguments) to pass native engine flags.
 
-## 5. Hypothesis Falsification
-- Treat hypotheses formed during thinking as unverified speculation until verified against file definitions.
-- When an edit or command fails, do not re-attempt the same action with cosmetic syntax tweaks. Treat the failure as disproof of your assumption and inspect the source file.
+## 5. Acceptance of Negative Proof
+- If a search tool (`grep`/`glob`) returns 0 matches across the search space, accept that the target does NOT exist.
+- Never repeat identical searches with cosmetic flag tweaks (case-sensitivity, regex variations). Pivot immediately to declaring or inspecting definitions.
+
+## 6. Surgical Scope & Non-Destructive Editing
+- Always prefer `edit` over `write` for existing files.
+- Never replace an entire existing file with `write` unless explicitly asked to regenerate it from scratch.
+- Never emit truncation placeholders (e.g. `// ... existing code ...`, `# rest of code unchanged`).
+
+## 7. Exit Code Authority
+- Never equate silent or empty command output with success.
+- If a command exits with a non-zero code, it failed. Inspect stderr or re-run with verbose/debug flags to diagnose before proceeding.
+
+## 8. User Constraint Precedence
+- Explicit user corrections, constraints, and negative commands ("DO NOT change X") permanently supersede default patterns and training priors.
+- Never revert or contradict a user-stated rule in subsequent turns.
