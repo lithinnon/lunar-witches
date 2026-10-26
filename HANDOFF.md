@@ -9,13 +9,13 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-26 09:20 +07:00
+- **Timestamp:** 2026-10-26 09:31 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `75e0c16`
+- **Active Git Commit:** `b66729b`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 175 (Linux 7.3.0-cachyos)
-- **Active Agent Stack:** OpenCode v2.1.1 (CodeMode disabled / `execute = "deny"` + `codemode = false` on MCP, direct tool calling enforced, `fuzzy-edit.js` active, 16k output budget preserved, `reasoningBudget = 4096`, `--reasoning-loop-guard force-close`, `snc8` KV cache, MCP `nixos` & `brave-search` direct).
+- **Live NixOS Generation:** Generation 176 (Linux 7.3.0-cachyos)
+- **Active Agent Stack:** OpenCode v2.1.1 (CodeMode disabled / `execute = "deny"` + `codemode = false` on MCP, `fuzzy-edit.js` registered correctly via `api.tool.hook("execute.before")` modifying `event.input.oldString`, 16k output budget preserved, `reasoningBudget = 4096`, `--reasoning-loop-guard force-close`, `snc8` KV cache, MCP `nixos` & `brave-search` direct).
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
