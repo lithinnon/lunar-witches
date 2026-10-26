@@ -44,6 +44,7 @@
           parallel ? 1,
           cacheRam ? null,
           cacheDisk ? null,
+          maxTokens ? null,
           extraFlags ? [ ],
         }:
         let
@@ -101,6 +102,7 @@
               (if reasoningBudget != null then "--reasoning-budget ${toString reasoningBudget}" else null)
               (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
               "--repeat-last-n 128"
+              (if maxTokens != null then "--n-predict ${toString maxTokens}" else null)
             ]
             ++ extraFlags;
         in
@@ -204,6 +206,7 @@
                       kvTailTokens = 512;
                       reasoningPreserve = true;
                       reasoningBudget = 4096;
+                      maxTokens = 32768;
                       extraFlags = [
                         "--jinja"
                         "--spec-type draft-mtp"
