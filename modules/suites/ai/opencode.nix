@@ -35,6 +35,12 @@
                   "${./opencode/instructions.md}"
                 ];
 
+                agent = {
+                  title = {
+                    disable = true;
+                  };
+                };
+
                 provider = {
                   llama-swap = {
                     npm = "@ai-sdk/openai-compatible";
@@ -75,6 +81,7 @@
                   webfetch = "allow";
                   "brave-search_*" = "allow";
                   "brave_*" = "allow";
+                  set_session_title = "allow";
                 };
 
                 mcp = {
@@ -106,6 +113,10 @@
             # Aider-style whitespace, typo-tolerant & cognitive guard plugin
             home.file."${config.xdg.configHome}/opencode/plugins/fuzzy-edit.js".source =
               ./opencode/plugins/fuzzy-edit.js;
+
+            # Native in-band session title tool (zero background LLM concurrency & preserves KV cache)
+            home.file."${config.xdg.configHome}/opencode/plugins/session-title.js".source =
+              ./opencode/plugins/session-title.js;
           }
         )
       ];

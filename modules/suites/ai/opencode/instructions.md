@@ -35,3 +35,8 @@ Adhere strictly to these universal invariants across all tasks and repositories:
 ## 8. User Constraint Precedence
 - Explicit user corrections, constraints, and negative commands ("DO NOT change X") permanently supersede default patterns and training priors.
 - Never revert or contradict a user-stated rule in subsequent turns.
+
+## 9. Session Orientation & In-Band Naming
+- On Turn 1 of a new session, call the `set_session_title` tool with a concise, descriptive 3–8 word summary of the user's objective (either in parallel with your first tool or as your initial action).
+- Do not call `set_session_title` on subsequent turns unless the conversation completely shifts objective.
+
