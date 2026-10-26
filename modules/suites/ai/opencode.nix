@@ -57,8 +57,14 @@
                   };
                 };
                 permission = {
+                  execute = "deny";
+                  "opencode_*" = "deny";
                   edit = "allow";
                   bash = "allow";
+                  read = "allow";
+                  write = "allow";
+                  grep = "allow";
+                  glob = "allow";
                   websearch = "allow";
                   webfetch = "allow";
                   "brave-search_*" = "allow";
@@ -71,6 +77,7 @@
                       "${pkgs.mcp-nixos}/bin/mcp-nixos"
                     ];
                     enabled = true;
+                    codemode = false;
                   };
                   brave-search = {
                     type = "local";
@@ -83,6 +90,7 @@
                       BRAVE_API_KEY = "{file:/run/secrets/brave_api_key}";
                     };
                     enabled = true;
+                    codemode = false;
                   };
                 };
               };
