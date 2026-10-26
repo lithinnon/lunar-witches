@@ -24,11 +24,36 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+const recentToolCalls = new Map();
+
 export default {
   id: "fuzzy-edit",
   setup: async (api) => {
     // 1. Before Execution Hook: Intercepts and repairs edit payloads before native engine runs
     api.tool.hook("execute.before", async (event) => {
+      // Loop Guard: Prevent repetitive tool calling cycles under reasoning-preserve
+      const sid = event.context?.sessionID || "default";
+      const callSig = `${event.tool}:${JSON.stringify(event.input || {})}`;
+      const history = recentToolCalls.get(sid) || [];
+
+      let consecutive = 0;
+      for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i] === callSig) {
+          consecutive++;
+        } else {
+          break;
+        }
+      }
+
+      if (consecutive >= 2) {
+        throw new Error(
+          `[Loop Guard] Tool '${event.tool}' was called with identical arguments multiple times consecutively. The output is already available in your conversation context. Do NOT repeat this tool call. Pivot immediately to analyzing the returned data and answering the user.`
+        );
+      }
+
+      history.push(callSig);
+      if (history.length > 25) history.shift();
+      recentToolCalls.set(sid, history);
       // Anti-Sed Guard: Block raw sed -i calls on source files to prevent line-arithmetic corruption
       if (event.tool === "bash") {
         const cmd = String(event.input?.command ?? "");

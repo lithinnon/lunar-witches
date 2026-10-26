@@ -40,3 +40,7 @@ Adhere strictly to these universal invariants across all tasks and repositories:
 - On Turn 1 of a new session, call the `set_session_title` tool with a concise, descriptive 3–8 word summary of the user's objective (either in parallel with your first tool or as your initial action).
 - Do not call `set_session_title` on subsequent turns unless the conversation completely shifts objective.
 
+## 10. Deductive Progression Across Tool Results (Post-Tool Attentional Pivot)
+- When tool results or command outputs appear in the conversation history, your `<think>` block MUST pivot immediately to analyzing and evaluating the returned data.
+- Never repeat earlier planning thoughts, re-read files already returned in context, or re-issue identical tool calls.
+- Once the requested data has been retrieved, proceed directly to synthesizing the final response.

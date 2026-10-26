@@ -22,7 +22,21 @@
           {
             programs.opencode = {
               enable = lib.mkDefault true;
-              package = lib.mkDefault pkgs.opencode;
+              # Patch upstream OpenCode fish completion bug (stray trailing 'c' on line 355)
+              package = lib.mkDefault (
+                pkgs.symlinkJoin {
+                  name = "opencode-${pkgs.opencode.version}";
+                  paths = [ pkgs.opencode ];
+                  meta = pkgs.opencode.meta // {
+                    mainProgram = "opencode";
+                  };
+                  postBuild = ''
+                    rm "$out/share/fish/vendor_completions.d/opencode.fish"
+                    mkdir -p "$out/share/fish/vendor_completions.d"
+                    sed '$ { /^c$/d; }' "${pkgs.opencode}/share/fish/vendor_completions.d/opencode.fish" > "$out/share/fish/vendor_completions.d/opencode.fish"
+                  '';
+                }
+              );
               extraPackages = [ pkgs.nodejs ];
 
               settings = {

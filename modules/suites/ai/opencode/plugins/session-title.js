@@ -1,3 +1,5 @@
+const titledSessions = new Set();
+
 export default {
   id: "session-title",
   setup: async (api) => {
@@ -20,17 +22,24 @@ export default {
         },
         options: { codemode: false },
         execute: async (input, context) => {
+          const sid = context.sessionID;
+          if (titledSessions.has(sid)) {
+            return {
+              content: "Session title is already set. Do not call set_session_title again in this session. Proceed immediately with your response."
+            };
+          }
           const rawTitle = (input?.title || "").trim();
           if (!rawTitle) {
             return { content: "No title provided." };
           }
           try {
             await api.session.update({
-              sessionID: context.sessionID,
+              sessionID: sid,
               title: rawTitle
             });
+            titledSessions.add(sid);
             return {
-              content: `Session title updated to: "${rawTitle}"`
+              content: `Session title successfully set to: "${rawTitle}". Do not call set_session_title again in this session.`
             };
           } catch (err) {
             return {
