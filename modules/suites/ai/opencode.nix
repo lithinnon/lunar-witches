@@ -46,7 +46,7 @@
                 model = "llama-swap/reasoning/qwen3.8-26b-a4b";
 
                 instructions = [
-                  "${./opencode/instructions.md}"
+                  "${config.home.homeDirectory}/.agents/models/Qwen3.8-26B-A4B.md"
                 ];
 
                 agent = {
