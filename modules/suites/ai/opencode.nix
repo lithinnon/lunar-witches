@@ -68,7 +68,7 @@
                         name = "Qwen 3.8 26B A4B (Local)";
                         limit = {
                           context = 131072;
-                          output = 32768;
+                          output = 4096;
                         };
                       };
                       "creative/boulesis-v2.1-headtune" = {

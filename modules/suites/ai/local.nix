@@ -117,6 +117,7 @@
                 "--dry-base ${toString dryBase}"
                 "--dry-allowed-length ${toString dryAllowedLength}"
                 "--dry-penalty-last-n ${toString dryPenaltyLastN}"
+                "--dry-sequence-breaker none"
               ]
             else
               [ ];
