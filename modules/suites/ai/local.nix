@@ -82,7 +82,13 @@
               "--hf-repo ${hfRepo}"
             else
               throw "mkServerCmd requires either 'model' or 'hfRepo'";
-          mmprojFlag = if mmproj != null then "--mmproj ${mmproj}" else "--no-mmproj";
+          mmprojFlag =
+            if mmproj == "auto" then
+              "--mmproj-auto"
+            else if mmproj != null then
+              "--mmproj ${mmproj}"
+            else
+              "--no-mmproj";
           chatTemplateFlag = if chatTemplate != null then "--chat-template-file ${chatTemplate}" else null;
           serverFlags =
             lib.filter (f: f != null) [
@@ -212,6 +218,8 @@
                         "--dry-base 1.75"
                         "--dry-allowed-length 2"
                         "--dry-penalty-last-n 512"
+                        "--reasoning-budget 4096"
+                        ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                       ];
                     };
                   };
@@ -219,7 +227,7 @@
                     ttl = 600; # 10 minutes
                     cmd = mkServerCmd {
                       hfRepo = "unsloth/gemma-4-12B-it-qat-GGUF:UD-Q4_K_XL";
-                      mmproj = "/home/nnon/.cache/huggingface/hub/models--unsloth--gemma-4-12B-it-qat-GGUF/snapshots/980b060c40a8539ac159e0501a3e0f66a6365af3/mmproj-BF16.gguf";
+                      mmproj = "auto";
                       ctxSize = 65536; # 64k
                       cacheTypeKV = "snc8";
                       kvTailTokens = 1024;

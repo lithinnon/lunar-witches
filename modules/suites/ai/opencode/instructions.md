@@ -36,9 +36,9 @@ Adhere strictly to these universal invariants across all tasks and repositories:
 - Explicit user corrections, constraints, and negative commands ("DO NOT change X") permanently supersede default patterns and training priors.
 - Never revert or contradict a user-stated rule in subsequent turns.
 
-## 9. Session Orientation & In-Band Naming
-- On Turn 1 of a new session, call the `set_session_title` tool with a concise, descriptive 3–8 word summary of the user's objective (either in parallel with your first tool or as your initial action).
-- Do not call `set_session_title` on subsequent turns unless the conversation completely shifts objective.
+## 9. Working Directory & Relative Path Discipline
+- ALWAYS use relative paths (e.g. `./src/main.rs`, `tests/test_math.py`) relative to the project root for all tool operations (`read`, `edit`, `write`, `glob`, `bash`).
+- Avoid generating long absolute paths containing hash IDs or deep directory trees that risk subword tokenization corruption.
 
 ## 10. Deductive Progression Across Tool Results (Post-Tool Attentional Pivot)
 - When tool results or command outputs appear in the conversation history, your `<think>` block MUST pivot immediately to analyzing and evaluating the returned data.
