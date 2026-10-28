@@ -12,7 +12,7 @@
 - **Timestamp:** 2026-10-28 18:50 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `cb6d703`
+- **Active Git Commit:** `03f9fda`
 - **Working Tree:** Clean (`master`)
 - **Live NixOS Generation:** Generation 169 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80`, `--dry-penalty-last-n 512`, `--repeat-last-n 512`, `--temp 0.70`).
@@ -52,8 +52,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-68. **Fish Completions Line 355 Bug Root Fix (`14bdfcb`):**
-    - Overrode `programs.opencode.package` with `symlinkJoin` stripping trailing `c` from line 355 in `vendor_completions.d/opencode.fish`. Sourcing and Fish tab completion now exit with 0 errors.
 69. **In-Band Native Titler & Background Title Agent Disabling (`9e2a094`):**
     - Created dedicated plugin `modules/suites/ai/opencode/plugins/session-title.js` registering native `set_session_title` tool (`codemode: false`).
     - Disabled upstream concurrent title agent (`agent.title.disable = true`) eliminating llama-server slot contention and KV cache evictions.
@@ -61,7 +59,10 @@ When working on active subsystems, consult these authoritative references:
     - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps, combined with a 128-token repetition horizon blind spot.
     - Fixed `chat_template.jinja` to strip intermediate `<think>` blocks when `preserve_reasoning=false` while keeping fresh `<think>` blocks for active generation.
     - Configured `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80 --dry-penalty-last-n 512`, `--repeat-last-n 512`, and `--temp 0.70` in `local.nix` and `llama-swap.yml`.
-    - Verified in OpenCode: multi-hop debugging task passed in 90s with zero loops and autonomous self-correction.
+71. **Generalized `mkServerCmd` Architecture, Universal Reasoning Budget & Guardrail Purge (`03f9fda`):**
+    - Generalized `mkServerCmd` with intelligent typed knobs: universal default `reasoningBudget = 4096` with `--reasoning-budget-message`, `reasoningLoopGuard = "force-close"`, `repeatLastN = 512`, and `dryMultiplier = 0.80`.
+    - Made multimodal projector handling declarative (`mmproj = "auto"` automatically passes `--mmproj-auto` and provisions 2 GiB RAM cache while disabling disk spill).
+    - Purged legacy custom plugins (`fuzzy-edit.js` and `session-title.js`) in favor of native OpenCode engine operations and relative path working directory discipline.
 
 ---
 
