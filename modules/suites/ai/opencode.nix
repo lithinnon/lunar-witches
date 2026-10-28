@@ -45,6 +45,10 @@
                 formatter = true;
                 model = "llama-swap/reasoning/qwen3.8-26b-a4b";
 
+                instructions = [
+                  "${./opencode/instructions.md}"
+                ];
+
                 agent = {
                   title = {
                     disable = true;
