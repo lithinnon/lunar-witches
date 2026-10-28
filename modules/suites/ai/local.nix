@@ -26,20 +26,39 @@
       # Reusable command generator for llama-server instances.
       # Extracts redundant hardware, cache tier, batching, and reasoning flags
       # shared across models on the Strix Halo Radeon 8060S (ROCm gfx1151).
-      # Supports symmetric (`cacheTypeKV`) or asymmetric (`cacheTypeK` / `cacheTypeV`)
-      # KV cache quantization (e.g. snc4 key + snc8 value).
+      # Provides intelligent, production-tuned defaults for agentic coding,
+      # anti-looping guards, DRY sampling, and asymmetric SNC KV cache.
       mkServerCmd =
         {
           hfRepo ? null,
           model ? null,
           mmproj ? null,
           chatTemplate ? null,
-          ctxSize,
+          ctxSize ? 65536,
           cacheTypeKV ? null,
-          cacheTypeK ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
+          cacheTypeK ? (if cacheTypeKV != null then cacheTypeKV else "snc4"),
           cacheTypeV ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
-          kvTailTokens,
-          reasoningPreserve,
+          kvTailTokens ? 1024,
+          reasoning ? true,
+          reasoningFormat ? "deepseek",
+          reasoningPreserve ? false,
+          reasoningBudget ? 4096,
+          reasoningBudgetMessage ? " ... reasoning budget exceeded, need to answer.\\n",
+          reasoningLoopGuard ? "force-close",
+          reasoningLoopCheckInterval ? 32,
+          reasoningLoopInterventions ? 1,
+          temp ? 0.70,
+          topK ? null,
+          topP ? 0.90,
+          minP ? 0.05,
+          repeatLastN ? 512,
+          repeatPenalty ? 1.08,
+          dryMultiplier ? 0.80,
+          dryBase ? 1.75,
+          dryAllowedLength ? 2,
+          dryPenaltyLastN ? 512,
+          jinja ? false,
+          specType ? null,
           parallel ? 1,
           cacheRam ? null,
           cacheDisk ? null,
@@ -90,6 +109,64 @@
             else
               "--no-mmproj";
           chatTemplateFlag = if chatTemplate != null then "--chat-template-file ${chatTemplate}" else null;
+
+          dryFlags =
+            if dryMultiplier != null && dryMultiplier > 0 then
+              [
+                "--dry-multiplier ${toString dryMultiplier}"
+                "--dry-base ${toString dryBase}"
+                "--dry-allowed-length ${toString dryAllowedLength}"
+                "--dry-penalty-last-n ${toString dryPenaltyLastN}"
+              ]
+            else
+              [ ];
+
+          reasoningFlags =
+            if reasoning then
+              lib.filter (f: f != null) [
+                (if reasoningFormat != null then "--reasoning-format ${reasoningFormat}" else null)
+                "--reasoning on"
+                (if reasoningLoopGuard != null then "--reasoning-loop-guard ${reasoningLoopGuard}" else null)
+                (
+                  if reasoningLoopCheckInterval != null then
+                    "--reasoning-loop-check-interval ${toString reasoningLoopCheckInterval}"
+                  else
+                    null
+                )
+                (
+                  if reasoningLoopInterventions != null then
+                    "--reasoning-loop-interventions ${toString reasoningLoopInterventions}"
+                  else
+                    null
+                )
+                (if reasoningBudget != null then "--reasoning-budget ${toString reasoningBudget}" else null)
+                (
+                  if reasoningBudget != null && reasoningBudgetMessage != null then
+                    ''--reasoning-budget-message "${reasoningBudgetMessage}"''
+                  else
+                    null
+                )
+                (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
+              ]
+            else
+              [ "--reasoning off" ];
+
+          samplingFlags =
+            lib.filter (f: f != null) [
+              (if temp != null then "--temp ${toString temp}" else null)
+              (if topK != null then "--top-k ${toString topK}" else null)
+              (if topP != null then "--top-p ${toString topP}" else null)
+              (if minP != null then "--min-p ${toString minP}" else null)
+              (if repeatPenalty != null then "--repeat-penalty ${toString repeatPenalty}" else null)
+              (if repeatLastN != null then "--repeat-last-n ${toString repeatLastN}" else null)
+            ]
+            ++ dryFlags;
+
+          featureFlags = lib.filter (f: f != null) [
+            (if jinja then "--jinja" else null)
+            (if specType != null then "--spec-type ${specType}" else null)
+          ];
+
           serverFlags =
             lib.filter (f: f != null) [
               modelFlag
@@ -97,14 +174,10 @@
               chatTemplateFlag
               "--port \${PORT}"
               "--no-webui"
-              "--reasoning-format deepseek"
-              "--reasoning on"
-              "--reasoning-loop-guard force-close"
-              "--reasoning-loop-check-interval 32"
-              "--reasoning-loop-interventions 1"
-              (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
-              "--repeat-last-n 512"
             ]
+            ++ reasoningFlags
+            ++ samplingFlags
+            ++ featureFlags
             ++ extraFlags;
         in
         ''
@@ -179,48 +252,31 @@
                     ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
                       hfRepo = "mradermacher/Boulesis-v2.1-26B-A4B-HeadTune-i1-GGUF:IQ4_XS";
-                      ctxSize = 65536;
-                      cacheTypeK = "snc4";
-                      cacheTypeV = "snc8";
-                      kvTailTokens = 1024;
-                      reasoningPreserve = true;
-                      extraFlags = [
-                        "-cram 1228"
-                        "--reasoning-budget 2304"
-                        ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
-                        "--temp 1.00"
-                        "--top-k 64"
-                        "--repeat-penalty 1.06"
-                        "--dry-multiplier 0.80"
-                        "--dry-penalty-last-n 256"
-                      ];
+                      reasoningPreserve = true; # Maintain persona consistency in creative RP
+                      reasoningBudget = 2304;
+                      temp = 1.00;
+                      topK = 64;
+                      repeatPenalty = 1.06;
+                      dryPenaltyLastN = 256;
+                      extraFlags = [ "-cram 1228" ];
                     };
                   };
                   "reasoning/qwen3.8-26b-a4b" = {
                     ttl = 1200; # 20 minutes
                     cmd = mkServerCmd {
                       model = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/Qwen3.8-26B-A4B.gguf";
-                      # mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/mmproj-Qwen3.8-26B-A4B.gguf";
                       chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/chat_template.jinja";
-                      ctxSize = 131072; # 128k
-                      cacheTypeK = "snc4";
-                      cacheTypeV = "snc8";
+                      ctxSize = 131072; # 128k context
                       kvTailTokens = 512;
-                      reasoningPreserve = false;
-                      extraFlags = [
-                        "--jinja"
-                        "--spec-type draft-mtp"
-                        "--temp 0.70"
-                        "--min-p 0.05"
-                        "--top-p 0.90"
-                        "--repeat-penalty 1.08"
-                        "--dry-multiplier 0.80"
-                        "--dry-base 1.75"
-                        "--dry-allowed-length 2"
-                        "--dry-penalty-last-n 512"
-                        "--reasoning-budget 4096"
-                        ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
-                      ];
+                      jinja = true;
+                      specType = "draft-mtp";
+                      # Inherits universal agent defaults:
+                      # reasoningBudget = 4096 (with budget exceeded message)
+                      # reasoningPreserve = false (strips intermediate thoughts)
+                      # reasoningLoopGuard = "force-close"
+                      # cacheTypeK = "snc4", cacheTypeV = "snc8"
+                      # temp = 0.70, minP = 0.05, topP = 0.90, repeatPenalty = 1.08, repeatLastN = 512
+                      # dryMultiplier = 0.80, dryPenaltyLastN = 512
                     };
                   };
                   "general/gemma-4-12B-it" = {
@@ -228,15 +284,10 @@
                     cmd = mkServerCmd {
                       hfRepo = "unsloth/gemma-4-12B-it-qat-GGUF:UD-Q4_K_XL";
                       mmproj = "auto";
-                      ctxSize = 65536; # 64k
                       cacheTypeKV = "snc8";
-                      kvTailTokens = 1024;
-                      reasoningPreserve = false;
-                      extraFlags = [
-                        "--spec-type draft-mtp"
-                        "--temp 1.0"
-                        "--top-k 64"
-                      ];
+                      temp = 1.0;
+                      topK = 64;
+                      specType = "draft-mtp";
                     };
                   };
                   "vector/embeddinggemma-2" = {
