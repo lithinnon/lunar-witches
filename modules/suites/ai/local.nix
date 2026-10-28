@@ -40,11 +40,9 @@
           cacheTypeV ? (if cacheTypeKV != null then cacheTypeKV else "snc8"),
           kvTailTokens,
           reasoningPreserve,
-          reasoningBudget ? null,
           parallel ? 1,
           cacheRam ? null,
           cacheDisk ? null,
-          maxTokens ? null,
           extraFlags ? [ ],
         }:
         let
@@ -98,11 +96,8 @@
               "--reasoning-loop-guard force-close"
               "--reasoning-loop-check-interval 32"
               "--reasoning-loop-interventions 1"
-              ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
-              (if reasoningBudget != null then "--reasoning-budget ${toString reasoningBudget}" else null)
               (if reasoningPreserve then "--reasoning-preserve" else "--no-reasoning-preserve")
-              "--repeat-last-n 128"
-              (if maxTokens != null then "--n-predict ${toString maxTokens}" else null)
+              "--repeat-last-n 512"
             ]
             ++ extraFlags;
         in
@@ -183,9 +178,10 @@
                       cacheTypeV = "snc8";
                       kvTailTokens = 1024;
                       reasoningPreserve = true;
-                      reasoningBudget = 2304;
                       extraFlags = [
                         "-cram 1228"
+                        "--reasoning-budget 2304"
+                        ''--reasoning-budget-message " ... reasoning budget exceeded, need to answer.\n"''
                         "--temp 1.00"
                         "--top-k 64"
                         "--repeat-penalty 1.06"
@@ -201,19 +197,37 @@
                       # mmproj = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/mmproj-Qwen3.8-26B-A4B.gguf";
                       chatTemplate = "/home/nnon/Projects/github.com/lithinnon/qwen3.8-26b-a4b/chat_template.jinja";
                       ctxSize = 131072; # 128k
-                      cacheTypeK = "snc8";
+                      cacheTypeK = "snc4";
                       cacheTypeV = "snc8";
                       kvTailTokens = 512;
-                      reasoningPreserve = true;
-                      reasoningBudget = 4096;
-                      maxTokens = 32768;
+                      reasoningPreserve = false;
                       extraFlags = [
                         "--jinja"
                         "--spec-type draft-mtp"
-                        "--temp 0.55"
+                        "--temp 0.70"
                         "--min-p 0.05"
                         "--top-p 0.90"
-                        "--repeat-penalty 1.05"
+                        "--repeat-penalty 1.08"
+                        "--dry-multiplier 0.80"
+                        "--dry-base 1.75"
+                        "--dry-allowed-length 2"
+                        "--dry-penalty-last-n 512"
+                      ];
+                    };
+                  };
+                  "general/gemma-4-12B-it" = {
+                    ttl = 600; # 10 minutes
+                    cmd = mkServerCmd {
+                      hfRepo = "unsloth/gemma-4-12B-it-qat-GGUF:UD-Q4_K_XL";
+                      mmproj = "/home/nnon/.cache/huggingface/hub/models--unsloth--gemma-4-12B-it-qat-GGUF/snapshots/980b060c40a8539ac159e0501a3e0f66a6365af3/mmproj-BF16.gguf";
+                      ctxSize = 65536; # 64k
+                      cacheTypeKV = "snc8";
+                      kvTailTokens = 1024;
+                      reasoningPreserve = false;
+                      extraFlags = [
+                        "--spec-type draft-mtp"
+                        "--temp 1.0"
+                        "--top-k 64"
                       ];
                     };
                   };
@@ -245,6 +259,7 @@
                     members = [
                       "creative/boulesis-v2.1-headtune"
                       "reasoning/qwen3.8-26b-a4b"
+                      "general/gemma-4-12B-it"
                     ];
                   };
                   embeddings = {
