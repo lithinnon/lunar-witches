@@ -9,13 +9,13 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-26 10:52 +07:00
+- **Timestamp:** 2026-10-28 18:50 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `14bdfcb`
+- **Active Git Commit:** `cb6d703`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 164 (Linux 7.3.0-cachyos)
-- **Active Agent Stack:** OpenCode v2.1.1 (Patched vendor completions removing line 355 `c`, Loop Guard in `fuzzy-edit.js`, one-shot latch in `session-title.js`, Post-Tool Attentional Pivot Rule 10 in `instructions.md`, `--reasoning-preserve` 100% intact, background `title` agent disabled, 32k output limit).
+- **Live NixOS Generation:** Generation 169 (Linux 7.2.8-cachyos)
+- **Active Agent Stack:** OpenCode v2.1.1 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80`, `--dry-penalty-last-n 512`, `--repeat-last-n 512`, `--temp 0.70`).
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
@@ -52,15 +52,16 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-67. **In-Band Native Titler & Background Title Agent Disabling (`9e2a094`):**
-    - Created dedicated plugin `modules/suites/ai/opencode/plugins/session-title.js` registering native `set_session_title` tool (`codemode: false`).
-    - Disabled upstream concurrent title agent (`agent.title.disable = true`) eliminating llama-server slot contention and KV cache evictions.
 68. **Fish Completions Line 355 Bug Root Fix (`14bdfcb`):**
     - Overrode `programs.opencode.package` with `symlinkJoin` stripping trailing `c` from line 355 in `vendor_completions.d/opencode.fish`. Sourcing and Fish tab completion now exit with 0 errors.
-69. **Cognitive Loop Guard & Reasoning-Preserve Stability (`14bdfcb`):**
-    - Preserved `--reasoning-preserve` 100% for full model intelligence across turns.
-    - Added Rule 10 (Post-Tool Attentional Pivot) to `instructions.md`, directing `<think>` blocks to evaluate returned data rather than re-reading or repeating previous plans.
-    - Added consecutive identical call loop blocker to `fuzzy-edit.js` and one-shot latch to `session-title.js`. Verified clean 2-step parallel titling and execution.
+69. **In-Band Native Titler & Background Title Agent Disabling (`9e2a094`):**
+    - Created dedicated plugin `modules/suites/ai/opencode/plugins/session-title.js` registering native `set_session_title` tool (`codemode: false`).
+    - Disabled upstream concurrent title agent (`agent.title.disable = true`) eliminating llama-server slot contention and KV cache evictions.
+70. **Anti-Looping Architecture: DRY Sampling, Loop Guard & Intermediate Reasoning Stripping (`cb6d703`):**
+    - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps, combined with a 128-token repetition horizon blind spot.
+    - Fixed `chat_template.jinja` to strip intermediate `<think>` blocks when `preserve_reasoning=false` while keeping fresh `<think>` blocks for active generation.
+    - Configured `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80 --dry-penalty-last-n 512`, `--repeat-last-n 512`, and `--temp 0.70` in `local.nix` and `llama-swap.yml`.
+    - Verified in OpenCode: multi-hop debugging task passed in 90s with zero loops and autonomous self-correction.
 
 ---
 
