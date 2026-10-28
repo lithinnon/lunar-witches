@@ -9,33 +9,30 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-28 18:50 +07:00
+- **Timestamp:** 2026-10-28 20:25 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `03f9fda`
+- **Active Git Commit:** `c1f7215`
 - **Working Tree:** Clean (`master`)
 - **Live NixOS Generation:** Generation 169 (Linux 7.2.8-cachyos)
-- **Active Agent Stack:** OpenCode v2.1.1 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80`, `--dry-penalty-last-n 512`, `--repeat-last-n 512`, `--temp 0.70`).
+- **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
+- **Unified Prompt Directives:** `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by both Pi and OpenCode).
 
 ### Indexed Knowledge Chronicles (Tier 3) & Cold Traces (Tier 4)
 - **Master Session Chronicles:** [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) (Synthesizes all 9 thematic domains from Pi, OpenCode & Antigravity sessions).
-- **Cold Forensic Traces:** Antigravity `4ae41731-d0f6-4907-b645-9cb43e4f5fb9` (current), Pi legacy `2026-10-25T17-24-48-368Z_01a17417-f06f-70cc-8719-df5a7ac0c7fc`.
+- **Cold Forensic Traces:** Antigravity `f22d1737-c8e0-48d5-b804-080941a37627` (current).
 
 ---
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Completed full migration from Pi to OpenCode (`suite-ai-opencode`) and equipped OpenCode with Aider-style fuzzy edit replacer, Levenshtein typo tolerance, anti-sed guard, and negative-proof annotator.
-- [x] Swapped Pi suite for OpenCode suite (`modules/suites/ai/opencode.nix`, `hosts/lunar-qualia/default.nix`).
-- [x] Declared SOPS `brave_api_key` integration for native Brave MCP search.
-- [x] Implemented OpenCode plugin `${config.xdg.configHome}/opencode/plugins/fuzzy-edit/index.js` with:
-  - Pass 1: Line-trimmed relative indentation matching.
-  - Pass 2: Levenshtein distance typo tolerance (15% length threshold, repairing perceptual slips like `sites` vs `suites`).
-  - Anti-`sed` guard blocking `sed -i` line-arithmetic corruption.
-  - Negative-proof annotator (0 matches found banner) and silent failure exit banner.
-- [x] Documented Full-Graph Dependency Convergence Invariant and Cognitive Guardrails in `AGENTS.md`.
-- [x] Evaluated and built candidate system generation locally via `nh os build`.
-- [x] Activated configuration on live host (**Generation 169** active).
+- **Current Focus:** Unified prompt architecture at `~/.agents/models/Qwen3.8-26B-A4B.md`, syntax-safe DRY sampling (`dryAllowedLength = 5`), JSON tool calling default in `chat_template.jinja`, and purge of redundant in-tree prompt files and legacy plugins.
+- [x] Fixed `chat_template.jinja` line 2 default `tool_call_format` to `'json'`, enabling clean OpenAI function calling on `llama-server`.
+- [x] Relaxed `dryAllowedLength` from 2 $\to$ 5 and `repeatPenalty` to 1.02 in `local.nix`, preventing false penalties on JSON syntax quotes/braces.
+- [x] Authored and relocated master operational directives to `~/.agents/models/Qwen3.8-26B-A4B.md` with temporal (2026) and web search authority guardrails.
+- [x] Wired OpenCode `instructions = [ "${config.home.homeDirectory}/.agents/models/Qwen3.8-26B-A4B.md" ]` and symlinked Pi `APPEND_SYSTEM.md`.
+- [x] Deleted redundant in-tree `modules/suites/ai/opencode/instructions.md` and purged legacy plugins.
+- [x] Evaluated flake dry-run build (`nix build --dry-run` passed 100%).
 
 ---
 
@@ -52,24 +49,10 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-69. **In-Band Native Titler & Background Title Agent Disabling (`9e2a094`):**
-    - Created dedicated plugin `modules/suites/ai/opencode/plugins/session-title.js` registering native `set_session_title` tool (`codemode: false`).
-    - Disabled upstream concurrent title agent (`agent.title.disable = true`) eliminating llama-server slot contention and KV cache evictions.
 70. **Anti-Looping Architecture: DRY Sampling, Loop Guard & Intermediate Reasoning Stripping (`cb6d703`):**
-    - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps, combined with a 128-token repetition horizon blind spot.
-    - Fixed `chat_template.jinja` to strip intermediate `<think>` blocks when `preserve_reasoning=false` while keeping fresh `<think>` blocks for active generation.
-    - Configured `--reasoning-loop-guard force-close`, `--dry-multiplier 0.80 --dry-penalty-last-n 512`, `--repeat-last-n 512`, and `--temp 0.70` in `local.nix` and `llama-swap.yml`.
-71. **Generalized `mkServerCmd` Architecture, Universal Reasoning Budget & Guardrail Purge (`03f9fda`):**
-    - Generalized `mkServerCmd` with intelligent typed knobs: universal default `reasoningBudget = 4096` with `--reasoning-budget-message`, `reasoningLoopGuard = "force-close"`, `repeatLastN = 512`, and `dryMultiplier = 0.80`.
-    - Made multimodal projector handling declarative (`mmproj = "auto"` automatically passes `--mmproj-auto` and provisions 2 GiB RAM cache while disabling disk spill).
-    - Purged legacy custom plugins (`fuzzy-edit.js` and `session-title.js`) in favor of native OpenCode engine operations and relative path working directory discipline.
-
----
-
-## 5. Architectural Invariants & Gotchas
-
-1. **Privilege Escalation:** Always use `sudo -A` and `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` for system switching (`ksshaskpass` graphical dialog).
-2. **`gfx` Invariant:** `pkgs.rocm-therock` and `suites.ai.rocm.gfx` must NEVER default to any architecture.
-3. **TheRock Python Wheels:** Aggregate index is `https://stable.repo.amd.com/rocm/whl-next`. PyTorch packages split into neutral `torch` and device kernel pack `amd-torch-device-${gfx}`.
-4. **Secrets Management:** Secrets live in encrypted `secrets/*.yaml` via `sops-nix` and decrypt to RAM in `/run/secrets/`. Do not commit plaintext tokens or private age keys to Git.
-5. **Session Continuity:** Keep this file under 100 lines. Rotate completed entries into `retrospects/history/` regularly.
+    - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps.
+    - Generalized `mkServerCmd` in `local.nix` with typed options and universal defaults (`reasoningBudget = 4096`, `reasoningLoopGuard = "force-close"`).
+71. **Master Directives, Syntax-Safe Sampling & Unified Prompt Alignment (`cd739f2`, `c1f7215`):**
+    - Set `tool_call_format = 'json'` in `chat_template.jinja` (`9fbd8e7`), fixing corrupted XML parameter parsing in `llama-server`.
+    - Tuned `dryAllowedLength = 5` and `repeatPenalty = 1.02` in `local.nix`, preventing DRY penalty on syntax delimiters (`"}`, `",`).
+    - Consolidated agent instructions into `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by Pi and OpenCode) and deleted `modules/suites/ai/opencode/instructions.md`.
