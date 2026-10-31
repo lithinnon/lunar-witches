@@ -2,7 +2,7 @@
 { lib, ... }:
 
 let
-  commonRocmModule = import ./common-rocm.nix { inherit lib; };
+  commonRocmModule = import ./common.nix { inherit lib; };
   mkCommonRocm = commonRocmModule.flake.lib.mkCommonRocm;
 
   # Function to generate devShells for any target architecture and ROCm version without hardcoding
@@ -11,8 +11,8 @@ let
       pkgs,
       gfx ? throw "mkRocmDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'multiarch').",
       version ? "10.1.0",
-      rocmPkg ? pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; },
-      xrtPkg ? pkgs.callPackage ../pkgs/xrt-amdxdna { },
+      rocmPkg ? pkgs.callPackage ../../pkgs/rocm-therock { inherit gfx version; },
+      xrtPkg ? pkgs.callPackage ../../pkgs/xrt-amdxdna { },
       torchVersion ? "2.12.0+rocm${rocmPkg.version}",
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
@@ -29,11 +29,8 @@ let
           ;
       };
 
-      # Standalone helper script to bootstrap IRON NPU tools into active or default venv
-      initIronScript = pkgs.writeShellScriptBin "init-iron-venv" ''
-        set -euo pipefail
-        ${common.initVenvScript}/bin/init-rocm-venv "''${1:-}" --with-iron
-      '';
+      scripts = import ./scripts.nix { inherit lib pkgs; };
+      initIronScript = scripts.mkInitIronScript { inherit (common) initVenvScript; };
     in
     {
       # Variant 1: Minimal HIP Runtime (Diagnostics & device execution)

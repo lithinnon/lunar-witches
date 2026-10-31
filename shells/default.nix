@@ -9,9 +9,7 @@
   };
 
   imports = [
-    ./common-rocm.nix
-    ./rocm.nix
-    ./loom.nix
+    ./amd
   ];
 
   config = {

@@ -9,7 +9,7 @@
 { lib, ... }:
 
 let
-  commonRocmModule = import ./common-rocm.nix { inherit lib; };
+  commonRocmModule = import ./common.nix { inherit lib; };
   mkCommonRocm = commonRocmModule.flake.lib.mkCommonRocm;
 
   # Function to generate Loom & HRX devShells for any target architecture and ROCm version without hardcoding
@@ -18,8 +18,8 @@ let
       pkgs,
       gfx ? throw "mkLoomDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'gfx1201', 'gfx942').",
       version ? "10.1.0",
-      rocmPkg ? pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; },
-      loomPkg ? pkgs.callPackage ../pkgs/hrx-loom { },
+      rocmPkg ? pkgs.callPackage ../../pkgs/rocm-therock { inherit gfx version; },
+      loomPkg ? pkgs.callPackage ../../pkgs/hrx-loom { },
       torchVersion ? "2.12.0+rocm${rocmPkg.version}",
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
@@ -35,84 +35,11 @@ let
           ;
       };
 
-      # Method 1 Wrapper: Run any ROCm/HIP application using HRX's lightweight libamdhip64.so
-      hrxRun = pkgs.writeShellScriptBin "hrx-run" ''
-        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
-        if [ ! -f "$HRX_DIR/lib64/libamdhip64.so" ] && [ -f "/tmp/hrx-system/install/lib64/libamdhip64.so" ]; then
-          HRX_DIR="/tmp/hrx-system/install"
-        fi
-
-        if [ $# -eq 0 ]; then
-          echo "Usage: hrx-run <executable> [args...]"
-          echo "Executes any standard ROCm/HIP application with HRX's lightweight runtime preloaded."
-          exit 1
-        fi
-
-        if [ ! -f "$HRX_DIR/lib64/libamdhip64.so" ]; then
-          echo "Error: HRX libamdhip64.so not found at $HRX_DIR/lib64/libamdhip64.so"
-          echo "Run 'build-hrx-system' to compile the HRX distribution."
-          exit 1
-        fi
-
-        LD_PRELOAD="$HRX_DIR/lib64/libamdhip64.so" exec "$@"
-      '';
-
-      # Method 2 Wrappers: Native HRX C and C++ Compiler Wrappers
-      hrxCc = pkgs.writeShellScriptBin "hrxcc" ''
-        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
-        if [ ! -d "$HRX_DIR/include" ] && [ -d "/tmp/hrx-system/install/include" ]; then
-          HRX_DIR="/tmp/hrx-system/install"
-        fi
-        exec clang -I"$HRX_DIR/include" -I"$HRX_DIR/include/hrx" -L"$HRX_DIR/lib64" -lhrx -Wl,-rpath,"$HRX_DIR/lib64" "$@"
-      '';
-
-      hrxCxx = pkgs.writeShellScriptBin "hrxcxx" ''
-        HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
-        if [ ! -d "$HRX_DIR/include" ] && [ -d "/tmp/hrx-system/install/include" ]; then
-          HRX_DIR="/tmp/hrx-system/install"
-        fi
-        exec clang++ -I"$HRX_DIR/include" -I"$HRX_DIR/include/hrx" -L"$HRX_DIR/lib64" -lhrx -Wl,-rpath,"$HRX_DIR/lib64" "$@"
-      '';
-
-      # Build Automation Helper
-      buildHrxSystem = pkgs.writeShellScriptBin "build-hrx-system" ''
-        SRC_DIR="''${1:-$HOME/sources/hrx-system}"
-        PREFIX="''${2:-$HOME/.local/share/rocm/hrx-system}"
-        echo "Building HRX System & Loom from $SRC_DIR -> $PREFIX..."
-        if [ ! -d "$SRC_DIR" ]; then
-          mkdir -p "$(dirname "$SRC_DIR")"
-          git clone https://github.com/ROCm/hrx-system.git "$SRC_DIR"
-        fi
-        mkdir -p "$SRC_DIR/build/cmake"
-        cmake -S "$SRC_DIR" -B "$SRC_DIR/build/cmake" -GNinja \
-          -DIREE_ROCM_PATH="${rocmPkg}" \
-          -DIREE_ROCM_DEPENDENCY_MODE=package \
-          -DCMAKE_INSTALL_LIBDIR=lib64 \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DIREE_HAL_DRIVER_AMDGPU=ON \
-          -DIREE_HAL_AMDGPU_TARGETS="${gfx}" \
-          -DAMDF_BUILD=ON \
-          -DAMDF_FAMILY_XDNA=ON
-        ninja -C "$SRC_DIR/build/cmake" \
-          libhrx_src_binding_hip_amdhip64 \
-          libhrx_src_libhrx_hrx \
-          libhrx_tools_hrx-info \
-          loomc_shared \
-          loom-compile \
-          iree-run-loom \
-          iree-xdna-run \
-          enumerate
-        cmake --install "$SRC_DIR/build/cmake" --prefix "$PREFIX" --component HrxPublicDist
-        cp "$SRC_DIR/build/cmake/loom/src/loom/tools/loom-compile/loom-compile" "$PREFIX/bin/"
-        cp "$SRC_DIR/build/cmake/loom/src/loom/tools/iree-run-loom/iree-run-loom" "$PREFIX/bin/"
-        cp "$SRC_DIR/build/cmake/experimental/xdna/iree-xdna-run" "$PREFIX/bin/"
-        cp "$SRC_DIR/build/cmake/libamdf/examples/enumerate" "$PREFIX/bin/amdf-enumerate"
-        cp -d "$SRC_DIR/build/cmake/libamdf"/libamdf.so* "$PREFIX/lib64/"
-        ln -sf lib64 "$PREFIX/lib"
-        ln -sf hrx/hrx_runtime.h "$PREFIX/include/hrx_runtime.h"
-        ln -sf hrx/hrx_runtime_cxx.h "$PREFIX/include/hrx_runtime_cxx.h"
-        echo "✓ HRX System built and installed to $PREFIX"
-      '';
+      scripts = import ./scripts.nix { inherit lib pkgs; };
+      hrxRun = scripts.mkHrxRun;
+      hrxCc = scripts.mkHrxCc;
+      hrxCxx = scripts.mkHrxCxx;
+      buildHrxSystem = scripts.mkBuildHrxSystem { inherit rocmPkg gfx; };
     in
     {
       # Minimal HRX / Loom Runtime Shell
