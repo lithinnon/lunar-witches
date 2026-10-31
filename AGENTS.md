@@ -1,6 +1,6 @@
 # AI Agent Guidelines & Architecture Invariants
 
-> Mandatory repository invariants and boundaries. Hardware specs live in `~/.agents/devices/$(hostname).md`; global system rules live in `~/.agents/AGENTS.md`.
+> Mandatory repository invariants and boundaries.
 
 ---
 

@@ -1,6 +1,6 @@
 # lunar-witches
 
-Dendritic NixOS configuration for `lunar-qualia` (AMD Strix Halo APU). Hardware profile and device specifications live in `~/.agents/devices/lunar-qualia.md`.
+Dendritic NixOS configuration for `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S).
 
 ---
 
