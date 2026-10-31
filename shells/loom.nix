@@ -19,6 +19,7 @@ let
       gfx ? throw "mkLoomDevShells: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'gfx1201', 'gfx942').",
       version ? "10.1.0",
       rocmPkg ? pkgs.callPackage ../pkgs/rocm-therock { inherit gfx version; },
+      loomPkg ? pkgs.callPackage ../pkgs/hrx-loom { },
       torchVersion ? "2.12.0+rocm${rocmPkg.version}",
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
@@ -191,7 +192,9 @@ let
       loom-dev = pkgs.mkShell {
         name = "rocm-loom-dev-${gfx}";
         packages = common.commonPackages ++ [
-          # HRX & Loom runtime wrappers
+          # Declarative Loom SDK v0.1.0 (loom-compile, loom-serve, libloomc, libiree)
+          loomPkg
+          # HRX runtime wrappers & optional source builder
           hrxRun
           hrxCc
           hrxCxx
@@ -213,11 +216,19 @@ let
         };
 
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${common.commonLdLibraryPath}:$LD_LIBRARY_PATH"
-          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${loomPkg}/lib:${common.commonLdLibraryPath}:$LD_LIBRARY_PATH"
+          export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:${loomPkg}/bin:$PATH"
 
           # Auto-activate shared ROCm virtual environment (with PyTorch and Flash Attention 2)
           ${common.venvActivationHook}
+
+          # Link declarative Loom SDK into active venv site-packages
+          if [ -n "''${VIRTUAL_ENV:-}" ]; then
+            VENV_SITE="$("$VIRTUAL_ENV/bin/python" -c "import site; print(site.getsitepackages()[0])" 2>/dev/null || true)"
+            if [ -n "$VENV_SITE" ] && [ -d "$VENV_SITE" ] && [ ! -f "$VENV_SITE/loom.pth" ]; then
+              echo "${loomPkg}/lib/python3.14/site-packages" > "$VENV_SITE/loom.pth"
+            fi
+          fi
 
           # Discover or configure HRX & Loom runtime directory
           export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"

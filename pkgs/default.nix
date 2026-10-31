@@ -15,6 +15,8 @@
       beellama = pkgs.callPackage ./triellama { };
       radeon-developer-tool-suite = pkgs.callPackage ./radeon-developer-tool-suite { };
       rgp = pkgs.callPackage ./radeon-developer-tool-suite { };
+      hrx-loom = pkgs.callPackage ./hrx-loom { };
+      loom = pkgs.callPackage ./hrx-loom { };
     };
   };
 
@@ -35,6 +37,8 @@
     rdts = final.radeon-developer-tool-suite;
     rgp = final.radeon-developer-tool-suite;
     radeon-gpu-profiler = final.radeon-developer-tool-suite;
+    hrx-loom = final.callPackage ./hrx-loom { };
+    loom = final.hrx-loom;
 
     # Upstream nixpkgs unstable bumped mcp to 2.x where fastmcp-slim is marked broken.
     # Override fastmcp-slim with nixpkgs's backwards-compatible mcp_1 (1.29.0).
