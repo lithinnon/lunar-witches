@@ -163,4 +163,16 @@ During the migration and post-install configuration, several notable edge cases 
   - Define explicit font fallback priorities in [`modules/suites/desktop/fonts.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/fonts.nix) using `fonts.fontconfig.defaultFonts` to ensure `Noto Sans CJK JP/SC/KR` are prioritized when generic `sans-serif` or `serif` is requested.
   - Rebuilt Flatpak Fontconfig cache via `flatpak run --command=fc-cache <APP_ID> -r`.
 
+---
+
+## 14. KDE Plasma Application Indexing across NixOS Symlink Swaps
+- **Symptom:** Newly installed GUI applications or updated `.desktop` files (e.g. `r2modman`, `google-antigravity-ide`) do not appear in the Kickoff application menu or KRunner search taskbar after `nh os switch`, requiring manual session restart or shell relaunch.
+- **Cause:**
+  1. On standard distributions, package managers create/modify files in `/usr/share/applications`, triggering inotify (`KDirWatch`) so Plasma auto-reloads.
+  2. On NixOS, `/run/current-system` is an atomic symlink swap to a new `/nix/store/...` directory. Because the underlying Nix store directory inode never receives in-place filesystem events, `KDirWatch` never fires.
+  3. Abruptly restarting `plasmashell` disrupts open window tracking and arrangement in Icons-only Task Manager (`icontasks`).
+- **Resolution:**
+  - Provisioned `home.activation.kbuildsycoca` in [`modules/users/nnon/plasma.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/plasma.nix) to automatically run `XDG_MENU_PREFIX=plasma- ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental` during home-manager activation with proper `LOCALE_ARCHIVE` and `XDG_DATA_DIRS`, immediately updating KSycoca (`~/.cache/ksycoca6_*`) without restarting `plasmashell`.
+
+
 
