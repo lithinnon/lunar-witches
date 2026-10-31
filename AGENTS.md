@@ -9,6 +9,7 @@
 - **Stack:** NixOS 26.11 via `flake-parts` & `home-manager` on branch `master`.
 - **AskPass Runner:** In non-login subshells or automation, prefix switch with `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches`.
 - **Secrets Boundary:** Stored in `chmod 600` `~/.config/secrets.env` or encrypted via `sops-nix` in `secrets/secrets.yaml`. Never commit raw tokens to `.nix` or git.
+- **Terminal Sandbox Boundary:** Antigravity IDE runs in a `bwrap` FHS container (`NoNewPrivs: 1`). Never run `nh os switch`, `test`, or `sudo` directly in its integrated terminal (kernel blocks setuid). Use an external host terminal or escape via `systemd-run --user --pty --same-dir nh os switch ...`.
 - **Zero Backward-Compatibility Aliases:** Never preserve or create legacy aliases, shims, or compatibility bindings. Refactor all call sites directly and keep only canonical definitions.
 
 ---
@@ -23,7 +24,10 @@
 
 ---
 
-## 3. Handover Protocol
+## 3. Handover Protocol & Sliding Window
 
-- Read and update [`./HANDOFF.md`](./HANDOFF.md) on session start and yield.
-- Keep [`./HANDOFF.md`](./HANDOFF.md) strictly under 100 lines; graduate completed milestones to [`./retrospects/history/2026-10-session-ledger.md`](./retrospects/history/2026-10-session-ledger.md).
+- **Start & Yield:** Read and update [`./HANDOFF.md`](./HANDOFF.md) on session start and yield.
+- **Window Size:** Keep strictly the **last 3 completed milestones** in `HANDOFF.md` under `## 3. Recent Milestones`.
+- **Graduation Rule:** When adding milestone $N$, cut any milestone $\le N - 3$ from `HANDOFF.md` and append it to `./retrospects/history/<YYYY-MM>-session-ledger.md` (create new monthly archive on month rollover).
+- **Focus Sanitation:** `## 2. In-Flight Focus` tracks only active/pending tasks ($\le 4$ items). Once a milestone covers completed work, remove resolved `[x]` items.
+- **Target Line Ceiling:** Keep `HANDOFF.md` strictly under 45 lines.

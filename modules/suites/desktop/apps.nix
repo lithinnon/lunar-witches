@@ -82,17 +82,16 @@
         ''} $out/share/applications/digital.desktop
       '')
       # Digital++ — digital-egro
-      (pkgs.runCommand "digital-egro" { } ''
+      (let
+        digitalEgroPkg = inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideMavenAttrs (_: {
+          mvnHash = "sha256-g6gev7ZVhQSzPgUj496E/QjQnQ3rIcBq4o8a/r5x8FA=";
+        });
+      in
+      pkgs.runCommand "digital-egro" { } ''
         mkdir -p $out/bin $out/share/applications $out/share
-        ln -s ${
-          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
-        }/bin/digital $out/bin/digital-egro
-        ln -s ${
-          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
-        }/bin/digital $out/bin/digital++
-        cp -r ${
-          inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default
-        }/share/icons $out/share/ 2>/dev/null || true
+        ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital-egro
+        ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital++
+        cp -r ${digitalEgroPkg}/share/icons $out/share/ 2>/dev/null || true
         install -Dm644 ${pkgs.writeText "digital-egro.desktop" ''
           [Desktop Entry]
           Categories=Education;Electronics;

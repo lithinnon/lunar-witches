@@ -3,11 +3,9 @@
 let
   inTreePackages = {
     mem-ttm = ./mem-ttm;
-    amdgpu-boost = ./amdgpu-boost;
     sync-power-state = ./sync-power-state;
     service-deck-helper = ./service-deck-helper;
     plasma-widget-servicedeck = ./plasma-widget-servicedeck;
-    plasma-widget-amdgpuboost = ./plasma-widget-amdgpuboost;
     xrt-amdxdna = ./xrt-amdxdna;
     triellama = ./triellama;
     radeon-developer-tool-suite = ./radeon-developer-tool-suite;

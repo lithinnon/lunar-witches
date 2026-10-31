@@ -5,7 +5,6 @@
   bash,
   coreutils,
   gnugrep,
-  kdePackages,
 }:
 
 stdenv.mkDerivation {
@@ -27,7 +26,6 @@ stdenv.mkDerivation {
           bash
           coreutils
           gnugrep
-          kdePackages.libkscreen
         ]
       }
   '';

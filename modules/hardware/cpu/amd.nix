@@ -9,5 +9,9 @@
       "amd_pstate=active"
       "iommu=pt"
     ];
+
+    systemd.tmpfiles.rules = [
+      "z /sys/devices/system/cpu/cpufreq/boost 0666 root root -"
+    ];
   };
 }

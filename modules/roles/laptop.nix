@@ -15,7 +15,7 @@
 
       networking.networkmanager = {
         enable = true;
-        wifi.powersave = false;
+        wifi.powersave = true;
         plugins = with pkgs; [
           networkmanager-openvpn
         ];
@@ -25,6 +25,7 @@
       systemd.services.NetworkManager.stopIfChanged = false;
 
       services.power-profiles-daemon.enable = lib.mkDefault true;
+      powerManagement.powertop.enable = true;
 
       systemd.tmpfiles.rules = [
         "z /sys/firmware/acpi/platform_profile 0666 root root -"

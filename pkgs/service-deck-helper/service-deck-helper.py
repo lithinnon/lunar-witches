@@ -31,7 +31,6 @@ def load_config():
                 "name": "Hardware",
                 "icon": "preferences-system-hardware",
                 "services": [
-                    {"id": "amdgpu-boost.service", "name": "AMD GPU Boost", "scope": "user"},
                     {"id": "asusd.service", "name": "ASUS Control", "scope": "system"}
                 ]
             },

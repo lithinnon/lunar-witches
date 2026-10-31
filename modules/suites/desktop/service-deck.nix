@@ -24,7 +24,7 @@
               options = {
                 id = lib.mkOption {
                   type = lib.types.str;
-                  example = "amdgpu-boost.service";
+                  example = "asusd.service";
                   description = "Systemd unit ID.";
                 };
                 display_id = lib.mkOption {
@@ -35,7 +35,7 @@
                 };
                 name = lib.mkOption {
                   type = lib.types.str;
-                  example = "AMD GPU Boost";
+                  example = "ASUS Control Daemon";
                   description = "Human-readable service title.";
                 };
                 scope = lib.mkOption {

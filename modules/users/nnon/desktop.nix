@@ -13,30 +13,6 @@
     pkgs.espresso
   ];
 
-  # AMD GPU Boost background service (D-Bus event-driven clock manager)
-  systemd.user.services.amdgpu-boost = lib.mkIf osConfig.services.amdgpu-boost.enable {
-    Unit = {
-      Description = "AMD GPU Performance Boost & DPM Manager Daemon";
-      After = [
-        "graphical-session.target"
-        "asusd.service"
-      ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      Type = "simple";
-      Environment = [
-        "AMDGPU_BOOST_CARD=${osConfig.services.amdgpu-boost.card}"
-      ];
-      ExecStart = "${pkgs.amdgpu-boost}/bin/amdgpu-boost --daemon";
-      Restart = "always";
-      RestartSec = 2;
-    };
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
-    };
-  };
-
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
@@ -161,11 +137,6 @@
         name = "Hardware";
         icon = "preferences-system-hardware";
         services = [
-          {
-            id = "amdgpu-boost.service";
-            name = "AMD GPU Boost";
-            scope = "user";
-          }
           {
             id = "asusd.service";
             name = "ASUS Control";

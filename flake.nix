@@ -16,11 +16,17 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "flake-compat";
+        rust-overlay.follows = "rust-overlay";
       };
     };
 
@@ -41,6 +47,7 @@
 
     digital-egro = {
       url = "github:MiniHarinn/digital-egro";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-craftapps = {

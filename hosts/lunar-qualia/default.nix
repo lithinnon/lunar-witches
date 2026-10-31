@@ -25,14 +25,12 @@
       self.nixosModules.hw-cpu-amd
       self.nixosModules.hw-gpu-amd-integrated
       self.nixosModules.hw-memory-zswap
-      self.nixosModules.hw-network-realtek-rtw89
       self.nixosModules.hw-bluetooth
       self.nixosModules.hw-oem-asus-laptop
       self.nixosModules.hw-peripheral-yubikey
       self.nixosModules.hw-peripheral-keychron
 
       # 5. Opt-in Features for this machine
-      self.nixosModules.feature-amdgpu-boost
       self.nixosModules.feature-syncthing
       self.nixosModules.feature-chulawifi
       self.nixosModules.feature-openssh
@@ -80,15 +78,10 @@
           ttmPagesLimit = 5862940;
           overrideGfxVersion = "11.5.1";
           rocmArch = "gfx1151";
-          disableDcIps = true; # Fix sleep/suspend issues with newer AMD CPU Display Core IPS
+          disableDcIps = false; # Allow AMD Display Core Idle Power States (IPS1/IPS2) for low idle power
         };
 
         hardware.amdgpu.development.enable = true;
-
-        services.amdgpu-boost = {
-          enable = true;
-          card = "card1";
-        };
 
         services.syncthing.enable = true;
 

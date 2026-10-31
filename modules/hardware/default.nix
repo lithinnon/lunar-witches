@@ -7,7 +7,6 @@
     ./gpu/amd.nix
     ./gpu/amd-integrated.nix
     ./memory/zswap.nix
-    ./network/realtek-rtw89.nix
     ./bluetooth.nix
     ./oem/asus/base.nix
     ./oem/asus/laptop.nix

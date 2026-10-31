@@ -37,14 +37,6 @@
         services.desktopManager.plasma6.enable = true;
         programs.kde-pim.enable = false;
 
-        # Headless Baloo File Indexer: prevent QGuiApplication aborts when running in background user service
-        systemd.user.services.kde-baloo = {
-          overrideStrategy = "asDropin";
-          serviceConfig = {
-            Environment = [ "QT_QPA_PLATFORM=offscreen" ];
-          };
-        };
-
         # KDE Wallet Integration (Seamless Chromium/Brave password decryption)
         security.pam.services.sddm.kwallet = {
           enable = true;

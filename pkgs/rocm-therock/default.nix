@@ -107,6 +107,7 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out
     cp -r * $out/
+    rm -f $out/env-vars
 
     # CRITICAL INVARIANT: DO NOT run patchelf on .so files!
     # AMD's TheRock compiler toolchain packs embedded Tensile/GPU code objects with PT_PHDR

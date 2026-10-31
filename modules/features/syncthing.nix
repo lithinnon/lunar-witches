@@ -19,5 +19,11 @@
         configDir = lib.mkDefault "${userHome}/.local/state/syncthing";
         openDefaultPorts = lib.mkDefault true;
       };
+
+      systemd.services.syncthing.serviceConfig = lib.mkIf cfg.enable {
+        Nice = 19;
+        CPUSchedulingPolicy = "idle";
+        IOSchedulingClass = "idle";
+      };
     };
 }

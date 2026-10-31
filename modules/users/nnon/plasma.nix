@@ -56,6 +56,11 @@
     };
 
     configFile = {
+      "baloofilerc" = {
+        "Basic Settings" = {
+          "Indexing-Enabled" = false;
+        };
+      };
       "kcminputrc" = {
         "Libinput/10248/592/ASCF1206:00 2808:0250 Touchpad" = {
           ClickMethod = 2;

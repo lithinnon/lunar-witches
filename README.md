@@ -15,10 +15,10 @@ lunar-witches/
 │   ├── core/       # Universal baseline (Nix, nh, sudo, locale, nix-ld)
 │   ├── roles/      # Form factor roles (laptop, desktop, server, boot)
 │   ├── hardware/   # Hardware and silicon traits
-│   ├── features/   # Opt-in services (amdgpu-boost, sops, syncthing, chulawifi)
+│   ├── features/   # Opt-in services (sops, syncthing, chulawifi)
 │   ├── suites/     # Software suites (plasma, apps, gaming, ai, development)
 │   └── users/      # Declarative Home Manager user profiles
-├── pkgs/           # In-tree derivations (mem-ttm, amdgpu-boost, app)
+├── pkgs/           # In-tree derivations (mem-ttm, app, hrx-runtime)
 ├── shells/         # Flake devShells (default, amd-dev, amd-runtime)
 └── retrospects/    # Indexed knowledge base (ADRs, manuals, proofs, postmortems)
 ```
