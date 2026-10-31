@@ -49,7 +49,7 @@ To introduce a new host (e.g. `lunar-station`):
 ```
 
 ### 3. Register Host in `flake.nix`
-Add `./hosts/lunar-station` to the `imports` list in [`flake.nix`](file:///home/nnon/lunar-witches/flake.nix).
+Add `./hosts/lunar-station` to the `imports` list in [`flake.nix`](../../flake.nix).
 
 ### 4. Create Device Profile
 Create `~/.agents/devices/lunar-station.md` documenting its CPU, GPU, memory, and swap layout.

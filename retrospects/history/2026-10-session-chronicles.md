@@ -37,7 +37,7 @@
 ### Thematic Domain 1: Enterprise 802.1x Networking & Secrets Boundary (`ChulaWiFi`)
 
 - **Origin Session:** Pi Session (`01a10a7f-7d9a-753c-9b68-372aa214bb10`), Turns 5–240, 480–604.
-- **Architectural Scope:** `modules/features/chulawifi.nix`, `hosts/lunar-qualia/default.nix`, [`ADR 0012`](file:///home/nnon/lunar-witches/retrospects/adr/0012-chulawifi-enterprise-secrets.md).
+- **Architectural Scope:** `modules/features/chulawifi.nix`, `hosts/lunar-qualia/default.nix`, [`ADR 0012`](../../retrospects/adr/0012-chulawifi-enterprise-secrets.md).
 
 #### Context & Problem
 Connecting to Chulalongkorn University's campus enterprise Wi-Fi (`ChulaWiFi` / `eduroam`) requires WPA2-Enterprise 802.1x with EAP-PEAP / MSCHAPv2 authentication. NixOS's declarative configuration model poses two critical challenges:
@@ -61,7 +61,7 @@ Connecting to Chulalongkorn University's campus enterprise Wi-Fi (`ChulaWiFi` / 
 ### Thematic Domain 2: Container Decommissioning & In-Tree Binary Packaging
 
 - **Origin Session:** Pi Session (`01a10a7f-7d9a-753c-9b68-372aa214bb10`), Turns 716–830.
-- **Architectural Scope:** `pkgs/app`, `modules/suites/desktop/apps.nix`, [`AGENTS.md`](file:///home/nnon/lunar-witches/AGENTS.md#1-system-identity--core-invariants).
+- **Architectural Scope:** `pkgs/app`, `modules/suites/desktop/apps.nix`, [`AGENTS.md`](../../AGENTS.md#1-system-identity--core-invariants).
 
 #### Context & Problem
 During the Fedora-to-NixOS migration, legacy workflows relied on Podman, Distrobox, and containerized tools for third-party software (such as third-party's app tool). The user requested setting up Distrobox on NixOS to run Ubuntu-based containers.
@@ -134,7 +134,7 @@ The system requires an autonomous local LLM environment for creative prose and r
 ### Thematic Domain 5: In-Tree ROCm 10.1 (TheRock) Packaging & 3-Tier DevShell Isolation
 
 - **Origin Session:** Antigravity Session (`f73d4a6a-84c7-4614-9114-d72055951b42`), Turns 6755–7815.
-- **Architectural Scope:** `pkgs/rocm-therock`, `modules/suites/ai/rocm.nix`, `shells/rocm.nix`, [`ADR 0015`](file:///home/nnon/lunar-witches/retrospects/adr/0015-rocm-therock-and-devshell-isolation.md), [`Manual`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md).
+- **Architectural Scope:** `pkgs/rocm-therock`, `modules/suites/ai/rocm.nix`, `shells/rocm.nix`, [`ADR 0015`](../../retrospects/adr/0015-rocm-therock-and-devshell-isolation.md), [`Manual`](../../retrospects/manuals/amd-ai-compute-stack.md).
 
 #### Context & Problem
 Upstream Nixpkgs packages ROCm at legacy version 7.x, lacking support for RDNA 3.5 APUs (Strix Halo `gfx1151`). Installing unpatched prebuilt compiler toolchains (`hipcc`, `amdclang++`) onto global NixOS paths breaks CMake discovery, clashes with system Clang/GCC, and pollutes unrelated host builds.
@@ -159,7 +159,7 @@ Upstream Nixpkgs packages ROCm at legacy version 7.x, lacking support for RDNA 3
 ### Thematic Domain 6: AMD XDNA 2 AIE2p NPU Silicon Execution & Driver Post-Mortem
 
 - **Origin Session:** Antigravity Session (`f73d4a6a-84c7-4614-9114-d72055951b42`), Turns 7857–8659.
-- **Architectural Scope:** `pkgs/xrt-amdxdna`, `modules/core/default.nix`, [`ADR 0016`](file:///home/nnon/lunar-witches/retrospects/adr/0016-unlimited-memlock-for-hardware-accelerators.md), [`Post-Mortem`](file:///home/nnon/lunar-witches/retrospects/postmortems/2026-10-09-amdxdna-ring-buffer-eagain.md), [`Proof`](file:///home/nnon/lunar-witches/retrospects/proofs/2026-10-09-amd-xdna-iron-xrt-verification.md).
+- **Architectural Scope:** `pkgs/xrt-amdxdna`, `modules/core/default.nix`, [`ADR 0016`](../../retrospects/adr/0016-unlimited-memlock-for-hardware-accelerators.md), [`Post-Mortem`](../../retrospects/postmortems/2026-10-09-amdxdna-ring-buffer-eagain.md), [`Proof`](../../retrospects/proofs/2026-10-09-amd-xdna-iron-xrt-verification.md).
 
 #### Context & Problem
 The AMD Ryzen AI Max+ 392 contains an AMD XDNA 2 neural processing unit (AIE2p, 32 tiles, 55+ TOPS). Attempting to initialize the NPU device ring buffer failed immediately with `err=-11 (EAGAIN)`.
@@ -181,7 +181,7 @@ The AMD Ryzen AI Max+ 392 contains an AMD XDNA 2 neural processing unit (AIE2p, 
 ### Thematic Domain 7: ROCm Loom (`libamdf`) & Direct DRM Accelerator Architecture
 
 - **Origin Session:** Antigravity Session (`f73d4a6a-84c7-4614-9114-d72055951b42`), Turns 7992–9549.
-- **Architectural Scope:** `shells/loom.nix`, [`RFC`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-09-rocm-loom-hrx-architecture-rfc.md), [`Proofs`](file:///home/nnon/lunar-witches/retrospects/proofs/).
+- **Architectural Scope:** `shells/loom.nix`, [`RFC`](../../retrospects/history/2026-10-09-rocm-loom-hrx-architecture-rfc.md), [`Proofs`](../../retrospects/proofs/).
 
 #### Context & Problem
 AMD ROCm Loom introduces a unified heterogeneous runtime (HRX / `libamdf`) capable of dispatching compute graphs directly to both GPU (`gfx1151`) and NPU (`aie2p`) silicon via standard Linux Direct Rendering Manager (DRM) interfaces (`/dev/accel/accel0`), eliminating the heavy XRT userspace layer.
@@ -204,7 +204,7 @@ AMD ROCm Loom introduces a unified heterogeneous runtime (HRX / `libamdf`) capab
 ### Thematic Domain 8: System Tuning, Closure Shedding & Declarative Environment Quirks
 
 - **Origin Sessions:** Both Pi and Antigravity Sessions.
-- **Architectural Scope:** `modules/suites/desktop/plasma.nix`, `modules/users/nnon/desktop.nix`, `modules/core/default.nix`, [`Troubleshooting`](file:///home/nnon/lunar-witches/retrospects/troubleshooting/nixos-desktop-quirks.md).
+- **Architectural Scope:** `modules/suites/desktop/plasma.nix`, `modules/users/nnon/desktop.nix`, `modules/core/default.nix`, [`Troubleshooting`](../../retrospects/troubleshooting/nixos-desktop-quirks.md).
 
 #### Technical Discoveries & Fixes
 1. **KDE PIM / Kontact Closure Shedding:**  

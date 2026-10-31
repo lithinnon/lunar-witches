@@ -6,7 +6,7 @@
 > **Hardware Platform:** AMD Ryzen AI Max+ 392 (Strix Halo APU, Radeon 8060S / `gfx1151`, NPU `aie2p`)  
 > **Source OS:** Fedora 44 (Workstation, Linux 6.14/6.15, GNOME/KDE, BTRFS root)  
 > **Destination OS:** NixOS 26.11 (Zokor, Dendritic Flake + Home Manager + BTRFS + KDE Plasma 6 Wayland)  
-> **Repository Working Directory:** [`/home/nnon/lunar-witches`](file:///home/nnon/lunar-witches)  
+> **Repository Working Directory:** [`/home/nnon/lunar-witches`](../..)  
 > **Migration Storage Backup:** SD Card `Tera` at `/run/media/nnon/Tera/nixos-migration/`
 
 ---

@@ -10,7 +10,7 @@ During the migration and post-install configuration, several notable edge cases 
   ⚠️ Mount point '/boot' which backs the random seed file is world accessible, which is a security hole! ⚠️
   ```
 - **Cause:** Default VFAT mount options in systemd-boot allow standard world-readable permissions (0022), leaving `/boot/loader/random-seed` readable by unprivileged users.
-- **Resolution:** Added `options = [ "fmask=0077" "dmask=0077" ];` to `fileSystems."/boot"` in [`hosts/lunar-qualia/hardware.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/hardware.nix#L18).
+- **Resolution:** Added `options = [ "fmask=0077" "dmask=0077" ];` to `fileSystems."/boot"` in [`hosts/lunar-qualia/hardware.nix`](../../hosts/lunar-qualia/hardware.nix#L18).
 
 ---
 
@@ -41,7 +41,7 @@ During the migration and post-install configuration, several notable edge cases 
   unit-home-manager-nnon.service failed (code=exited, status=1/FAILURE)
   ```
 - **Cause:** Restoring backup files from the external SD Card into `/home/nnon` placed pre-existing config files where Home Manager intended to create symlinks. By default, Home Manager refuses to overwrite unmanaged files.
-- **Resolution:** Added `home-manager.backupFileExtension = "backup";` to the Home Manager block in [`hosts/lunar-qualia/default.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/default.nix#L26).
+- **Resolution:** Added `home-manager.backupFileExtension = "backup";` to the Home Manager block in [`hosts/lunar-qualia/default.nix`](../../hosts/lunar-qualia/default.nix#L26).
 
 ---
 
@@ -77,7 +77,7 @@ During the migration and post-install configuration, several notable edge cases 
 
 ## 8. External Game Storage & Mount Flags (`noexec` Trap)
 - **Symptom:** Steam Proton games and anime game launchers (such as Honkai Impact 3rd) on the external SD Card (`/run/media/nnon/Tera`) failed to boot or execute binaries.
-- **Cause:** In [`hosts/lunar-qualia/hardware.nix`](file:///home/nnon/lunar-witches/hosts/lunar-qualia/hardware.nix), the mount entry had `options = [ "nofail" "x-systemd.automount" "user" ];`. In standard Linux `/etc/fstab` semantics, the `user` flag implicitly enforces `noexec,nosuid,nodev` as a security precaution, preventing any binaries or Proton scripts from executing directly off the filesystem.
+- **Cause:** In [`hosts/lunar-qualia/hardware.nix`](../../hosts/lunar-qualia/hardware.nix), the mount entry had `options = [ "nofail" "x-systemd.automount" "user" ];`. In standard Linux `/etc/fstab` semantics, the `user` flag implicitly enforces `noexec,nosuid,nodev` as a security precaution, preventing any binaries or Proton scripts from executing directly off the filesystem.
 - **Resolution:** Replaced `user` with `[ "defaults" "nofail" "x-systemd.automount" "exec" ]`.
 
 ---
@@ -137,8 +137,8 @@ During the migration and post-install configuration, several notable edge cases 
      ```
   4. When combined with `SSH_ASKPASS_REQUIRE="prefer"`, OpenSSH inspects `getenv("SSH_ASKPASS")`. Because the variable exists with length 0, it calls `execve("", ...)`, failing immediately with `ENOENT` (`ssh_askpass: exec(): No such file or directory`) before a passphrase can be entered for encrypted keys.
 - **Resolution:**
-  - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/ksshaskpass";` in [`modules/suites/desktop/plasma.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/plasma.nix).
-  - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/shell.nix).
+  - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/ksshaskpass";` in [`modules/suites/desktop/plasma.nix`](../../modules/suites/desktop/plasma.nix).
+  - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](../../modules/users/nnon/shell.nix).
 
 ---
 
@@ -150,7 +150,7 @@ During the migration and post-install configuration, several notable edge cases 
   3. By default, `/nix/store` is not exposed inside Flatpak sandboxes (except for specific portal-exported application assets).
   4. Consequently, every symlink in `/run/host/fonts` becomes a dangling/broken link inside the sandbox, forcing Fontconfig to fall back to the minimal Western fonts bundled in the Freedesktop runtime (DejaVu, FreeSans, Liberation).
 - **Resolution:**
-  - Declaratively create `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` in [`modules/suites/desktop/apps.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/apps.nix):
+  - Declaratively create `/var/lib/flatpak/overrides/global` via `systemd.tmpfiles.rules` in [`modules/suites/desktop/apps.nix`](../../modules/suites/desktop/apps.nix):
     ```nix
     systemd.tmpfiles.rules = [
       "d /var/lib/flatpak/overrides 0755 root root -"
@@ -160,7 +160,7 @@ During the migration and post-install configuration, several notable edge cases 
       ''}"
     ];
     ```
-  - Define explicit font fallback priorities in [`modules/suites/desktop/fonts.nix`](file:///home/nnon/lunar-witches/modules/suites/desktop/fonts.nix) using `fonts.fontconfig.defaultFonts` to ensure `Noto Sans CJK JP/SC/KR` are prioritized when generic `sans-serif` or `serif` is requested.
+  - Define explicit font fallback priorities in [`modules/suites/desktop/fonts.nix`](../../modules/suites/desktop/fonts.nix) using `fonts.fontconfig.defaultFonts` to ensure `Noto Sans CJK JP/SC/KR` are prioritized when generic `sans-serif` or `serif` is requested.
   - Rebuilt Flatpak Fontconfig cache via `flatpak run --command=fc-cache <APP_ID> -r`.
 
 ---
@@ -172,7 +172,7 @@ During the migration and post-install configuration, several notable edge cases 
   2. On NixOS, `/run/current-system` is an atomic symlink swap to a new `/nix/store/...` directory. Because the underlying Nix store directory inode never receives in-place filesystem events, `KDirWatch` never fires.
   3. Abruptly restarting `plasmashell` disrupts open window tracking and arrangement in Icons-only Task Manager (`icontasks`).
 - **Resolution:**
-  - Provisioned `home.activation.kbuildsycoca` in [`modules/users/nnon/plasma.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/plasma.nix) to automatically run `XDG_MENU_PREFIX=plasma- ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental` during home-manager activation with proper `LOCALE_ARCHIVE` and `XDG_DATA_DIRS`, immediately updating KSycoca (`~/.cache/ksycoca6_*`) without restarting `plasmashell`.
+  - Provisioned `home.activation.kbuildsycoca` in [`modules/users/nnon/plasma.nix`](../../modules/users/nnon/plasma.nix) to automatically run `XDG_MENU_PREFIX=plasma- ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental` during home-manager activation with proper `LOCALE_ARCHIVE` and `XDG_DATA_DIRS`, immediately updating KSycoca (`~/.cache/ksycoca6_*`) without restarting `plasmashell`.
   - **Kickoff Search Cache vs. Tree View Nuance:** Kickoff's category browse tree (`AppsModel`) reads KSycoca directly and immediately shows new items. However, Kickoff's search bar uses an in-memory `RunnerModel` (`ServiceRunner`) embedded inside `plasmashell` that caches queries. Standalone KRunner (`Alt+Space`) picks up the new cache right away because it spawns fresh. To force Kickoff's in-memory search model to re-instantiate cleanly **without restarting `plasmashell`** (which would disrupt taskbar window grouping and pinned tasks):
     - Right-click the Kickoff launcher icon -> **"Show Alternatives..."** -> select **"Application Menu"** -> **Switch**.
     - Right-click the icon -> **"Show Alternatives..."** -> select **"Application Launcher"** -> **Switch**.
