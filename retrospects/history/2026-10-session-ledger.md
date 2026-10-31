@@ -219,6 +219,11 @@
     - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps.
     - Generalized `mkServerCmd` in `local.nix` with typed options and universal defaults (`reasoningBudget = 4096`, `reasoningLoopGuard = "force-close"`).
 
+71. **Master Directives, Syntax-Safe Sampling & Unified Prompt Alignment (`cd739f2`, `c1f7215`, `c71231b`):**
+    - Set `tool_call_format = 'json'` in `chat_template.jinja` (`9fbd8e7`), fixing corrupted XML parameter parsing in `llama-server`.
+    - Tuned `dryAllowedLength = 5`, `drySequenceBreaker = "none"`, and `repeatPenalty = 1.02` in `local.nix`.
+    - Consolidated agent instructions into `~/.agents/models/Qwen3.8-26B-A4B.md` and deleted `modules/suites/ai/opencode/instructions.md`.
+
 
 
 

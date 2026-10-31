@@ -139,7 +139,7 @@
       "application/x-matroska" = "mpv.desktop";
       "video/quicktime" = "mpv.desktop";
       "video/avi" = "mpv.desktop";
-      "x-scheme-handler/antigravity" = "antigravity-app.desktop";
+      "x-scheme-handler/antigravity" = "antigravity-ide.desktop";
       "x-scheme-handler/curseforge" = "org.prismlauncher.PrismLauncher.desktop";
       "x-scheme-handler/discord" = "vesktop.desktop";
       "x-scheme-handler/lemonade" = "lemonade-app-handler.desktop";
