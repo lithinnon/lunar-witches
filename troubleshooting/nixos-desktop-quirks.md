@@ -178,6 +178,42 @@ During the migration and post-install configuration, several notable edge cases 
     - Right-click the icon -> **"Show Alternatives..."** -> select **"Application Launcher"** -> **Switch**.
     - This recreates Kickoff's QML engine in ~3 seconds with zero screen flicker and 100% window tracking preservation.
 
+---
+
+## 15. Privilege Escalation Failure in Antigravity IDE Integrated Terminal (`NoNewPrivs`)
+- **Symptom:**
+  Running `nh os switch`, `nh os test`, or any command invoking `sudo` from the integrated terminal inside Google Antigravity IDE fails during activation:
+  ```text
+  Error: 
+     0: Activation (test) failed
+     1: Activating configuration (exit status ExitStatus(Exited(1)))
+        stderr:
+        sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+        sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+  ```
+- **Cause:**
+  1. `google-antigravity-ide` is packaged on NixOS using `buildFHSEnv` (`antigravity-nix`), which wraps the application inside an unprivileged Bubblewrap (`bwrap`) container.
+  2. Bubblewrap initializes Linux user namespaces and sets `PR_SET_NO_NEW_PRIVS = 1` (`NoNewPrivs: 1` in `/proc/self/status`).
+  3. Every child process spawned by the IDE—including integrated terminal shells (Fish, Bash, Zsh)—inherits this flag.
+  4. While Nix evaluation and package builds succeed without root privileges, the configuration activation phase (`switch-to-configuration`) executes `sudo`.
+  5. The Linux kernel strictly prevents setuid binaries from escalating privileges when `NoNewPrivs` is set, causing `sudo` to immediately terminate.
+- **Resolution:**
+  - **Preferred (External Host Terminal):** Run `nh os switch` or `nh os test` from a standalone host terminal emulator (Konsole, Ghostty, Ptyxis, Alacritty) launched by Plasma (`NoNewPrivs: 0`):
+    ```bash
+    NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches
+    ```
+  - **IDE Terminal Escape (`systemd-run`):** When executing from inside the Antigravity IDE terminal without switching windows, escape the Bubblewrap user namespace by dispatching through the user systemd instance:
+    ```bash
+    systemd-run --user --pty --same-dir nh os switch /home/nnon/lunar-witches
+    ```
+  - **Dry-Run / Build Only:** For configuration syntax and build verification without activation:
+    ```bash
+    nh os build /home/nnon/lunar-witches
+    # or
+    nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run
+    ```
+
+
 
 
 

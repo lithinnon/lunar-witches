@@ -229,13 +229,64 @@
     - Added `suite-ai-open-webui` (`modules/suites/ai/open-webui.nix`) with custom Python overlay pinning `mcp = 1.30.0`.
     - Upgraded `local.nix` with configurable `batchSize`/`ubatchSize` and swapped in `unleashed/gemma-4-26B-A4B-it` (Uncensored Heretic Q4_K_S).
     - Registered `open-webui.service` in Service Deck desktop configuration.
-
-
-
-
-
-
-
-
-
+73. **KScreen/Baloo Crash Fixes, GPU Boost Query Decoupling & r2modman (`bd107f7`, `969290b`):**
+    - Decoupled `amdgpu-boost` metrics queries (`json`/`status`) from display rate switching, stopping 1000ms `kscreen-doctor` storms.
+    - Bound `amdgpu-boost.service` to `graphical-session.target` and guarded all `kscreen-doctor` calls with active display checks.
+    - Declaratively provisioned `QT_QPA_PLATFORM=offscreen` as drop-in for `kde-baloo.service` in `suite-desktop-plasma`.
+    - Integrated `r2modman` into `suite-gaming` and registered `x-scheme-handler/ror2mm` in `xdg.mimeApps` for Thunderstore web installs.
+74. **Google Antigravity IDE Integration (`7ea4865`):**
+    - Provisioned `google-antigravity-ide` in `suite-ai-antigravity` (`modules/suites/ai/antigravity.nix`).
+    - Registered `x-scheme-handler/antigravity = "antigravity-ide.desktop"` in `modules/users/nnon/desktop.nix`.
+    - Verified generation 196 activation and default MIME association.
+75. **Declarative Plasma KSycoca Refresh Hook & Search Verification (`3861386`, Generation 197):**
+    - Added `home.activation.kbuildsycoca` in `modules/users/nnon/plasma.nix` ensuring every `nh os switch` immediately rebuilds the KSycoca application index with proper locale and `XDG_MENU_PREFIX=plasma-`.
+    - Documented NixOS symlink inotify limitation and Kickoff zero-restart re-instantiation trick in `retrospects/troubleshooting/nixos-desktop-quirks.md#14`.
+    - Empirically verified Kickoff search and KRunner (`Alt+Space`) resolving `antigravity-ide` and `r2modman`.
+76. **Antigravity IDE User Settings Port & Loom Rust Integration (`5979388`):**
+    - Ported settings to `~/.antigravity-ide/User/` and added Rust toolchain to `shells/loom.nix`.
+77. **Documentation Debloat & Relative Link Canonicalization (`8c41446`):**
+    - Removed `file://` absolute URIs and debloated `README.md`, `AGENTS.md`, and `HANDOFF.md`.
+78. **Extract Shared ROCm Foundation to `shells/common-rocm.nix` (`c5e7031`):**
+    - Created `mkCommonRocm` unifying constraints, Flash Attention builder, virtualenv bootstrapper, compiler caching, package lists, and library paths. Refactored `shells/rocm.nix` and `shells/loom.nix`.
+79. **Declarative Loom SDK v0.1.0 Packaging & Integration (`50ffc8c`):**
+    - Created `pkgs/hrx-loom` with patchelfed `loom-compile`, `loom-serve`, `libloomc`, `libiree`, and Python site-packages. Added to `loom-dev` shell without manual CMake build requirements.
+80. **Reorganize AMD Shells & Extract Scripts (`453e3a0`):**
+    - Moved shells to `shells/amd/` (`common.nix`, `standard.nix`, `loom.nix`, `default.nix`) and extracted embedded shell scripts into `shells/amd/scripts.nix`.
+81. **Canonicalize AMD Shell Names (`2a77efd`):**
+    - Renamed primary/runtime devShells to `standard-dev`/`standard` and `loom-dev`/`loom` while maintaining backward-compatible aliases (`amd-ai-dev`, `hip-runtime`, `loom-runtime`).
+82. **Unify AMD DevShells into `amd-dev` & `amd-runtime` (`be04c99`):**
+    - Replaced `standard.nix` and `loom.nix` with `dev.nix` (`amd-dev`) and `runtime.nix` (`amd-runtime`), unifying the entire ROCm, PyTorch, Flash Attention, XRT, Loom, HRX, and Rust toolchain into a single studio.
+83. **Declarative HRX Runtime Package & Imperative Dir Purge (`a8a818e`):**
+    - Created `pkgs/hrx-runtime/default.nix` packaging `libhrx`, `libamdf`, `libamdhip64.so`, and `amdf-enumerate` with autoPatchelfHook.
+    - Wired `pkgs.hrx-runtime` into `shells/amd/dev.nix`, `shells/amd/runtime.nix`, and `shells/amd/scripts.nix`.
+    - Permanently purged imperative `~/.local/share/rocm/hrx-system` from disk.
+84. **Unified `init-venv` & Decoupled Package Caching (`0e4c0a5`):**
+    - Consolidated `init-rocm-venv`, `build-flash-attention`, and `init-iron-venv` into canonical `init-venv` with `--torch`, `-fa`/`--flash-attn`, and `--iron` flags.
+    - Decoupled package cache (`~/.local/share/rocm/pkg-cache-${gfx}`) from virtualenvs: `init-venv` uses Btrfs reflink copy (`--reflink=auto`) to seed 6.6GB packages into clean project-local `./.venv` in under 0.5s.
+    - Removed global venv auto-activation from `common.nix` (strictly project-local `./.venv` activation).
+85. **Pruned Bazel & Streamlined AMD Devshell (`2e03656`):**
+    - Removed unused build tools `bazelisk` and `bazel_7` from `shells/amd/dev.nix`.
+    - Removed redundant `(Active Venv: ...)` output from devshell startup banner.
+86. **Refactored `pkgs/` & Enforced Repository Invariants (`HEAD`):**
+    - Single-sourced in-tree package set across `perSystem.packages` and `flake.overlays.default` via `inTreePackages` map, eliminating boilerplate duplication.
+    - Enforced Zero Backward-Compatibility rule: purged legacy aliases `amd-ttm`, `beellama`, `rdts`, `rgp`, `radeon-gpu-profiler`, and `loom`.
+    - Refactored call sites: updated `modules/hardware/gpu/amd.nix` to canonical `pkgs.radeon-developer-tool-suite`, removed `ln -s amd-ttm` from `pkgs/mem-ttm`, updated `modules/suites/ai/rocm.nix` to call `pkgs.rocm-therock` directly, and updated `shells/amd/` to prefer `pkgs.*` with fallback.
+    - Added `rocm-therock-gfx1151` to `packages` for direct CLI evaluation and build.
+87. **Disable Baloo File Indexer Declaratively & Purge Database (`d776538`):**
+    - Configured `programs.plasma.configFile."baloofilerc"."Basic Settings"."Indexing-Enabled" = false;` in `modules/users/nnon/plasma.nix`.
+    - Removed obsolete headless `kde-baloo` systemd drop-in from `modules/suites/desktop/plasma.nix`.
+    - Purged index database and stopped active indexer process (`balooctl6 purge && balooctl6 disable`).
+88. **Laptop Battery Optimization & Dendritic Cleanup:**
+    - Removed display refresh rate switching from `pkgs/sync-power-state/sync-power-state.sh`.
+    - Re-enabled AMD Display Core Idle Power States (`disableDcIps = false;` in `hosts/lunar-qualia/default.nix`).
+    - Purged `modules/hardware/network/realtek-rtw89.nix` (unblocking PCIe ASPM L1/L1ss) and set `wifi.powersave = true`.
+89. **Purge Obsolete `amdgpu-boost` Daemon & Artifacts (`HEAD`):**
+    - Deleted `modules/features/amdgpu-boost.nix`, `pkgs/amdgpu-boost/`, and `pkgs/plasma-widget-amdgpuboost/`.
+    - Removed user background service and Service Deck references, delegating GPU power management to native AMD PMFW `auto` DPM governor.
+90. **Eliminate Deprecated `stdenv.is<Os>` Evaluation Warnings (`HEAD`):**
+    - Added modern `rust-overlay` input in `flake.nix` and bound `aagl.inputs.rust-overlay.follows = "rust-overlay"`.
+    - Updated lockfile to pull upstream `rust-overlay` (`6ecf534`), resolving deprecated `stdenv.isLinux` and `stdenv.isDarwin` aliases.
+91. **Closure Size Optimization & OpenJDK Deduplication (`HEAD`):**
+    - Purged leaked build-time `env-vars` from `pkgs/rocm-therock/default.nix`, severing runtime reference to 1.90 GiB upstream source tarball.
+    - Bound `digital-egro.inputs.nixpkgs.follows = "nixpkgs"` in `flake.nix`, overrode `mvnHash` in `modules/suites/desktop/apps.nix` for maven dependency convergence, and eliminated duplicate OpenJDK 21 (~568 MiB reclaimed).
 
