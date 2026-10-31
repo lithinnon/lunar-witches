@@ -1,5 +1,5 @@
 # Developer shell for ROCm Loom and the HRX System (HIP Runtime Extended)
-# Inherits PyTorch 2.12 and Flash Attention 2 capabilities from amd-ai-dev,
+# Inherits PyTorch 2.12 and Flash Attention 2 capabilities from standard-dev,
 # but deliberately omits XRT/pyxrt (as Loom/HRX operates over libamdf and direct Linux DRM).
 #
 # Supported Workflows:
@@ -227,8 +227,6 @@ let
     in
     {
       inherit loom loom-dev;
-      # Backward compatibility alias
-      loom-runtime = loom;
     };
 in
 {
@@ -246,17 +244,11 @@ in
     in
     {
       devShells = {
-        # Primary unified Loom devShell
         loom-dev = shellsGfx1151.loom-dev;
         "loom-dev-gfx1151" = shellsGfx1151.loom-dev;
 
-        # Minimal HRX runtime shell
         loom = shellsGfx1151.loom;
         "loom-gfx1151" = shellsGfx1151.loom;
-
-        # Backward compatibility aliases
-        loom-runtime = shellsGfx1151.loom;
-        "loom-runtime-gfx1151" = shellsGfx1151.loom;
       };
     };
 }

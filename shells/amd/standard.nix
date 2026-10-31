@@ -105,9 +105,6 @@ let
     in
     {
       inherit standard standard-dev;
-      # Backward compatibility aliases
-      hip-runtime = standard;
-      amd-ai-dev = standard-dev;
     };
 in
 {
@@ -124,23 +121,11 @@ in
     in
     {
       devShells = {
-        # Primary unified devShell
         standard-dev = shellsGfx1151.standard-dev;
         "standard-dev-gfx1151" = shellsGfx1151.standard-dev;
 
-        # Standard runtime shell
         standard = shellsGfx1151.standard;
         "standard-gfx1151" = shellsGfx1151.standard;
-
-        # Backward compatibility aliases
-        amd-ai-dev = shellsGfx1151.standard-dev;
-        "amd-ai-dev-gfx1151" = shellsGfx1151.standard-dev;
-        torch-dev = shellsGfx1151.standard-dev;
-        hip-dev = shellsGfx1151.standard-dev;
-        "torch-dev-gfx1151" = shellsGfx1151.standard-dev;
-        "hip-dev-gfx1151" = shellsGfx1151.standard-dev;
-        hip-runtime = shellsGfx1151.standard;
-        "hip-runtime-gfx1151" = shellsGfx1151.standard;
       };
     };
 }

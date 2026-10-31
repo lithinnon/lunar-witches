@@ -9,6 +9,7 @@
 - **Stack:** NixOS 26.11 via `flake-parts` & `home-manager` on branch `master`.
 - **AskPass Runner:** In non-login subshells or automation, prefix switch with `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches`.
 - **Secrets Boundary:** Stored in `chmod 600` `~/.config/secrets.env` or encrypted via `sops-nix` in `secrets/secrets.yaml`. Never commit raw tokens to `.nix` or git.
+- **Zero Backward-Compatibility Aliases:** Never preserve or create legacy aliases, shims, or compatibility bindings. Refactor all call sites directly and keep only canonical definitions.
 
 ---
 

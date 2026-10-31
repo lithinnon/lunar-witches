@@ -22,7 +22,7 @@ Enabling modern AMD GPU AI compute (ROCm 10.1, PyTorch 2.12, Flash Attention 2) 
 2. **Three-Tier Architecture & DevShell Isolation:**
    - **Global Host (`environment.systemPackages`):** Exposes only `rocm-diagnostics` (`rocminfo`, `amd-smi`, `rocm_agent_enumerator`).
    - **Dynamic Linker (`programs.nix-ld.libraries`):** Retains ROCm shared libraries to support unpatched binaries and wheels.
-   - **Compilers & Developer Tools (`shells/rocm.nix`):** Full compilers, headers, CMake configs, and Python virtual environment bootstrap tools (`torch-dev`, `init-rocm-venv`) are strictly confined to the `amd-ai-dev` shell.
+   - **Compilers & Developer Tools (`shells/amd/standard.nix`):** Full compilers, headers, CMake configs, and Python virtual environment bootstrap tools (`init-rocm-venv`) are strictly confined to the `standard-dev` shell.
    - **Elimination of `exposeCompilers`:** Removed the global compiler toggle entirely to enforce strict isolation.
 3. **Pattern B Shared Virtual Environment & Flash Attention:**
    - Devshell provides instant startup by prioritizing `./.venv` if present, falling back to a cached `~/.local/share/rocm/venv-${gfx}`.
@@ -32,4 +32,4 @@ Enabling modern AMD GPU AI compute (ROCm 10.1, PyTorch 2.12, Flash Attention 2) 
 
 - System closure reduced by ~200 MiB and store paths cleaned up.
 - Host CMake and C/C++ builds remain isolated from ROCm compiler overrides.
-- Instant, zero-friction developer experience inside `nix develop .#amd-ai-dev`.
+- Instant, zero-friction developer experience inside `nix develop .#standard-dev`.
