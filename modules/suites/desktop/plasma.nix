@@ -39,6 +39,7 @@
 
         # Headless Baloo File Indexer: prevent QGuiApplication aborts when running in background user service
         systemd.user.services.kde-baloo = {
+          overrideStrategy = "asDropin";
           serviceConfig = {
             Environment = [ "QT_QPA_PLATFORM=offscreen" ];
           };
