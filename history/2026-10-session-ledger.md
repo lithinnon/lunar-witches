@@ -1,7 +1,7 @@
 # Historical Session Ledger Archive (October 2026)
 
-> **Context:** This archive captures completed technical milestones, packaging efforts, and hardware proofs graduated from [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to keep the active working register compact.  
-> For deep thematic extraction, root cause analyses, and architectural narratives mined from these sessions, consult [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md).
+> **Context:** This archive captures completed technical milestones, packaging efforts, and hardware proofs graduated from [`HANDOFF.md`](../../HANDOFF.md) to keep the active working register compact.  
+> For deep thematic extraction, root cause analyses, and architectural narratives mined from these sessions, consult [`2026-10-session-chronicles.md`](../../retrospects/history/2026-10-session-chronicles.md).
 
 ---
 
@@ -9,10 +9,10 @@
 
 | Date Range | Primary Agents | Model / Harness | Indexed Knowledge & Chronicles | Cold Transcript Path |
 | :--- | :--- | :--- | :--- | :--- |
-| **2026-10-05 – 2026-10-09** | Pi | Kimi K2.6 / MiMo | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-05T05-18-09-818Z_01a10a7f-7d9a-753c-9b68-372aa214bb10.jsonl` |
-| **2026-09-30 – 2026-10-10** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/f73d4a6a-84c7-4614-9114-d72055951b42/.system_generated/logs/transcript.jsonl` |
-| **2026-10-11 – 2026-10-13** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/463892eb-7168-495e-bac8-3611a3078d13/.system_generated/logs/transcript.jsonl` |
-| **2026-10-13** | Pi | MiMo v2.6 | [`2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-13T07-21-01-325Z_01a13422-d88c-70d1-a404-d738cde6a7e2.jsonl` |
+| **2026-10-05 – 2026-10-09** | Pi | Kimi K2.6 / MiMo | [`2026-10-session-chronicles.md`](../../retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-05T05-18-09-818Z_01a10a7f-7d9a-753c-9b68-372aa214bb10.jsonl` |
+| **2026-09-30 – 2026-10-10** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](../../retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/f73d4a6a-84c7-4614-9114-d72055951b42/.system_generated/logs/transcript.jsonl` |
+| **2026-10-11 – 2026-10-13** | Antigravity | Google Antigravity | [`2026-10-session-chronicles.md`](../../retrospects/history/2026-10-session-chronicles.md) | `~/.gemini/antigravity-cli/brain/463892eb-7168-495e-bac8-3611a3078d13/.system_generated/logs/transcript.jsonl` |
+| **2026-10-13** | Pi | MiMo v2.6 | [`2026-10-session-chronicles.md`](../../retrospects/history/2026-10-session-chronicles.md) | `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/2026-10-13T07-21-01-325Z_01a13422-d88c-70d1-a404-d738cde6a7e2.jsonl` |
 
 ---
 

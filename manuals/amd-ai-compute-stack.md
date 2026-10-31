@@ -99,13 +99,13 @@ AMD's AI software stack today exists in two paradigms: the **Production Classic 
 ## 4. Hardware Proof Ledger (Executed on `lunar-qualia`)
 
 ### Proof 1: ROCm TheRock + PyTorch + Flash Attention 2
-* **Toolchain:** Sourced via in-tree [`pkgs/rocm-therock`](file:///home/nnon/lunar-witches/pkgs/rocm-therock).
+* **Toolchain:** Sourced via in-tree [`pkgs/rocm-therock`](../../pkgs/rocm-therock).
 * **Fix Applied:** Eliminated `autoPatchelfHook` on `.so` files to avoid integer underflow in `PT_PHDR` (`0xffffffffffd9d040`), fixing SIGSEGV in `libhipblaslt` and `llama-cli`.
 * **Execution:** Bootstrapped Python 3.14 virtual environment with `torch==2.12.0+rocm10.1.0`, `amd-torch-device-gfx1151`, and compiled Flash Attention 2 with Composable Kernel backend.
 * **Status:** Verified on physical Radeon 8060S with packed and standard QKV attention forward passes.
 
 ### Proof 2: AMD XDNA NPU via XRT & Python IRON
-* **Toolchain:** Mainline Linux 7.2.8 `amdxdna` driver + in-tree [`pkgs/xrt-amdxdna`](file:///home/nnon/lunar-witches/pkgs/xrt-amdxdna) (XRT `2.21.75`).
+* **Toolchain:** Mainline Linux 7.2.8 `amdxdna` driver + in-tree [`pkgs/xrt-amdxdna`](../../pkgs/xrt-amdxdna) (XRT `2.21.75`).
 * **Fix Applied:** Configured `memlock = unlimited` in `modules/core/default.nix` to satisfy the 64 MB hardware ring buffer requirement (`mmap MAP_LOCKED`).
 * **Execution:** JIT-compiled 4-tile streaming vector kernel (`scale` multiplying 4096 integers) via `@iron.jit` using Peano Clang 21 and executed on physical NPU tiles.
 * **Status:** Verified **0 mismatches (4096/4096 bit-exact match)** on physical AIE2p hardware.
