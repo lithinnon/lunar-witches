@@ -127,6 +127,6 @@ AMD's AI software stack today exists in two paradigms: the **Production Classic 
 
 | DevShell | Command | Purpose & Best Use Cases |
 | :--- | :--- | :--- |
-| **`amd-ai-dev`** | `nix develop /home/nnon/lunar-witches#amd-ai-dev` | **Flagship AI Development:** PyTorch ROCm 2.12, Flash Attention 2, Triton, HuggingFace models, Rust toolchain (`cargo`/`rustc`), CMake, Ccache, and NPU execution via `pyxrt` + `xrt-smi`. |
-| **`loom-dev`** | `nix develop /home/nnon/lunar-witches#loom-dev` | **Next-Gen Substrate Studio:** ROCm Loom, HRX System, `libamdf`, Bazel 7, CMake, Clang, direct-to-DRM NPU `.xdna` compilation, and `llama.cpp` HRX backend development. |
-| **`default`** | `nix develop /home/nnon/lunar-witches` | **Flake Maintenance:** Lightweight shell providing `nixd` (language server) and `nixfmt`. |
+| **`standard-dev`** | `nix develop .#standard-dev` | **Flagship AI Development:** PyTorch ROCm 2.12, Flash Attention 2, Triton, HuggingFace models, Rust toolchain (`cargo`/`rustc`), CMake, Ccache, and NPU execution via `pyxrt` + `xrt-smi`. |
+| **`loom-dev`** | `nix develop .#loom-dev` | **Next-Gen Substrate Studio:** ROCm Loom, HRX System, `libamdf`, Bazel 7, CMake, Clang, direct-to-DRM NPU `.xdna` compilation, and `llama.cpp` HRX backend development. |
+| **`default`** | `nix develop` | **Flake Maintenance:** Lightweight shell providing `nixd` (language server) and `nixfmt`. |
