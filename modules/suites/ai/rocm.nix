@@ -13,7 +13,7 @@
       cfg = config.suites.ai.rocm;
       rocmPkg =
         if cfg.gfx != null then
-          pkgs.callPackage ../../../pkgs/rocm-therock {
+          pkgs.rocm-therock {
             gfx = cfg.gfx;
             inherit (cfg) version;
           }

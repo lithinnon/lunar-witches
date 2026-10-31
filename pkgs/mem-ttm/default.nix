@@ -18,7 +18,6 @@ stdenv.mkDerivation {
     cp mem-ttm.py $out/bin/mem-ttm
     chmod +x $out/bin/mem-ttm
     patchShebangs $out/bin/mem-ttm
-    ln -s mem-ttm $out/bin/amd-ttm
   '';
 
   meta = with lib; {
