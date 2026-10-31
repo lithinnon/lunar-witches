@@ -9,10 +9,10 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-31 13:20 +07:00
+- **Timestamp:** 2026-10-31 14:00 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `8f6c8ca`
+- **Active Git Commit:** `5979388`
 - **Working Tree:** Clean (Generation 197 active)
 - **Live NixOS Generation:** Generation 197 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
@@ -47,11 +47,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-73. **KScreen/Baloo Crash Fixes, GPU Boost Query Decoupling & r2modman (`bd107f7`, `969290b`):**
-    - Decoupled `amdgpu-boost` metrics queries (`json`/`status`) from display rate switching, stopping 1000ms `kscreen-doctor` storms.
-    - Bound `amdgpu-boost.service` to `graphical-session.target` and guarded all `kscreen-doctor` calls with active display checks.
-    - Declaratively provisioned `QT_QPA_PLATFORM=offscreen` as drop-in for `kde-baloo.service` in `suite-desktop-plasma`.
-    - Integrated `r2modman` into `suite-gaming` and registered `x-scheme-handler/ror2mm` in `xdg.mimeApps` for Thunderstore web installs.
 74. **Google Antigravity IDE Integration (`7ea4865`):**
     - Provisioned `google-antigravity-ide` in `suite-ai-antigravity` (`modules/suites/ai/antigravity.nix`).
     - Registered `x-scheme-handler/antigravity = "antigravity-ide.desktop"` in `modules/users/nnon/desktop.nix`.
@@ -60,3 +55,7 @@ When working on active subsystems, consult these authoritative references:
     - Added `home.activation.kbuildsycoca` in `modules/users/nnon/plasma.nix` ensuring every `nh os switch` immediately rebuilds the KSycoca application index with proper locale and `XDG_MENU_PREFIX=plasma-`.
     - Documented NixOS symlink inotify limitation and Kickoff zero-restart re-instantiation trick in `retrospects/troubleshooting/nixos-desktop-quirks.md#14`.
     - Empirically verified Kickoff search and KRunner (`Alt+Space`) resolving `antigravity-ide` and `r2modman`.
+76. **Antigravity IDE User Settings Port & Loom Rust Integration (`5979388`):**
+    - Directly ported VS Code configuration to `~/.antigravity-ide/User/` (`settings.json`, `mcp.json`) and symlinked `~/.antigravity-ide/extensions` to share extensions.
+    - Added full Rust toolchain (`rustc`, `cargo`, `clippy`, `rustfmt`, `rust-analyzer`) and `RUST_SRC_PATH` to `shells/loom.nix`.
+    - Verified `rustc 1.99.0` and `rust-analyzer` execution in `loom-dev`.
