@@ -43,7 +43,9 @@
       self.nixosModules.suite-desktop-apps
       self.nixosModules.suite-gaming
       self.nixosModules.suite-ai-rocm
+      self.nixosModules.suite-ai-claude
       self.nixosModules.suite-ai-antigravity
+      self.nixosModules.suite-ai-open-webui
       self.nixosModules.suite-ai-opencode
       self.nixosModules.suite-ai-local
       self.nixosModules.suite-ai-prose

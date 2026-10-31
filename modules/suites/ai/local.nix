@@ -63,6 +63,8 @@
           cacheRam ? null,
           cacheDisk ? null,
           extraFlags ? [ ],
+          batchSize ? 2048,
+          ubatchSize ? 512,
         }:
         let
           hasCustomCacheRam =
@@ -185,8 +187,8 @@
           ${cfg.package}/bin/llama-server \
               --parallel ${toString parallel} \
               --ctx-size ${toString ctxSize} \
-              --batch-size 2048 \
-              --ubatch-size 512 \
+              --batch-size ${toString batchSize} \
+              --ubatch-size ${toString ubatchSize} \
               --flash-attn on \
               --cache-type-k ${cacheTypeK} \
               --cache-type-v ${cacheTypeV} \
@@ -280,15 +282,16 @@
                       # dryMultiplier = 0.80, dryPenaltyLastN = 512
                     };
                   };
-                  "general/gemma-4-12B-it" = {
+                  "unleashed/gemma-4-26B-A4B-it" = {
                     ttl = 600; # 10 minutes
                     cmd = mkServerCmd {
-                      hfRepo = "unsloth/gemma-4-12B-it-qat-GGUF:UD-Q4_K_XL";
+                      hfRepo = "llmfan46/gemma-4-26B-A4B-it-uncensored-heretic-GGUF:Q4_K_S";
                       mmproj = "auto";
-                      cacheTypeKV = "snc8";
+                      cacheTypeKV = "snc4";
+                      kvTailTokens = 1024;
                       temp = 1.0;
                       topK = 64;
-                      specType = "draft-mtp";
+                      ubatchSize = 1024;
                     };
                   };
                   "vector/embeddinggemma-2" = {
@@ -313,13 +316,13 @@
                 };
 
                 groups = {
-                  chat = {
+                  agents = {
                     swap = true;
                     exclusive = false;
                     members = [
                       "creative/boulesis-v2.1-headtune"
                       "reasoning/qwen3.8-26b-a4b"
-                      "general/gemma-4-12B-it"
+                      "unleashed/gemma-4-26B-A4B-it"
                     ];
                   };
                   embeddings = {

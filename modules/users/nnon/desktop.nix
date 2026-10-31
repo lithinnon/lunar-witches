@@ -204,6 +204,11 @@
             name = "llama-swap";
             scope = "user";
           }
+          {
+            id = "open-webui.service";
+            name = "Open WebUI";
+            scope = "system";
+          }
         ];
       }
     ];
