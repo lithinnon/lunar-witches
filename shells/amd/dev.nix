@@ -15,6 +15,7 @@ let
       rocmPkg ? pkgs.callPackage ../../pkgs/rocm-therock { inherit gfx version; },
       xrtPkg ? pkgs.callPackage ../../pkgs/xrt-amdxdna { },
       loomPkg ? pkgs.callPackage ../../pkgs/hrx-loom { },
+      hrxRuntimePkg ? pkgs.callPackage ../../pkgs/hrx-runtime { },
       torchVersion ? "2.12.0+rocm${rocmPkg.version}",
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
@@ -33,10 +34,9 @@ let
 
       scripts = import ./scripts.nix { inherit lib pkgs; };
       initIronScript = scripts.mkInitIronScript { inherit (common) initVenvScript; };
-      hrxRun = scripts.mkHrxRun;
-      hrxCc = scripts.mkHrxCc;
-      hrxCxx = scripts.mkHrxCxx;
-      buildHrxSystem = scripts.mkBuildHrxSystem { inherit rocmPkg gfx; };
+      hrxRun = scripts.mkHrxRun { inherit hrxRuntimePkg; };
+      hrxCc = scripts.mkHrxCc { inherit hrxRuntimePkg; };
+      hrxCxx = scripts.mkHrxCxx { inherit hrxRuntimePkg; };
     in
     pkgs.mkShell {
       name = "amd-dev-${gfx}";
@@ -44,11 +44,11 @@ let
         # Silicon & Runtime Packages
         xrtPkg
         loomPkg
+        hrxRuntimePkg
         # HRX & Loom runtime wrappers
         hrxRun
         hrxCc
         hrxCxx
-        buildHrxSystem
         initIronScript
         # Build Tools & Compilers
         pkgs.bazelisk
@@ -93,20 +93,21 @@ let
           fi
         fi
 
-        # Discover or configure HRX & Loom runtime directory
-        export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
-        if [ ! -d "$HRX_DIR" ] && [ -d "/tmp/hrx-system/install" ]; then
-          export HRX_DIR="/tmp/hrx-system/install"
-        fi
+        # Discover or configure HRX runtime directory
+        export HRX_DIR="''${HRX_DIR:-${hrxRuntimePkg}}"
 
         if [ -d "$HRX_DIR" ]; then
           export PATH="$HRX_DIR/bin:$PATH"
-          export LD_LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LD_LIBRARY_PATH"
-          export LIBRARY_PATH="$HRX_DIR/lib64:$HRX_DIR/lib:$LIBRARY_PATH"
+          export LD_LIBRARY_PATH="$HRX_DIR/lib:$HRX_DIR/lib64:$LD_LIBRARY_PATH"
+          export LIBRARY_PATH="$HRX_DIR/lib:$HRX_DIR/lib64:$LIBRARY_PATH"
           export C_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$C_INCLUDE_PATH"
           export CPLUS_INCLUDE_PATH="$HRX_DIR/include:$HRX_DIR/include/hrx:$CPLUS_INCLUDE_PATH"
-          export CMAKE_PREFIX_PATH="$HRX_DIR/lib64/cmake/hrx:$HRX_DIR/lib64/cmake/loomc:$CMAKE_PREFIX_PATH"
-          export HRX_HIP_PRELOAD="$HRX_DIR/lib64/libamdhip64.so"
+          export CMAKE_PREFIX_PATH="$HRX_DIR/lib/cmake/hrx:$HRX_DIR/lib/cmake/amdf:$CMAKE_PREFIX_PATH"
+          if [ -f "$HRX_DIR/lib/libamdhip64.so" ]; then
+            export HRX_HIP_PRELOAD="$HRX_DIR/lib/libamdhip64.so"
+          else
+            export HRX_HIP_PRELOAD="$HRX_DIR/lib64/libamdhip64.so"
+          fi
         fi
 
         # Session toggle helpers: Instant switch between standard ROCm and HRX runtime
@@ -116,7 +117,7 @@ let
             echo "✓ HRX HIP runtime enabled globally for this session"
             echo "  Active: $LD_PRELOAD"
           else
-            echo "Error: HRX libamdhip64.so not found at ''${HRX_HIP_PRELOAD:-$HRX_DIR/lib64/libamdhip64.so}"
+            echo "Error: HRX libamdhip64.so not found at ''${HRX_HIP_PRELOAD:-$HRX_DIR/lib/libamdhip64.so}"
             return 1
           fi
         }

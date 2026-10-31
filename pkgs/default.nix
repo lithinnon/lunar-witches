@@ -17,6 +17,7 @@
       rgp = pkgs.callPackage ./radeon-developer-tool-suite { };
       hrx-loom = pkgs.callPackage ./hrx-loom { };
       loom = pkgs.callPackage ./hrx-loom { };
+      hrx-runtime = pkgs.callPackage ./hrx-runtime { };
     };
   };
 
@@ -39,6 +40,7 @@
     radeon-gpu-profiler = final.radeon-developer-tool-suite;
     hrx-loom = final.callPackage ./hrx-loom { };
     loom = final.hrx-loom;
+    hrx-runtime = final.callPackage ./hrx-runtime { };
 
     # Upstream nixpkgs unstable bumped mcp to 2.x where fastmcp-slim is marked broken.
     # Override fastmcp-slim with nixpkgs's backwards-compatible mcp_1 (1.29.0).
