@@ -19,10 +19,6 @@ let
         inherit gfx torchVersion tritonVersion;
       };
 
-      buildFlashAttnScript = scripts.mkBuildFlashAttnScript {
-        inherit gfx;
-      };
-
       initVenvScript = scripts.mkInitVenvScript {
         inherit
           gfx
@@ -30,13 +26,12 @@ let
           torchVersion
           tritonVersion
           xrtPkg
-          buildFlashAttnScript
           ;
+        loomPkg = pkgs.callPackage ../../pkgs/hrx-loom { };
       };
 
       commonPackages = [
         rocmPkg
-        buildFlashAttnScript
         initVenvScript
         pkgs.cmake
         pkgs.ninja
@@ -105,25 +100,15 @@ let
       ];
 
       venvActivationHook = ''
-        GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-
         if [ -d ".venv" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
           echo "==> Activating project-local virtual environment (./.venv)..."
           source .venv/bin/activate
-        elif [ -d "$GLOBAL_VENV" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
-          echo "==> Activating shared ROCm virtual environment ($GLOBAL_VENV)..."
-          source "$GLOBAL_VENV/bin/activate"
-        elif [ -z "''${VIRTUAL_ENV:-}" ]; then
-          echo "==> First-time setup: Auto-bootstrapping shared ROCm environment at $GLOBAL_VENV..."
-          ${initVenvScript}/bin/init-rocm-venv "$GLOBAL_VENV"
-          source "$GLOBAL_VENV/bin/activate"
         fi
       '';
     in
     {
       inherit
         constraintsFile
-        buildFlashAttnScript
         initVenvScript
         commonPackages
         commonEnv

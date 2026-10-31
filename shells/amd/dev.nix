@@ -33,7 +33,6 @@ let
       };
 
       scripts = import ./scripts.nix { inherit lib pkgs; };
-      initIronScript = scripts.mkInitIronScript { inherit (common) initVenvScript; };
       hrxRun = scripts.mkHrxRun { inherit hrxRuntimePkg; };
       hrxCc = scripts.mkHrxCc { inherit hrxRuntimePkg; };
       hrxCxx = scripts.mkHrxCxx { inherit hrxRuntimePkg; };
@@ -49,7 +48,6 @@ let
         hrxRun
         hrxCc
         hrxCxx
-        initIronScript
         # Build Tools & Compilers
         pkgs.bazelisk
         pkgs.bazel_7
@@ -146,10 +144,12 @@ let
         echo ""
         echo "  Supported Execution Workflows:"
         echo "  ------------------------------------------------------------------------------"
-        echo "  1. Standard PyTorch & NPU (XRT):"
-        echo "     $ python app.py                      # Runs standard ROCm HIP"
+        echo "  1. Python Acceleration & Virtual Environment:"
+        echo "     $ init-venv                          # Full stack: PyTorch + Flash-Attn/AITER + IRON"
+        echo "     $ init-venv --torch                  # PyTorch 2.12 + Triton only"
+        echo "     $ init-venv -fa                      # Flash Attention 2 + AITER"
+        echo "     $ init-venv --iron                   # Ryzen AI NPU MLIR-AIE + Peano"
         echo "     $ xrt-smi examine                    # NPU status & telemetry"
-        echo "     $ init-iron-venv                     # Installs MLIR-AIE IRON wheels"
         echo ""
         echo "  2. HRX Low-Latency HIP Execution:"
         echo "     $ hrx-run python app.py              # Intercepts HIP with HRX libamdhip64"

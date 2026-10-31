@@ -15,38 +15,7 @@ rec {
       amd-torch-device-${gfx}==${torchVersion}
     '';
 
-  # Flash Attention 2 + AITER Triton/CK builder
-  mkBuildFlashAttnScript =
-    { gfx }:
-    pkgs.writeShellScriptBin "build-flash-attention" ''
-      set -euo pipefail
-      if [ -z "''${VIRTUAL_ENV:-}" ]; then
-        GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-        if [ -d "$GLOBAL_DEFAULT" ]; then
-          source "$GLOBAL_DEFAULT/bin/activate"
-        else
-          echo "Error: No active virtual environment found. Run 'init-rocm-venv' first."
-          exit 1
-        fi
-      fi
-      echo "==> Building Flash Attention 2 for active environment: $VIRTUAL_ENV"
-      TMPDIR=$(mktemp -d)
-      trap 'rm -rf "$TMPDIR"' EXIT
-      git clone --depth 1 https://github.com/Dao-AILab/flash-attention "$TMPDIR/flash-attention"
-      (
-        cd "$TMPDIR/flash-attention"
-        git submodule update --init --depth 1 third_party/aiter csrc/composable_kernel || true
-        echo "==> Building & installing aiter..."
-        AITER_USE_SYSTEM_TRITON=1 ENABLE_CK=1 PREBUILD_KERNELS=0 \
-          pip install --no-build-isolation --no-deps ./third_party/aiter
-        echo "==> Building & installing flash-attention..."
-        FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE" \
-          pip install --no-build-isolation --no-deps .
-      )
-      echo "==> Flash Attention 2 successfully built and installed!"
-    '';
-
-  # Unified PyTorch & device library virtual environment bootstrapper
+  # Unified PyTorch, Attention (Flash Attention + AITER), and NPU (IRON) virtual environment bootstrapper
   mkInitVenvScript =
     {
       gfx,
@@ -54,31 +23,49 @@ rec {
       torchVersion,
       tritonVersion,
       xrtPkg ? null,
-      buildFlashAttnScript,
+      loomPkg ? null,
     }:
-    pkgs.writeShellScriptBin "init-rocm-venv" ''
+    pkgs.writeShellScriptBin "init-venv" ''
       set -euo pipefail
-      WITH_FLASH_ATTN=0
-      WITH_IRON=0
+
+      WANT_TORCH=0
+      WANT_ATTN=0
+      WANT_IRON=0
+      FORCE_FRESH=0
       TARGET_DIR=""
+      FLAGS_GIVEN=0
 
       for arg in "$@"; do
         case "$arg" in
-          --flash-attn|--with-flash-attn)
-            WITH_FLASH_ATTN=1
+          --torch)
+            WANT_TORCH=1
+            FLAGS_GIVEN=1
             ;;
-          --iron|--with-iron)
-            WITH_IRON=1
+          -fa|--flash-attn|--flash-attention)
+            WANT_ATTN=1
+            FLAGS_GIVEN=1
+            ;;
+          --iron)
+            WANT_IRON=1
+            FLAGS_GIVEN=1
+            ;;
+          --fresh|--no-cache)
+            FORCE_FRESH=1
             ;;
           -h|--help)
-            echo "Usage: init-rocm-venv [directory] [--flash-attn]${
-              lib.optionalString (xrtPkg != null) " [--with-iron]"
-            }"
-            echo "  directory     Target directory (defaults to ~/.local/share/rocm/venv-${gfx})"
-            echo "  --flash-attn  Automatically build and install Flash Attention 2"
-            ${lib.optionalString (xrtPkg != null) ''
-              echo "  --with-iron   Automatically install MLIR-AIE (IRON) & Peano LLVM compiler wheels"
-            ''}
+            echo "Usage: init-venv [directory] [options]"
+            echo ""
+            echo "Initializes a ROCm Python virtual environment with copyable/cached packages."
+            echo ""
+            echo "Tier Selection (defaults to all if none specified):"
+            echo "  --torch                          Install PyTorch, Triton & ROCm device libraries"
+            echo "  -fa, --flash-attn, --flash-attention"
+            echo "                                   Install Flash Attention 2 + AITER & Composable Kernel"
+            echo "  --iron                           Install Ryzen AI NPU MLIR-AIE (IRON) & Peano LLVM compiler"
+            echo ""
+            echo "Options:"
+            echo "  directory                        Target directory (defaults to ./.venv)"
+            echo "  --fresh, --no-cache              Force a fresh build/download instead of reflink copy"
             exit 0
             ;;
           *)
@@ -89,58 +76,132 @@ rec {
         esac
       done
 
-      GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-      VENV_DIR="''${TARGET_DIR:-$GLOBAL_DEFAULT}"
+      # Default: if no specific tier flags were passed, install everything
+      if [ "$FLAGS_GIVEN" -eq 0 ]; then
+        WANT_TORCH=1
+        WANT_ATTN=1
+        WANT_IRON=1
+      fi
 
-      mkdir -p "$(dirname "$VENV_DIR")"
-      if [ ! -d "$VENV_DIR" ]; then
+      # Attention & IRON both depend on PyTorch
+      if [ "$WANT_ATTN" -eq 1 ] || [ "$WANT_IRON" -eq 1 ]; then
+        WANT_TORCH=1
+      fi
+
+      VENV_DIR="''${TARGET_DIR:-./.venv}"
+      PKG_CACHE="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/pkg-cache-${gfx}"
+      WHEELS_CACHE="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/wheels-${gfx}"
+
+      mkdir -p "$VENV_DIR"
+      if [ ! -f "$VENV_DIR/bin/python" ]; then
         echo "==> Creating virtual environment at $VENV_DIR..."
         ${pkgs.python3}/bin/python3 -m venv "$VENV_DIR"
       fi
+
+      # Activate the target environment
       source "$VENV_DIR/bin/activate"
+      SITE_PKGS="$("$VENV_DIR/bin/python" -c "import site; print(site.getsitepackages()[0])")"
+
+      ${lib.optionalString (loomPkg != null) ''
+        # Link declarative Loom SDK
+        echo "${loomPkg}/lib/python3.14/site-packages" > "$SITE_PKGS/loom.pth"
+      ''}
 
       ${lib.optionalString (xrtPkg != null) ''
-        # Link host pyxrt from xrt-amdxdna package into venv site-packages
-        SITE_PKGS="$("$VENV_DIR/bin/python" -c "import site; print(site.getsitepackages()[0])")"
+        # Link host pyxrt for XDNA NPU
         echo "${xrtPkg}/lib/python3.14/site-packages" > "$SITE_PKGS/xrt.pth"
       ''}
 
-      echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
-      uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
-        "torch==${torchVersion}" \
-        "triton==${tritonVersion}" \
-        "amd-torch-device-${gfx}==${torchVersion}" \
-        pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
-
-      if [ "$WITH_FLASH_ATTN" -eq 1 ]; then
-        echo "==> Building Flash Attention 2 (--flash-attn requested)..."
-        ${buildFlashAttnScript}/bin/build-flash-attention
+      # --------------------------------------------------------------------------
+      # Fast Reflink Copy from Package Cache
+      # --------------------------------------------------------------------------
+      if [ "$FORCE_FRESH" -eq 0 ] && [ -d "$PKG_CACHE" ] && [ "$(ls -A "$PKG_CACHE" 2>/dev/null)" ]; then
+        echo "==> Seeding packages from cache via Btrfs reflink ($PKG_CACHE -> $SITE_PKGS)..."
+        cp -a --reflink=auto "$PKG_CACHE"/* "$SITE_PKGS/" 2>/dev/null || true
       fi
 
-      ${lib.optionalString (xrtPkg != null) ''
-        if [ "$WITH_IRON" -eq 1 ]; then
-          echo "==> Installing MLIR-AIE (IRON) & Peano LLVM compiler wheels for Ryzen AI NPU..."
-          uv pip install mlir_aie --find-links https://github.com/Xilinx/mlir-aie/releases/expanded_assets/v1.4.2
-          uv pip install llvm-aie --find-links https://github.com/Xilinx/llvm-aie/releases/expanded_assets/nightly-20240501-20260527
-          echo "==> Configuring Peano compiler environment..."
+      # --------------------------------------------------------------------------
+      # Tier 1: PyTorch (ROCm backend, Triton, device libraries)
+      # --------------------------------------------------------------------------
+      if [ "$WANT_TORCH" -eq 1 ]; then
+        if ! "$VENV_DIR/bin/python" -c "import torch" >/dev/null 2>&1; then
+          echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
+          uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
+            "torch==${torchVersion}" \
+            "triton==${tritonVersion}" \
+            "amd-torch-device-${gfx}==${torchVersion}" \
+            pip setuptools wheel ninja packaging psutil einops pybind11 numpy pandas flydsl pyyaml
+        else
+          echo "✓ PyTorch stack available in environment"
+        fi
+      fi
+
+      # --------------------------------------------------------------------------
+      # Tier 2: Flash Attention 2 (with AITER & Composable Kernel)
+      # --------------------------------------------------------------------------
+      if [ "$WANT_ATTN" -eq 1 ]; then
+        if ! "$VENV_DIR/bin/python" -c "import flash_attn, aiter" >/dev/null 2>&1; then
+          mkdir -p "$WHEELS_CACHE"
+          if ls "$WHEELS_CACHE"/flash_attn*.whl >/dev/null 2>&1 && ls "$WHEELS_CACHE"/aiter*.whl >/dev/null 2>&1; then
+            echo "==> Installing Flash Attention 2 & AITER from wheel cache..."
+            uv pip install --find-links "$WHEELS_CACHE" --no-deps flash_attn aiter
+          else
+            echo "==> Building Flash Attention 2 & AITER wheels from Dao-AILab repository..."
+            TMPDIR=$(mktemp -d)
+            trap 'rm -rf "$TMPDIR"' EXIT
+            git clone --depth 1 https://github.com/Dao-AILab/flash-attention "$TMPDIR/flash-attention"
+            (
+              cd "$TMPDIR/flash-attention"
+              git submodule update --init --depth 1 third_party/aiter csrc/composable_kernel || true
+              echo "==> Packaging AITER wheel..."
+              AITER_USE_SYSTEM_TRITON=1 ENABLE_CK=1 PREBUILD_KERNELS=0 \
+                pip wheel --no-build-isolation --no-deps -w "$WHEELS_CACHE" ./third_party/aiter
+              echo "==> Packaging Flash Attention 2 wheel..."
+              FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE" \
+                pip wheel --no-build-isolation --no-deps -w "$WHEELS_CACHE" .
+            )
+            uv pip install --find-links "$WHEELS_CACHE" --no-deps flash_attn aiter
+          fi
+        else
+          echo "✓ Flash Attention 2 & AITER available in environment"
+        fi
+      fi
+
+      # --------------------------------------------------------------------------
+      # Tier 3: IRON (MLIR-AIE + Peano LLVM compiler for Ryzen AI NPU)
+      # --------------------------------------------------------------------------
+      if [ "$WANT_IRON" -eq 1 ]; then
+        ${lib.optionalString (xrtPkg != null) ''
+          if ! "$VENV_DIR/bin/python" -c "import aie" >/dev/null 2>&1; then
+            echo "==> Installing MLIR-AIE (IRON) & Peano LLVM compiler wheels for Ryzen AI NPU..."
+            uv pip install mlir_aie --find-links https://github.com/Xilinx/mlir-aie/releases/expanded_assets/v1.4.2
+            uv pip install llvm-aie --find-links https://github.com/Xilinx/llvm-aie/releases/expanded_assets/nightly-20240501-20260527
+          else
+            echo "✓ MLIR-AIE (IRON) available in environment"
+          fi
+
           PEANO_DIR="$VENV_DIR/lib/python3.14/site-packages/llvm-aie"
           if [ -d "$PEANO_DIR" ]; then
-            echo "export PEANO_INSTALL_DIR=\"$PEANO_DIR\"" >> "$VENV_DIR/bin/activate"
-            echo "export AIECC_PATH=\"$VENV_DIR/bin/aiecc\"" >> "$VENV_DIR/bin/activate"
-            echo "export AIE_XCLBINUTIL=\"${xrtPkg}/bin/xclbinutil\"" >> "$VENV_DIR/bin/activate"
+            if ! grep -q "PEANO_INSTALL_DIR" "$VENV_DIR/bin/activate"; then
+              echo "export PEANO_INSTALL_DIR=\"$PEANO_DIR\"" >> "$VENV_DIR/bin/activate"
+              echo "export AIECC_PATH=\"$VENV_DIR/bin/aiecc\"" >> "$VENV_DIR/bin/activate"
+              echo "export AIE_XCLBINUTIL=\"${xrtPkg}/bin/xclbinutil\"" >> "$VENV_DIR/bin/activate"
+            fi
           fi
-        fi
-      ''}
+        ''}
+      fi
 
-      echo "==> Ready! Virtual environment at $VENV_DIR is active."
-    '';
+      # --------------------------------------------------------------------------
+      # Sync Installed Packages back to Cache
+      # --------------------------------------------------------------------------
+      mkdir -p "$PKG_CACHE"
+      cp -a --reflink=auto "$SITE_PKGS"/* "$PKG_CACHE/" 2>/dev/null || true
 
-  # Helper to bootstrap IRON NPU tools into active or default venv
-  mkInitIronScript =
-    { initVenvScript }:
-    pkgs.writeShellScriptBin "init-iron-venv" ''
-      set -euo pipefail
-      ${initVenvScript}/bin/init-rocm-venv "''${1:-}" --with-iron
+      echo "================================================================================"
+      echo "✓ Virtual environment initialized and active at: $VENV_DIR"
+      echo "  Python:  $("$VENV_DIR/bin/python" --version)"
+      echo "  Tiers:   $([ "$WANT_TORCH" -eq 1 ] && echo -n "PyTorch ")$([ "$WANT_ATTN" -eq 1 ] && echo -n "Flash-Attn/AITER ")$([ "$WANT_IRON" -eq 1 ] && echo -n "IRON")"
+      echo "================================================================================"
     '';
 
   # HRX Method 1: Drop-in HIP runtime wrapper
