@@ -282,6 +282,12 @@ let
           pkgs.lld
           pkgs.ccache
           pkgs.sccache
+          # Rust toolchain
+          pkgs.rustc
+          pkgs.cargo
+          pkgs.clippy
+          pkgs.rustfmt
+          pkgs.rust-analyzer
           # Python & package management
           pkgs.python3
           pkgs.python3Packages.pip
@@ -316,6 +322,9 @@ let
           CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
           AMD_COMGR_CACHE_ENABLE = "1";
           ROCFFT_KERNEL_CACHE_ENABLE = "1";
+
+          # Rust environment
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
           # Flash Attention 2 & AITER build/runtime flags
           FLASH_ATTENTION_TRITON_AMD_ENABLE = "TRUE";
