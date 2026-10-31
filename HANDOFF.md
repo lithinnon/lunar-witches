@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-31 13:07 +07:00
+- **Timestamp:** 2026-10-31 13:09 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `2d8e86e`
-- **Working Tree:** Dirty (Milestone 75 ready to switch)
-- **Live NixOS Generation:** Generation 196 (Linux 7.2.8-cachyos)
+- **Active Git Commit:** `3861386`
+- **Working Tree:** Clean (Generation 197 active)
+- **Live NixOS Generation:** Generation 197 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
 - **Unified Prompt Directives:** `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by both Pi and OpenCode).
 
@@ -26,11 +26,11 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Declarative KSycoca desktop entry auto-indexing hook.
+- **Current Focus:** Plasma desktop indexing and system stabilization.
 - [x] Added `home.activation.kbuildsycoca` to `modules/users/nnon/plasma.nix`.
 - [x] Documented symlink inotify behavior in `retrospects/troubleshooting/nixos-desktop-quirks.md`.
 - [x] Verified full-graph Nix dry-run evaluation (`nix build --dry-run`).
-- [ ] Deploy and activate via `nh os switch`.
+- [x] Deployed and activated via `nh os switch` (Generation 197 verified).
 
 ---
 
