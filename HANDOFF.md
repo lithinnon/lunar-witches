@@ -12,8 +12,8 @@
 - **Timestamp:** 2026-10-31 12:54 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `aaa0827`
-- **Working Tree:** Staged (Milestone 74)
+- **Active Git Commit:** `7ea4865`
+- **Working Tree:** Clean (Ready to switch)
 - **Live NixOS Generation:** Generation 195 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
 - **Unified Prompt Directives:** `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by both Pi and OpenCode).
