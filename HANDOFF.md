@@ -9,7 +9,7 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-31 13:09 +07:00
+- **Timestamp:** 2026-10-31 13:20 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
 - **Active Git Commit:** `3861386`
@@ -47,11 +47,6 @@ When working on active subsystems, consult these authoritative references:
 
 ## 4. Recent Delta (Sliding Window: Last 3 Milestones)
 
-72. **Claude Desktop, Open WebUI Suite & Gemma 4 26B Heretic Integration (`348c070`):**
-    - Added `suite-ai-claude` (`modules/suites/ai/claude.nix`) wrapping `claude-desktop-fhs` and `claude-code`.
-    - Added `suite-ai-open-webui` (`modules/suites/ai/open-webui.nix`) with custom Python overlay pinning `mcp = 1.30.0`.
-    - Upgraded `local.nix` with configurable `batchSize`/`ubatchSize` and swapped in `unleashed/gemma-4-26B-A4B-it` (Uncensored Heretic Q4_K_S).
-    - Registered `open-webui.service` in Service Deck desktop configuration.
 73. **KScreen/Baloo Crash Fixes, GPU Boost Query Decoupling & r2modman (`bd107f7`, `969290b`):**
     - Decoupled `amdgpu-boost` metrics queries (`json`/`status`) from display rate switching, stopping 1000ms `kscreen-doctor` storms.
     - Bound `amdgpu-boost.service` to `graphical-session.target` and guarded all `kscreen-doctor` calls with active display checks.
@@ -61,6 +56,7 @@ When working on active subsystems, consult these authoritative references:
     - Provisioned `google-antigravity-ide` in `suite-ai-antigravity` (`modules/suites/ai/antigravity.nix`).
     - Registered `x-scheme-handler/antigravity = "antigravity-ide.desktop"` in `modules/users/nnon/desktop.nix`.
     - Verified generation 196 activation and default MIME association.
-75. **Declarative Plasma KSycoca Refresh Hook:**
-    - Added `home.activation.kbuildsycoca` in `modules/users/nnon/plasma.nix` ensuring every `nh os switch` immediately rebuilds the KSycoca application index without restarting plasmashell.
-    - Documented NixOS symlink inotify limitation in `retrospects/troubleshooting/nixos-desktop-quirks.md#14`.
+75. **Declarative Plasma KSycoca Refresh Hook & Search Verification (`3861386`, Generation 197):**
+    - Added `home.activation.kbuildsycoca` in `modules/users/nnon/plasma.nix` ensuring every `nh os switch` immediately rebuilds the KSycoca application index with proper locale and `XDG_MENU_PREFIX=plasma-`.
+    - Documented NixOS symlink inotify limitation and Kickoff zero-restart re-instantiation trick in `retrospects/troubleshooting/nixos-desktop-quirks.md#14`.
+    - Empirically verified Kickoff search and KRunner (`Alt+Space`) resolving `antigravity-ide` and `r2modman`.
