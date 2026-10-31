@@ -68,6 +68,7 @@ Reproducible lab runs, hardware traces, and validation benchmarks on physical si
 Authoritative operational guides and developer manuals kept continuously synchronized with the active codebase.
 
 - [`amd-ai-compute-stack.md`](file:///home/nnon/lunar-witches/retrospects/manuals/amd-ai-compute-stack.md): Master architectural reference for the entire AMD AI ecosystem (ROCm 10.1, PyTorch, Flash Attention 2, XRT, IRON, Loom, and HRX).
+- [`adding-hosts.md`](file:///home/nnon/lunar-witches/retrospects/manuals/adding-hosts.md): Procedure for adding and composing new target machines in the dendritic flake.
 
 ---
 

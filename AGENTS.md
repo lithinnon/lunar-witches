@@ -7,262 +7,67 @@
 
 ## 1. System Identity & Core Invariants
 
-- **Repository:** [`/home/nnon/lunar-witches`](file:///home/nnon/lunar-witches)
-- **Framework:** NixOS 26.11 (Zokor) managed via a **dendritic Nix Flake** using `flake-parts` and `home-manager`.
-- **Primary Deployment Target:** `lunar-qualia` (ASUS TUF Gaming A14 FA401EA, AMD Strix Halo APU, 32GB LPDDR5X UMA).
-- **Branch:** `master`
+- **Repository:** [`/home/nnon/lunar-witches`](file:///home/nnon/lunar-witches) | **Framework:** NixOS 26.11 (Zokor) via `flake-parts` & `home-manager` | **Branch:** `master`
+- **Primary Host:** `lunar-qualia` (ASUS TUF Gaming A14 FA401EA, AMD Strix Halo APU, 32GB LPDDR5X UMA).
 
-### Mandatory Behavioral Rules
-
-1. **Host-Specific Profiles:**
-   - ALWAYS verify the target hostname (e.g. `hostname`).
-   - Read the corresponding hardware and swap profile at `~/.gemini/devices/<hostname>.md` before making host-specific hardware or memory recommendations.
-2. **TTM Allocation & VRAM Limits:**
-   - ALWAYS check the active TTM memory limit using `mem-ttm` before recommending local model loading or heavy graphics/compute allocations.
-3. **Declarative NixOS Only:**
-   - NEVER suggest or execute imperative package managers (`apt`, `dnf`, `rpm`, `pacman`) or imperative bootloader tools (`grubby`, `update-grub`).
-   - All system packages, kernel parameters, daemons, and environment variables MUST be declared in Nix files within this repository.
-4. **Privilege Escalation & AskPass (`nh` & `sudo`):**
-   - When suggesting commands requiring `sudo`, ALWAYS use `sudo -A` (Askpass). The system is configured with KDE Plasma's `ksshaskpass` graphical dialog so user credentials are never handled directly by the agent.
-   - For `nh os switch`, `nh`'s internal Rust elevation logic specifically requires `NH_SUDO_ASKPASS` (or `NH_SUDOOPTS="-A"`) to pass `-A` to `sudo`. `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass` is declaratively provisioned in `suite-desktop-plasma` and `user-nnon.home.sessionVariables`. When executing `nh os switch` in non-login subshells or fresh scripts, explicitly prefix `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch ...` to guarantee graphical authentication.
-5. **Third-Party Binaries: In-Tree Packages & Plain AppImages:**
-   - There is **no container tooling** on this machine — the Fedora-era Podman setup and the short-lived `feature-containers` experiment are both gone. Never suggest `podman`/`docker`/`distrobox`.
-   - Packaged binaries come from `pkgs/` (e.g. `pkgs/app` via the overlay + `home.packages`). A **plain** `appimage-run` with an `application/vnd.appimage` double-click handler ships in `suite-desktop-apps` — deliberately without extra FHS packages (no webkit chain), so only AppImages whose libraries the base env provides will run. app runs via `pkgs.app`, not its AppImage.
-6. **Nix Store Secrets Boundary:**
-   - NEVER commit API tokens, passwords, or private keys to `.nix` files or Git history.
-   - The `/nix/store` is world-readable (`chmod -R a+r`). Secrets live in `chmod 600` environment files under `~/.config/` — `~/.config/secrets.env` for shell-sourced tokens (e.g. `HF_TOKEN`), `~/.config/chula/environment` for campus Wi-Fi credentials — with plain `KEY=VALUE` lines (no `export ` prefixes — systemd's `EnvironmentFile=` silently ignores them), sourced declaratively in shell init scripts (`fish.shellInit` / `bash.initExtra`).
+### Mandatory Rules
+1. **Host Profiles:** Check hostname (`hostname`) and read hardware/swap profile at `~/.agents/devices/<hostname>.md` before hardware recommendations.
+2. **TTM Allocation:** Run `mem-ttm` to verify active VRAM/TTM limits before local model loading or heavy GPU allocations.
+3. **Declarative NixOS Only:** Never suggest imperative package managers (`apt`, `dnf`, `rpm`) or bootloader tools (`grubby`). All state is declared in Nix and activated via `nh os switch`.
+4. **Privilege Escalation:** Use `sudo -A` (graphical `ksshaskpass`). For `nh os switch`, prefix with `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches` in non-login shells.
+5. **No Containers:** No `docker`/`podman`/`distrobox`. Software is packaged in Flake, `pkgs/`, or run via plain `appimage-run`.
+6. **Secrets Boundary:** Never commit secrets to `.nix` files or Git (`/nix/store` is world-readable). Secrets live in `chmod 600` files (`~/.config/secrets.env`) or encrypted via `sops-nix` (`secrets/secrets.yaml`).
 
 ---
 
-## 2. The 6-Tier Dendritic Architecture
+## 2. Dendritic Structure & Domain Placement
 
-The configuration is structured as a **dendritic tree** where leaf hosts compose decoupled, reusable traits rather than inheriting monolithic configurations:
+The repo uses a 6-tier decoupled dendritic tree (see [ADR 0010](retrospects/adr/0010-six-tier-dendritic-decomposition.md)):
+- `modules/core/`: Universal foundation (Nix, nh, sudo, locale, nix-ld). Zero GUI/hardware assumptions.
+- `modules/roles/`: Form-factor roles (`laptop`, `desktop`, `server`, `boot-systemd`).
+- `modules/hardware/`: CPU microcode, GPU drivers, zswap, Wi-Fi, OEM platform traits.
+- `modules/features/`: Opt-in daemons (`amdgpu-boost`, `sops`, `syncthing`, `chulawifi`, `openssh`).
+- `modules/suites/`: Curated software suites (`plasma`, `apps`, `gaming`, `ai`, `development`).
+- `modules/users/`: Declarative Home Manager user profile (`users/nnon/`).
+- `hosts/<host>/`: Host leaf composition (`default.nix`) and partition manifest (`hardware.nix`). (See [Adding Hosts Manual](retrospects/manuals/adding-hosts.md)).
+- `pkgs/`: In-tree derivations & overlays (`mem-ttm`, `amdgpu-boost`, `app`, plasma widgets).
+- `shells/`: Reusable devShells (`default`, `amd-ai-dev`, `loom-dev`).
 
-```mermaid
-flowchart TD
-    subgraph T1["Tier 1: Core Foundation"]
-        C["modules/core (Nix, nh, sudo, locale, nix-ld)"]
-    end
-
-    subgraph T2["Tier 2: Form Factor Roles"]
-        R1["role-laptop (Power, battery sync, lid)"]
-        R2["role-desktop (Stationary PC)"]
-        R3["role-server (Headless, no sleep)"]
-        R4["role-boot-systemd (systemd-boot EFI)"]
-    end
-
-    subgraph T3["Tier 3: Hardware Traits"]
-        H1["hw-cpu-amd"]
-        H2["hw-gpu-amd & hw-gpu-amd-integrated"]
-        H3["hw-memory-zswap"]
-        H4["hw-network-realtek-rtw89"]
-        H5["hw-oem-asus-base & hw-oem-asus-laptop"]
-        H6["hw-peripheral-yubikey & hw-peripheral-keychron"]
-    end
-
-    subgraph T4["Tier 4: Opt-In Features"]
-        F1["feature-amdgpu-boost (GPU governor)"]
-        F2["feature-syncthing (File sync)"]
-        F3["feature-chulawifi (Campus 802.1x)"]
-        F4["feature-openssh (Hardened sshd)"]
-    end
-
-    subgraph T5["Tier 5: Software Suites"]
-        S1["suite-desktop-plasma (KDE 6 Wayland)"]
-        S2["suite-desktop-apps (Brave, KeePassXC, Bottles, etc.)"]
-        S3["suite-gaming (Steam, GameScope, Honkers, Bedrock)"]
-        S4["suite-ai-rocm, suite-ai-antigravity & suite-ai-opencode"]
-        S5["suite-development (Compilers, uv, git)"]
-    end
-
-    subgraph T6["Tier 6: Host Leaf Manifests"]
-        L1["hosts/lunar-qualia/default.nix (Leaf Composition)"]
-        L2["hosts/lunar-qualia/hardware.nix (Disks, BTRFS, Swap)"]
-    end
-
-    C --> L1
-    T2 --> L1
-    T3 --> L1
-    T4 --> L1
-    T5 --> L1
-    L2 --> L1
-```
+### Key Domain Boundaries
+- **Windows Tools:** General emulation (`bottles`) belongs in `suites/desktop/apps.nix`; games (`steam`, `gamescope`) belong in `suites/gaming/`.
+- **Hardware Parameters:** Never hardcode machine limits in `modules/hardware/`. Expose typed `lib.mkOption` and set values in `hosts/<host>/default.nix`.
+- **Native Modules:** Avoid wrapper options around native NixOS services; configure upstream services directly with `lib.mkDefault`.
+- **Full-Graph Convergence:** Changes across definition, aggregator, and consumer layers must evaluate end-to-end (`nix build --dry-run`) before completing.
+- **Safe Editing:** Never use `sed`/`awk`/line arithmetic. Always use dedicated structured edit tools with unique surrounding anchors.
 
 ---
 
-## 3. Directory Taxonomy & Responsibilities
-
-| Directory | Module / Export | Scope & Classification Criteria |
-| :--- | :--- | :--- |
-| **`modules/core/`** | `self.nixosModules.core` | Universal baseline for ALL machines (servers, laptops, desktops). Nix settings, `nh` helper, basic CLI utilities, locale, zsh/bash/fish basics, `nix-ld`. Zero GUI or hardware assumptions. |
-| **`modules/roles/`** | `self.nixosModules.role-*` | Machine form-factor roles: `laptop.nix` (battery management, power-profiles-daemon), `desktop.nix` (stationary, sleep policies), `server.nix` (headless), `boot-systemd.nix`. |
-| **`modules/hardware/`** | `self.nixosModules.hw-*` | Silicon, bus, and peripheral drivers: CPU microcode (`cpu/amd`), GPU drivers (`gpu/amd`, `gpu/amd-integrated`), zswap (`memory/zswap`), Wi-Fi chipsets (`network/realtek-rtw89`), OEM platforms (`oem/asus/*`), and peripherals (`peripherals/yubikey`, `peripherals/keychron`). |
-| **`modules/features/`** | `self.nixosModules.feature-*` | Opt-in services and background daemons that may not be required by every machine (e.g. `amdgpu-boost.nix`, `syncthing.nix`, `chulawifi.nix`, `openssh.nix`). |
-| **`modules/suites/`** | `self.nixosModules.suite-*` | Curated collections of software packages and desktop capabilities: `desktop/plasma.nix`, `desktop/apps.nix`, `gaming/default.nix`, `ai/rocm.nix`, `ai/antigravity.nix`, `ai/opencode.nix`, `ai/prose.nix`, `development/default.nix`. |
-| **`modules/users/`** | `self.nixosModules.user-*` | User account definitions and integrated Home Manager configuration (`users/nnon/default.nix`, `shell.nix`, `development.nix`, `desktop.nix`, `plasma.nix`). |
-| **`hosts/<hostname>/`** | `flake.nixosConfigurations.<host>` | Host-specific composition manifests (`default.nix`) and physical partition/UUID configurations (`hardware.nix`). Supplies machine-specific numbers (RAM limits, card names). |
-| **`pkgs/`** | `flake.overlays.default` | Custom in-tree Nix derivations (`mem-ttm`, `amdgpu-boost`, `sync-power-state`, `service-deck-helper`, `app`, `plasma-widget-servicedeck`, `plasma-widget-amdgpuboost`). Built and exported to system overlays. |
-| **`retrospects/`** | Markdown docs | Categorized repository knowledge base: `adr/` (decision records), `postmortems/` (incident RCAs), `proofs/` (hardware verification runs), `manuals/` (living stack guides), `troubleshooting/` (runbooks), and `history/` (milestones). |
-
----
-
-## 4. Key Placement & Domain Rules
-
-When adding new configurations or options, follow these boundary guidelines:
-
-1. **Where does a Windows utility belong? (`bottles` vs. `steam`):**
-   - General-purpose Windows emulation (`bottles`) belongs in **`modules/suites/desktop/apps.nix`** because it runs academic software, VPN utilities, and productivity tools.
-   - Gaming-specific runners (`steam`, `gamescope`, `honkers-launcher`, `bedrock-on-linux`) belong strictly in **`modules/suites/gaming/default.nix`**.
-2. **Where do hardware parameters belong?:**
-   - NEVER hardcode arbitrary machine limits (such as `5862940` TTM pages or `card1` DRM devices) inside `modules/hardware/`.
-   - Expose typed options via `lib.mkOption` (e.g. `hardware.amdgpu.integrated.ttmPagesLimit`, `services.amdgpu-boost.card`) and assign the exact values in the leaf manifest `hosts/<hostname>/default.nix`.
-3. **Upstream Mesa & Kernel Features:**
-   - Do NOT introduce redundant driver environment variables if newer Mesa/Kernel versions stabilize them upstream.
-   - Example: Mesa 26.2.3 enables `bfloat16` by default on RDNA 3/3.5, making `RADV_EXPERIMENTAL = "bfloat16"` obsolete.
-4. **Computer Use Agent (CUA) Driver Boundary:**
-   - Input injection tools (`CUA_DRIVER_RS_ENABLE_WAYLAND`) belong in the desktop Wayland suite (`modules/suites/desktop/plasma.nix`), not the AI compute suite, because they require an active display session.
-5. **Native Module Wrapping:**
-   - Avoid creating custom wrapper options (e.g. `services.lunar-syncthing`) around native NixOS services. Configure upstream services directly using `lib.mkDefault` so downstream hosts can override properties effortlessly.
-6. **Enterprise Network Profiles & Secrets Boundary:**
-   - Network profiles requiring proprietary or campus 802.1x enterprise authentication (`ChulaWiFi`, `eduroam`) come from the [`chula`](https://github.com/MiniHarinn/chula-flake) flake input (`chula.nixosModules.wifi`). `modules/features/chulawifi.nix` is a bare import-time trait: importing it is the opt-in, and the host leaf sets `chula.wifi.environmentFile` directly (per rule 5 — no wrapper options around upstream).
-   - Invariants: Never embed passwords into Nix store files. Use NetworkManager's `ensureProfiles.environmentFiles` to substitute `$CHULA_WIFI_PASSWORD` / `$CHULA_WIFI_IDENTITY` into `/run/NetworkManager/system-connections/` at runtime (in RAM with 0600 permissions).
-   - RADIUS Quirks: Enterprise networks relying on legacy RADIUS TLS 1.0 handshakes require `phase1-auth-flags = 32` (0x20) and `openssl-ciphers = "DEFAULT@SECLEVEL=0"`. chula-flake provides the latter (plus a pinned RADIUS CA); `feature-chulawifi` layers the former on both profiles — keep that quirk until upstream adds it.
-   - Keyfile Quirk: NM keyfiles require `\` in values to be escaped as `\\`, but `envsubst` writes the password raw (and systemd's `EnvironmentFile=` collapses `\\`→`\`, so the env file can't carry the escaped form either). NM then rejects the value ("cannot be interpreted") and 802-1x auth fails every boot. `feature-chulawifi` re-escapes `password=` lines after profile generation and re-runs `nmcli connection reload`.
-7. **Full-Graph Dependency Convergence Invariant:**
-   - Architectural modifications (declaring options, refactoring traits, adding packages, or renaming interfaces) form a directed acyclic graph across three conceptual layers:
-     - **Definition Layer** (`modules/suites/`, `modules/hardware/`, `pkgs/`): Where options, derivations, and traits are declared and typed.
-     - **Aggregator Layer** (`modules/suites/default.nix`, `modules/roles/default.nix`, `flake.nix` exports): Where modules and traits are gathered and exported.
-     - **Consumer Layer** (`hosts/<hostname>/default.nix`, `modules/users/`, shell environments): Where options are assigned, suites are imported, and packages are consumed.
-   - An edit is never complete at the definition layer alone. Agents MUST trace the dependency graph across all three tiers, verify zero orphaned references or missing exports, and evaluate the system end-to-end (`nix build --dry-run`) before declaring a task complete. Never leave downstream aggregators or host manifests desynchronized.
-8. **Cognitive Guardrails & Safe File Editing:**
-   - NEVER use `sed`, `awk`, or manual line arithmetic to edit repository source code. Always use the dedicated `edit` or `write` tools with unique surrounding anchor blocks.
-   - Respect negative proofs: when search tools (`grep`, `glob`, `find`) return 0 matches, accept that the target does not exist rather than guessing undocumented flags or looping endlessly.
-
----
-
-## 5. Adding a New Machine to the Flake
-
-To introduce a new host (e.g. `lunar-station`):
-
-1. **Create Partition Manifest (`hosts/lunar-station/hardware.nix`):**
-   ```nix
-   { config, lib, pkgs, modulesPath, ... }:
-   {
-     imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-     # Declare fileSystems, swapDevices, boot.initrd.availableKernelModules
-   }
-   ```
-2. **Create Leaf Composition (`hosts/lunar-station/default.nix`):**
-   ```nix
-   { self, inputs, ... }:
-   {
-     flake.nixosConfigurations.lunar-station = inputs.nixpkgs.lib.nixosSystem {
-       system = "x86_64-linux";
-       specialArgs = { inherit inputs self; };
-       modules = [
-         ./hardware.nix
-         self.nixosModules.core
-         self.nixosModules.role-desktop
-         # Compose hardware traits
-         self.nixosModules.hw-cpu-amd
-         self.nixosModules.hw-gpu-amd
-         # Compose software suites
-         self.nixosModules.suite-desktop-plasma
-         self.nixosModules.suite-development
-         # Attach user
-         inputs.home-manager.nixosModules.home-manager
-         self.nixosModules.user-nnon
-         ({ pkgs, ... }: {
-           networking.hostName = "lunar-station";
-           nixpkgs.config.allowUnfree = true;
-           nixpkgs.overlays = [ self.overlays.default ];
-         })
-       ];
-     };
-   }
-   ```
-3. **Register Host in `flake.nix`:**
-   Add `./hosts/lunar-station` to the `imports` list in [`flake.nix`](file:///home/nnon/lunar-witches/flake.nix).
-4. **Create Device Profile:**
-   Create `~/.gemini/devices/lunar-station.md` documenting its CPU, GPU, memory, and swap layout.
-
----
-
-## 6. Daily Operations & Verification Commands
-
-All routine operations should be conducted through declarative tooling:
+## 3. Daily Operations & Verification
 
 ```bash
-# 1. Format and check syntax
-nix fmt ./**.nix
-
-# 2. Dry-build evaluation test (no root required)
-nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run
-
-# 3. Build and cache candidate generation locally
-nh os build /home/nnon/lunar-witches
-
-# 4. Activate configuration on live system (triggers graphical ksshaskpass via NH_SUDO_ASKPASS)
-nh os switch /home/nnon/lunar-witches
-# (If executing from a non-login subshell or automated runner, explicitly prefix:
-# NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches)
-
-# 5. Clean older generations (keeps last 3)
-nh clean all --keep 3
+nix fmt                                                                             # Format syntax
+nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run  # Dry-run evaluation
+nh os build /home/nnon/lunar-witches                                                # Build & cache generation
+nh os switch /home/nnon/lunar-witches                                               # Activate system configuration
+nh clean all --keep 3                                                               # Clean old generations
 ```
 
 ---
 
-## 7. Multi-Agent & Multi-Session Continuity Architecture (Antigravity ↔ OpenCode)
+## 4. Multi-Agent Continuity & Handover Protocol (Antigravity ↔ OpenCode)
 
-To ensure zero amnesia across agent tool boundaries (**Google Antigravity** ↔ **OpenCode / Qwen 3.8 26B-A4B**) and across **fresh chat sessions** as context windows grow large, the repository follows a **4-Tier Hierarchical Memory Model**:
-
-```
-Tier 1: Active Chat Context Window (Ephemeral, volatile, bounded ~0-100k tokens)
-   │
-   ▼ (Session Compaction / Rotation)
-Tier 2: Active Working Register (HANDOFF.md — sliding window strictly capped at ~100 lines)
-   │
-   ├─► Tier 3: Domain Knowledge Base & Indexed Chronicles (retrospects/ indexed via retrospects/README.md)
-   │
-   ▼ (Milestone Graduation)
-Tier 4: Archival Ledgers & Cold Forensics (retrospects/history/ & raw .jsonl session logs)
-```
-
-### Extracted Knowledge Chronicles vs. Raw Forensics
-- **Tier 3 Indexed Chronicles:** Prior sessions' substantive engineering knowledge, decisions, and hardware proofs are synthesized and indexed in [`retrospects/history/2026-10-session-chronicles.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-chronicles.md). Fresh sessions and incoming agents should **always** consult the structured retrospects rather than loading raw session logs into context.
-- **Tier 4 Cold Forensics:** Multi-megabyte `.jsonl` transcript logs are retained on disk strictly as cold forensic artifacts for pinpoint verification of raw compiler traces or exact past commands:
-  - **Antigravity Traces:**  
-    `~/.gemini/antigravity-cli/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
-  - **OpenCode Traces:**  
-    `~/.local/share/opencode/` / project sessions
-  - **Pi Legacy Traces:**  
-    `~/.config/pi/agent/sessions/--home-nnon-lunar-witches--/<session-id>.jsonl`
-
-### The Sliding-Window Rule (`HANDOFF.md`)
-- `HANDOFF.md` is an **active register**, not a permanent log. It must never exceed ~100–120 lines (~1.2k tokens).
-- When a task is verified and closed, graduate its checklist items to [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md).
-- Keep only the last 3–5 milestone deltas in `HANDOFF.md`.
-
-### Swap & Handover Invariants
-
-1. **Orientation (Cold-Start on Turn 1 in ANY Session):**
-   - Check `git status` and `git log -n 3 --oneline` to understand recent commits.
-   - Read [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) to inspect:
-     - Who was active last (`Antigravity` or `OpenCode / Qwen 3.8 26B-A4B`) and the session lineage IDs.
-     - What the immediate in-flight task is and any blockers.
-     - Active subsystem pointers (e.g. AI stack, desktop, networking).
-   - If the task touches an unfamiliar or existing domain, look up its authoritative ADR or living manual in [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md).
-2. **Session Rotation & Compaction Ceremony (On Session Yield / Large Context):**
-   - When a chat context grows large or work is handed over:
-     1. **Repository Cleanliness:** Commit working code with a conventional commit, or catalog all dirty WIP files and rationale in `HANDOFF.md`.
-     2. **Knowledge Crystallization:** Externalize any newly discovered hardware quirks, decisions, or stack rules into `retrospects/` (never leave architectural truths buried in chat).
-     3. **Ledger Compaction:** Move older completed items from `HANDOFF.md` into `retrospects/history/`.
-     4. **State Snapshot:** Update the **Active State** header in `HANDOFF.md` (active agent, timestamp, commit, generation, and session IDs).
-     5. **Handover Prompt:** Provide the user with a 1-line prompt to bootstrap the new session:  
-        `"Resume from HANDOFF.md: <objective>"`
-3. **Division of Labor & Tool Strengths:**
-   - **Antigravity:** Excels at high-level architectural refactors, multi-agent decomposition, multimodal UI verification (analyzing GUI logs/screenshots), and complex Flake module creation.
-   - **OpenCode (Qwen 3.8 26B-A4B):** Excels at rapid terminal iterations, localized module adjustments, interactive TUI workflows, subagent exploration, and swift parameter tweaking.
-
-
+1. **Memory Hierarchy:**
+   - **Active Register:** [`HANDOFF.md`](file:///home/nnon/lunar-witches/HANDOFF.md) — sliding window strictly capped at **<100 lines**.
+   - **Knowledge Base:** [`retrospects/`](file:///home/nnon/lunar-witches/retrospects/) (indexed in [`retrospects/README.md`](file:///home/nnon/lunar-witches/retrospects/README.md)) for ADRs, proofs, and manuals.
+   - **Cold Forensics:** Archived logs in `retrospects/history/` and raw `.jsonl` traces on disk.
+2. **Turn 1 Orientation (Every Session):**
+   - Run `git status` and `git log -n 3 --oneline`.
+   - Read `HANDOFF.md` to identify active agent, lineage, immediate queue, and subsystem references.
+3. **Session Rotation / Handover Ceremony:**
+   - Commit working code with a conventional commit.
+   - Externalize discovered hardware quirks or decisions into `retrospects/`.
+   - Graduate completed milestones from `HANDOFF.md` to [`retrospects/history/2026-10-session-ledger.md`](file:///home/nnon/lunar-witches/retrospects/history/2026-10-session-ledger.md) to keep `HANDOFF.md` <100 lines.
+   - Update `HANDOFF.md` active state header and provide resume prompt: `"Resume from HANDOFF.md: <objective>"`.
+4. **Tool Strengths:**
+   - **Antigravity:** Architectural refactors, multi-agent decomposition, multimodal UI verification, complex Flake modules.
+   - **OpenCode (Qwen 3.8 26B-A4B):** Terminal iterations, localized module adjustments, TUI workflows, subagents, swift parameter tweaking.
