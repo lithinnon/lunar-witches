@@ -41,10 +41,10 @@ let
       hrxCxx = scripts.mkHrxCxx;
       buildHrxSystem = scripts.mkBuildHrxSystem { inherit rocmPkg gfx; };
     in
-    {
+    let
       # Minimal HRX / Loom Runtime Shell
-      loom-runtime = pkgs.mkShell {
-        name = "rocm-loom-runtime-${gfx}";
+      loom = pkgs.mkShell {
+        name = "rocm-loom-${gfx}";
         packages = [
           rocmPkg
           hrxRun
@@ -224,6 +224,11 @@ let
           echo "================================================================================"
         '';
       };
+    in
+    {
+      inherit loom loom-dev;
+      # Backward compatibility alias
+      loom-runtime = loom;
     };
 in
 {
@@ -246,8 +251,12 @@ in
         "loom-dev-gfx1151" = shellsGfx1151.loom-dev;
 
         # Minimal HRX runtime shell
-        loom-runtime = shellsGfx1151.loom-runtime;
-        "loom-runtime-gfx1151" = shellsGfx1151.loom-runtime;
+        loom = shellsGfx1151.loom;
+        "loom-gfx1151" = shellsGfx1151.loom;
+
+        # Backward compatibility aliases
+        loom-runtime = shellsGfx1151.loom;
+        "loom-runtime-gfx1151" = shellsGfx1151.loom;
       };
     };
 }

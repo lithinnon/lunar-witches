@@ -32,10 +32,9 @@ let
       scripts = import ./scripts.nix { inherit lib pkgs; };
       initIronScript = scripts.mkInitIronScript { inherit (common) initVenvScript; };
     in
-    {
-      # Variant 1: Minimal HIP Runtime (Diagnostics & device execution)
-      hip-runtime = pkgs.mkShell {
-        name = "rocm-hip-runtime-${gfx}";
+    let
+      standard = pkgs.mkShell {
+        name = "amd-standard-${gfx}";
         packages = [
           rocmPkg
           pkgs.pciutils
@@ -53,16 +52,15 @@ let
             ]
           }:$LD_LIBRARY_PATH"
           echo "=========================================================="
-          echo "  ROCm ${rocmPkg.version} (TheRock) - HIP Runtime (${gfx})"
+          echo "  ROCm ${rocmPkg.version} (TheRock) - Standard Runtime (${gfx})"
           echo "  ROCM_PATH: ${rocmPkg}"
           echo "=========================================================="
           ${rocmPkg}/bin/rocminfo | grep -E 'Name:[[:space:]]+gfx' || true
         '';
       };
 
-      # Variant 2: Flagship Unified AI Development Shell (ROCm GPU + XDNA NPU + Rust Toolchain)
-      amd-ai-dev = pkgs.mkShell {
-        name = "amd-ai-dev-${gfx}";
+      standard-dev = pkgs.mkShell {
+        name = "amd-standard-dev-${gfx}";
         packages = common.commonPackages ++ [
           xrtPkg
           pkgs.cargo
@@ -104,6 +102,12 @@ let
           echo "=========================================================="
         '';
       };
+    in
+    {
+      inherit standard standard-dev;
+      # Backward compatibility aliases
+      hip-runtime = standard;
+      amd-ai-dev = standard-dev;
     };
 in
 {
@@ -121,18 +125,22 @@ in
     {
       devShells = {
         # Primary unified devShell
-        amd-ai-dev = shellsGfx1151.amd-ai-dev;
-        "amd-ai-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
+        standard-dev = shellsGfx1151.standard-dev;
+        "standard-dev-gfx1151" = shellsGfx1151.standard-dev;
+
+        # Standard runtime shell
+        standard = shellsGfx1151.standard;
+        "standard-gfx1151" = shellsGfx1151.standard;
 
         # Backward compatibility aliases
-        torch-dev = shellsGfx1151.amd-ai-dev;
-        hip-dev = shellsGfx1151.amd-ai-dev;
-        "torch-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
-        "hip-dev-gfx1151" = shellsGfx1151.amd-ai-dev;
-
-        # Minimal runtime shell
-        hip-runtime = shellsGfx1151.hip-runtime;
-        "hip-runtime-gfx1151" = shellsGfx1151.hip-runtime;
+        amd-ai-dev = shellsGfx1151.standard-dev;
+        "amd-ai-dev-gfx1151" = shellsGfx1151.standard-dev;
+        torch-dev = shellsGfx1151.standard-dev;
+        hip-dev = shellsGfx1151.standard-dev;
+        "torch-dev-gfx1151" = shellsGfx1151.standard-dev;
+        "hip-dev-gfx1151" = shellsGfx1151.standard-dev;
+        hip-runtime = shellsGfx1151.standard;
+        "hip-runtime-gfx1151" = shellsGfx1151.standard;
       };
     };
 }
