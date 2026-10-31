@@ -215,6 +215,10 @@
       4. Negative-proof annotator in `tool.execute.after` to halt infinite search loops on 0 matches, and silent failure annotator for non-zero exit codes.
     - Documented Full-Graph Dependency Convergence Invariant and Cognitive Guardrails in `AGENTS.md`.
 
+70. **Anti-Looping Architecture: DRY Sampling, Loop Guard & Intermediate Reasoning Stripping (`cb6d703`):**
+    - Diagnosed empirical root cause of multi-turn looping in `qwen3.8-26b-a4b`: intermediate `<think>` blocks kept in KV cache acted as autoregressive attractor traps.
+    - Generalized `mkServerCmd` in `local.nix` with typed options and universal defaults (`reasoningBudget = 4096`, `reasoningLoopGuard = "force-close"`).
+
 
 
 
