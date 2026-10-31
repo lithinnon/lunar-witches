@@ -48,9 +48,6 @@ let
         hrxRun
         hrxCc
         hrxCxx
-        # Build Tools & Compilers
-        pkgs.bazelisk
-        pkgs.bazel_7
         # Rust Toolchain
         pkgs.rustc
         pkgs.cargo
