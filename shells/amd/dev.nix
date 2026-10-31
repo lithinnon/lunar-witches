@@ -74,7 +74,7 @@ let
         export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${xrtPkg}/lib:${loomPkg}/lib:${common.commonLdLibraryPath}:$LD_LIBRARY_PATH"
         export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:${xrtPkg}/bin:${loomPkg}/bin:$PATH"
 
-        # Auto-activate shared ROCm virtual environment (with PyTorch and Flash Attention 2)
+        # Activate project-local ./.venv if present in current directory
         ${common.venvActivationHook}
 
         # Auto-configure Peano compiler if present in active venv
@@ -136,7 +136,7 @@ let
         echo "  ROCm (TheRock):  ${rocmPkg.version} (Compiler: $(${rocmPkg}/bin/hipcc --version | head -n 1))"
         echo "  Rust Toolchain:  $(cargo --version)"
         echo "  Loom SDK:        ${loomPkg.version}"
-        echo "  Locked PyTorch:  ${torchVersion} (Active Venv: ''${VIRTUAL_ENV:-None})"
+        echo "  Locked PyTorch:  ${torchVersion}"
         if [ -e /dev/accel/accel0 ]; then
           echo "  XDNA NPU:        /dev/accel/accel0 (Dual Transports: XRT ${xrtPkg.version} + Direct DRM libamdf)"
         fi
