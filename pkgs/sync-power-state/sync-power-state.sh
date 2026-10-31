@@ -79,9 +79,11 @@ set_cpu_boost() {
 
 case "$TARGET_STATE" in
     battery|bat|discharge)
-        # 1. Display: switch internal panel to 60Hz
-        kscreen-doctor output.eDP-1.mode.2560x1600@60 >/dev/null 2>&1 \
-            || kscreen-doctor output.eDP-1.mode.2 >/dev/null 2>&1 || true
+        # 1. Display: switch internal panel to 60Hz (if in graphical session)
+        if [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
+            kscreen-doctor output.eDP-1.mode.2560x1600@60 >/dev/null 2>&1 \
+                || kscreen-doctor output.eDP-1.mode.2 >/dev/null 2>&1 || true
+        fi
 
         # 2. Universal Linux ACPI platform profile: quiet / low-power
         set_platform_profile "quiet"
@@ -96,9 +98,11 @@ case "$TARGET_STATE" in
         set_cpu_boost 1
         ;;
     ac|plugged|performance)
-        # 1. Display: switch internal panel to high refresh rate (165Hz)
-        kscreen-doctor output.eDP-1.mode.2560x1600@165 >/dev/null 2>&1 \
-            || kscreen-doctor output.eDP-1.mode.1 >/dev/null 2>&1 || true
+        # 1. Display: switch internal panel to high refresh rate (165Hz) (if in graphical session)
+        if [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
+            kscreen-doctor output.eDP-1.mode.2560x1600@165 >/dev/null 2>&1 \
+                || kscreen-doctor output.eDP-1.mode.1 >/dev/null 2>&1 || true
+        fi
 
         # 2. Universal Linux ACPI platform profile: performance
         set_platform_profile "performance"

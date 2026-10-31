@@ -31,6 +31,7 @@
       mangohud
       protonplus
       protontricks
+      r2modman
       sgdboop
     ];
   };

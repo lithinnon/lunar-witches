@@ -143,6 +143,10 @@ apply_refresh_rate() {
     if [ "$AUTO_REFRESH_RATE" != "true" ]; then
         return
     fi
+    # Require active Wayland or X11 graphical session to run kscreen-doctor
+    if [ -z "$WAYLAND_DISPLAY" ] && [ -z "$DISPLAY" ]; then
+        return
+    fi
     if ! command -v kscreen-doctor >/dev/null 2>&1; then
         return
     fi
@@ -161,7 +165,9 @@ update_cached_system_state() {
 
     CACHED_IS_PERF=0
     if check_perf_profile; then CACHED_IS_PERF=1; fi
+}
 
+sync_display_refresh_on_ac_change() {
     # Trigger automatic display refresh rate switch on AC state transition
     if [ "$CACHED_IS_AC" != "$LAST_APPLIED_AC" ]; then
         apply_refresh_rate
@@ -332,6 +338,7 @@ JSON
 run_daemon() {
     echo "[amdgpu-boost] Advanced Smart Dual-Threshold & Auto-Display Daemon started."
     update_cached_system_state
+    sync_display_refresh_on_ac_change
     evaluate_and_apply
 
     # Background D-Bus signal listener (only update AC/Profile state when D-Bus broadcasts)
@@ -340,6 +347,7 @@ run_daemon() {
         while read -r line; do
             if [[ "$line" == *"member=PropertiesChanged"* ]]; then
                 update_cached_system_state
+                sync_display_refresh_on_ac_change
                 evaluate_and_apply
             fi
         done
@@ -378,6 +386,7 @@ case "$1" in
         read_config
         update_cached_system_state
         apply_refresh_rate
+        LAST_APPLIED_AC="$CACHED_IS_AC"
         echo "Display refresh rate applied according to power state."
         ;;
     json|-j)

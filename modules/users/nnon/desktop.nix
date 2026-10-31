@@ -21,6 +21,7 @@
         "graphical-session.target"
         "asusd.service"
       ];
+      PartOf = [ "graphical-session.target" ];
     };
     Service = {
       Type = "simple";
@@ -32,7 +33,7 @@
       RestartSec = 2;
     };
     Install = {
-      WantedBy = [ "default.target" ];
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
@@ -144,6 +145,7 @@
       "x-scheme-handler/lemonade" = "lemonade-app-handler.desktop";
       "x-scheme-handler/mongodb" = "mongodb-compass.desktop";
       "x-scheme-handler/mongodb+srv" = "mongodb-compass.desktop";
+      "x-scheme-handler/ror2mm" = "r2modman.desktop";
       "x-scheme-handler/sgdb" = "com.steamgriddb.SGDBoop.desktop";
       "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
       "x-scheme-handler/tonsite" = "org.telegram.desktop.desktop";
