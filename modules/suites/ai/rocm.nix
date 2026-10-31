@@ -47,7 +47,7 @@
         ];
 
         # System packages: expose only lightweight diagnostic utilities on global $PATH.
-        # Compilers (hipcc, amdclang++) are strictly confined to developer shells (standard-dev).
+        # Compilers (hipcc, amdclang++) are strictly confined to developer shells (amd-dev).
         environment.systemPackages = lib.optional (rocmPkg != null) (
           pkgs.runCommand "rocm-diagnostics" { } ''
             mkdir -p $out/bin

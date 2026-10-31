@@ -4,7 +4,7 @@
 {
   imports = [
     ./common.nix
-    ./standard.nix
-    ./loom.nix
+    ./dev.nix
+    ./runtime.nix
   ];
 }

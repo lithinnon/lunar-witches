@@ -19,7 +19,7 @@ lunar-witches/
 │   ├── suites/     # Software suites (plasma, apps, gaming, ai, development)
 │   └── users/      # Declarative Home Manager user profiles
 ├── pkgs/           # In-tree derivations (mem-ttm, amdgpu-boost, app)
-├── shells/         # Flake devShells (default, standard-dev, loom-dev)
+├── shells/         # Flake devShells (default, amd-dev, amd-runtime)
 └── retrospects/    # Indexed knowledge base (ADRs, manuals, proofs, postmortems)
 ```
 
@@ -28,8 +28,8 @@ lunar-witches/
 ## 2. Development Shells
 
 - `nix develop`: Core Flake hacking (`nixd`, `nixfmt`).
-- `nix develop .#standard-dev`: ROCm 10.1, PyTorch 2.12, Flash Attention 2, NPU tools (or `.#standard` for runtime).
-- `nix develop .#loom-dev`: ROCm Loom DSL, Rust toolchain, HRX direct DRM compute (or `.#loom` for runtime).
+- `nix develop .#amd-dev`: Unified AMD AI Studio (ROCm 10.1, PyTorch 2.12, Flash Attention 2, Loom, HRX, XRT, Rust toolchain).
+- `nix develop .#amd-runtime`: Lightweight AMD runtime & diagnostics (`rocminfo`, `xrt-smi`, HRX toggles).
 
 ---
 
