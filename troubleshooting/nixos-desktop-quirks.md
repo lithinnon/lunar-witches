@@ -173,6 +173,11 @@ During the migration and post-install configuration, several notable edge cases 
   3. Abruptly restarting `plasmashell` disrupts open window tracking and arrangement in Icons-only Task Manager (`icontasks`).
 - **Resolution:**
   - Provisioned `home.activation.kbuildsycoca` in [`modules/users/nnon/plasma.nix`](file:///home/nnon/lunar-witches/modules/users/nnon/plasma.nix) to automatically run `XDG_MENU_PREFIX=plasma- ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental` during home-manager activation with proper `LOCALE_ARCHIVE` and `XDG_DATA_DIRS`, immediately updating KSycoca (`~/.cache/ksycoca6_*`) without restarting `plasmashell`.
+  - **Kickoff Search Cache vs. Tree View Nuance:** Kickoff's category browse tree (`AppsModel`) reads KSycoca directly and immediately shows new items. However, Kickoff's search bar uses an in-memory `RunnerModel` (`ServiceRunner`) embedded inside `plasmashell` that caches queries. Standalone KRunner (`Alt+Space`) picks up the new cache right away because it spawns fresh. To force Kickoff's in-memory search model to re-instantiate cleanly **without restarting `plasmashell`** (which would disrupt taskbar window grouping and pinned tasks):
+    - Right-click the Kickoff launcher icon -> **"Show Alternatives..."** -> select **"Application Menu"** -> **Switch**.
+    - Right-click the icon -> **"Show Alternatives..."** -> select **"Application Launcher"** -> **Switch**.
+    - This recreates Kickoff's QML engine in ~3 seconds with zero screen flicker and 100% window tracking preservation.
+
 
 
 
