@@ -9,12 +9,12 @@
 ## 1. Active State Snapshot
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-10-31 12:54 +07:00
+- **Timestamp:** 2026-10-31 12:57 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `7ea4865`
-- **Working Tree:** Clean (Ready to switch)
-- **Live NixOS Generation:** Generation 195 (Linux 7.2.8-cachyos)
+- **Active Git Commit:** `91fea68`
+- **Working Tree:** Clean (Generation 196 active)
+- **Live NixOS Generation:** Generation 196 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
 - **Unified Prompt Directives:** `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by both Pi and OpenCode).
 
@@ -26,12 +26,12 @@
 
 ## 2. In-Flight Focus & Immediate Queue
 
-- **Current Focus:** Re-integration of Google Antigravity IDE into `suite-ai-antigravity`.
+- **Current Focus:** Antigravity IDE and desktop environment verification.
 - [x] Added `google-antigravity-ide` to `environment.systemPackages` in `modules/suites/ai/antigravity.nix`.
 - [x] Mapped `x-scheme-handler/antigravity = "antigravity-ide.desktop"` in `modules/users/nnon/desktop.nix`.
 - [x] Verified full-graph Nix dry-run evaluation (`nix build --dry-run`).
-- [ ] Deploy and activate via `nh os switch`.
-- [ ] Verify `antigravity-ide` in PATH and launch.
+- [x] Deployed and activated via `nh os switch` (Generation 196).
+- [x] Verified `antigravity-ide` binary in PATH and default handler.
 
 ---
 
