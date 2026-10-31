@@ -9,6 +9,9 @@
 { lib, ... }:
 
 let
+  commonRocmModule = import ./common-rocm.nix { inherit lib; };
+  mkCommonRocm = commonRocmModule.flake.lib.mkCommonRocm;
+
   # Function to generate Loom & HRX devShells for any target architecture and ROCm version without hardcoding
   mkLoomDevShells =
     {
@@ -20,88 +23,16 @@ let
       tritonVersion ? "3.8.0+git669b31ac.rocm${rocmPkg.version}",
     }:
     let
-      # Immutable constraints file preventing third-party packages from pulling PyPI CPU/CUDA builds
-      constraintsFile = pkgs.writeText "rocm-torch-constraints-${gfx}.txt" ''
-        torch==${torchVersion}
-        triton==${tritonVersion}
-        amd-torch-device-${gfx}==${torchVersion}
-      '';
-
-      # Build script for Flash Attention 2 with AITER Triton/CK backend
-      buildFlashAttnScript = pkgs.writeShellScriptBin "build-flash-attention" ''
-        set -euo pipefail
-        if [ -z "''${VIRTUAL_ENV:-}" ]; then
-          GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-          if [ -d "$GLOBAL_DEFAULT" ]; then
-            source "$GLOBAL_DEFAULT/bin/activate"
-          else
-            echo "Error: No active virtual environment found. Run 'init-rocm-venv' first."
-            exit 1
-          fi
-        fi
-        echo "==> Building Flash Attention 2 for active environment: $VIRTUAL_ENV"
-        TMPDIR=$(mktemp -d)
-        trap 'rm -rf "$TMPDIR"' EXIT
-        git clone --depth 1 https://github.com/Dao-AILab/flash-attention "$TMPDIR/flash-attention"
-        (
-          cd "$TMPDIR/flash-attention"
-          git submodule update --init --depth 1 third_party/aiter csrc/composable_kernel || true
-          echo "==> Building & installing aiter..."
-          AITER_USE_SYSTEM_TRITON=1 ENABLE_CK=1 PREBUILD_KERNELS=0 \
-            pip install --no-build-isolation --no-deps ./third_party/aiter
-          echo "==> Building & installing flash-attention..."
-          FLASH_ATTENTION_TRITON_AMD_ENABLE="TRUE" \
-            pip install --no-build-isolation --no-deps .
-        )
-        echo "==> Flash Attention 2 successfully built and installed!"
-      '';
-
-      # Bootstrap script for shared ROCm PyTorch virtual environment (XRT-free)
-      initVenvScript = pkgs.writeShellScriptBin "init-rocm-venv" ''
-        set -euo pipefail
-        WITH_FLASH_ATTN=0
-        TARGET_DIR=""
-
-        for arg in "$@"; do
-          case "$arg" in
-            --flash-attn|--with-flash-attn)
-              WITH_FLASH_ATTN=1
-              ;;
-            -h|--help)
-              echo "Usage: init-rocm-venv [directory] [--flash-attn]"
-              echo "  directory     Target directory (defaults to ~/.local/share/rocm/venv-${gfx})"
-              echo "  --flash-attn  Automatically build and install Flash Attention 2"
-              exit 0
-              ;;
-            *)
-              if [ -z "$TARGET_DIR" ]; then
-                TARGET_DIR="$arg"
-              fi
-              ;;
-          esac
-        done
-
-        GLOBAL_DEFAULT="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-        VENV_DIR="''${TARGET_DIR:-$GLOBAL_DEFAULT}"
-
-        mkdir -p "$(dirname "$VENV_DIR")"
-        if [ ! -d "$VENV_DIR" ]; then
-          echo "==> Creating virtual environment at $VENV_DIR..."
-          ${pkgs.python3}/bin/python3 -m venv "$VENV_DIR"
-        fi
-        source "$VENV_DIR/bin/activate"
-
-        echo "==> Installing ROCm ${rocmPkg.version} PyTorch & ${gfx} device libraries..."
-        uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next \
-          "torch==${torchVersion}" \
-          "triton==${tritonVersion}" \
-          "amd-torch-device-${gfx}==${torchVersion}"
-
-        if [ "$WITH_FLASH_ATTN" -eq 1 ]; then
-          ${buildFlashAttnScript}/bin/build-flash-attention
-        fi
-        echo "==> Virtual environment successfully bootstrapped at $VENV_DIR!"
-      '';
+      common = mkCommonRocm {
+        inherit
+          pkgs
+          gfx
+          version
+          rocmPkg
+          torchVersion
+          tritonVersion
+          ;
+      };
 
       # Method 1 Wrapper: Run any ROCm/HIP application using HRX's lightweight libamdhip64.so
       hrxRun = pkgs.writeShellScriptBin "hrx-run" ''
@@ -259,114 +190,34 @@ let
       # Flagship Loom & HRX Development Shell (with PyTorch + FA2 + Compilers)
       loom-dev = pkgs.mkShell {
         name = "rocm-loom-dev-${gfx}";
-        packages = [
-          rocmPkg
+        packages = common.commonPackages ++ [
           # HRX & Loom runtime wrappers
           hrxRun
           hrxCc
           hrxCxx
           buildHrxSystem
-          # PyTorch & Flash Attention helpers (without XRT)
-          initVenvScript
-          buildFlashAttnScript
-          # Build tools & compilers
+          # Bazel
           pkgs.bazelisk
           pkgs.bazel_7
-          pkgs.cmake
-          pkgs.ninja
-          pkgs.pkg-config
-          pkgs.git
-          pkgs.gcc
-          pkgs.gnumake
-          pkgs.clang
-          pkgs.lld
-          pkgs.ccache
-          pkgs.sccache
           # Rust toolchain
           pkgs.rustc
           pkgs.cargo
           pkgs.clippy
           pkgs.rustfmt
           pkgs.rust-analyzer
-          # Python & package management
-          pkgs.python3
-          pkgs.python3Packages.pip
-          pkgs.python3Packages.virtualenv
-          pkgs.uv
-          pkgs.python3Packages.pyyaml
-          pkgs.ruff
-          # System libraries & drivers
-          pkgs.zlib
-          pkgs.openssl
-          pkgs.pciutils
-          pkgs.libdrm
-          pkgs.numactl
-          pkgs.elfutils
-          pkgs.util-linux
         ];
 
-        env = {
-          ROCM_PATH = "${rocmPkg}";
-          HIP_PATH = "${rocmPkg}";
+        env = common.commonEnv // {
           IREE_ROCM_PATH = "${rocmPkg}";
-          AMDGPU_TARGETS = gfx;
-          GPU_TARGETS = gfx;
-          PYTORCH_ROCM_ARCH = gfx;
-          HSA_OVERRIDE_GFX_VERSION = if gfx == "gfx1151" then "11.5.1" else null;
-          HIP_PLATFORM = "amd";
-          HIP_COMPILER = "clang";
-          HIP_CLANG_PATH = "${rocmPkg}/lib/llvm/bin";
-
-          # Compiler caching
-          CMAKE_C_COMPILER_LAUNCHER = "ccache";
-          CMAKE_CXX_COMPILER_LAUNCHER = "ccache";
-          AMD_COMGR_CACHE_ENABLE = "1";
-          ROCFFT_KERNEL_CACHE_ENABLE = "1";
-
-          # Rust environment
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-
-          # Flash Attention 2 & AITER build/runtime flags
-          FLASH_ATTENTION_TRITON_AMD_ENABLE = "TRUE";
-          AITER_USE_SYSTEM_TRITON = "1";
-          ENABLE_CK = "1";
-          PREBUILD_KERNELS = "0";
-
-          # Python constraints & AMD wheel index
-          PIP_EXTRA_INDEX_URL = "https://stable.repo.amd.com/rocm/whl-next";
-          UV_EXTRA_INDEX_URL = "https://stable.repo.amd.com/rocm/whl-next";
-          PIP_CONSTRAINT = "${constraintsFile}";
-          UV_CONSTRAINT = "${constraintsFile}";
         };
 
         shellHook = ''
-          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${
-            lib.makeLibraryPath [
-              pkgs.stdenv.cc.cc.lib
-              rocmPkg
-              pkgs.zlib
-              pkgs.openssl
-              pkgs.libdrm
-              pkgs.numactl
-              pkgs.elfutils
-              pkgs.util-linux.lib
-            ]
-          }:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${rocmPkg}/lib:${rocmPkg}/lib/llvm/lib:${rocmPkg}/lib/rocm_sysdeps/lib:${common.commonLdLibraryPath}:$LD_LIBRARY_PATH"
           export PATH="${rocmPkg}/bin:${rocmPkg}/lib/llvm/bin:$PATH"
 
           # Auto-activate shared ROCm virtual environment (with PyTorch and Flash Attention 2)
-          GLOBAL_VENV="''${XDG_DATA_HOME:-$HOME/.local/share}/rocm/venv-${gfx}"
-          if [ -d ".venv" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
-            echo "==> Activating project-local virtual environment (./.venv)..."
-            source .venv/bin/activate
-          elif [ -d "$GLOBAL_VENV" ] && [ -z "''${VIRTUAL_ENV:-}" ]; then
-            echo "==> Activating shared ROCm virtual environment ($GLOBAL_VENV)..."
-            source "$GLOBAL_VENV/bin/activate"
-          elif [ -z "''${VIRTUAL_ENV:-}" ]; then
-            echo "==> First-time setup: Auto-bootstrapping shared ROCm environment at $GLOBAL_VENV..."
-            ${initVenvScript}/bin/init-rocm-venv "$GLOBAL_VENV"
-            source "$GLOBAL_VENV/bin/activate"
-          fi
+          ${common.venvActivationHook}
 
           # Discover or configure HRX & Loom runtime directory
           export HRX_DIR="''${HRX_DIR:-$HOME/.local/share/rocm/hrx-system}"
