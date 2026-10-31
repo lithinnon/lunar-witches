@@ -1,7 +1,29 @@
 # User KDE Plasma configuration (via plasma-manager): shortcuts, input, kwin, powerdevil
-{ osConfig, ... }:
+{
+  lib,
+  pkgs,
+  osConfig,
+  ...
+}:
 
 {
+  # Rebuild KSycoca application cache on home-manager activation so Kickoff and KRunner
+  # immediately detect newly added/removed .desktop files across NixOS symlink swaps without restarting plasmashell.
+  home.activation.kbuildsycoca = lib.mkIf osConfig.services.desktopManager.plasma6.enable (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      export LOCALE_ARCHIVE=/run/current-system/sw/lib/locale/locale-archive
+      export LANG="en_US.UTF-8"
+      export LC_ALL="en_US.UTF-8"
+      export XDG_MENU_PREFIX="plasma-"
+      export XDG_DATA_DIRS="''${XDG_DATA_DIRS:-$HOME/.local/share:$HOME/.nix-profile/share:/etc/profiles/per-user/$USER/share:/run/current-system/sw/share}"
+      case ":$XDG_DATA_DIRS:" in
+        *:/run/current-system/sw/share:*) ;;
+        *) export XDG_DATA_DIRS="$XDG_DATA_DIRS:/run/current-system/sw/share" ;;
+      esac
+      ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
+    ''
+  );
+
   programs.plasma = {
     enable = osConfig.services.desktopManager.plasma6.enable;
     overrideConfig = false;
