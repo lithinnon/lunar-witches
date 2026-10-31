@@ -12,7 +12,7 @@
 - **Timestamp:** 2026-10-31 12:20 +07:00
 - **Host Target:** `lunar-qualia` (AMD Ryzen AI Max+ 392, Radeon 8060S, 32GB UMA)
 - **Current Branch:** `master`
-- **Active Git Commit:** `bd107f7`
+- **Active Git Commit:** `969290b`
 - **Working Tree:** Clean (`master`)
 - **Live NixOS Generation:** Generation 169 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
