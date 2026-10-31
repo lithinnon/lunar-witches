@@ -136,7 +136,7 @@ let
         echo "================================================================================"
         echo "  ROCm (TheRock):  ${rocmPkg.version} (Compiler: $(${rocmPkg}/bin/hipcc --version | head -n 1))"
         echo "  Rust Toolchain:  $(cargo --version)"
-        echo "  Loom SDK:        0.1.0 ($(loom-compile --version 2>/dev/null || echo "v0.1.0 ready"))"
+        echo "  Loom SDK:        ${loomPkg.version}"
         echo "  Locked PyTorch:  ${torchVersion} (Active Venv: ''${VIRTUAL_ENV:-None})"
         if [ -e /dev/accel/accel0 ]; then
           echo "  XDNA NPU:        /dev/accel/accel0 (Dual Transports: XRT ${xrtPkg.version} + Direct DRM libamdf)"
