@@ -14,7 +14,7 @@
 - **Current Branch:** `master`
 - **Active Git Commit:** `969290b`
 - **Working Tree:** Clean (`master`)
-- **Live NixOS Generation:** Generation 169 (Linux 7.2.8-cachyos)
+- **Live NixOS Generation:** Generation 195 (Linux 7.2.8-cachyos)
 - **Active Agent Stack:** OpenCode v2.1.1 + Pi Coding Agent v1.4.0 + `reasoning/qwen3.8-26b-a4b` on `llama-swap` (`triellama.cpp`, `--no-reasoning-preserve`, `--reasoning-loop-guard force-close`, `repeatPenalty = 1.02`, `dryMultiplier = 0.50`, `dryAllowedLength = 5`, `temp = 0.70`).
 - **Unified Prompt Directives:** `~/.agents/models/Qwen3.8-26B-A4B.md` (read dynamically by both Pi and OpenCode).
 
@@ -32,8 +32,8 @@
 - [x] Bound `amdgpu-boost.service` to `graphical-session.target` and guarded `kscreen-doctor` calls with display session checks.
 - [x] Declaratively provisioned `QT_QPA_PLATFORM=offscreen` on `kde-baloo.service` in `suite-desktop-plasma`.
 - [x] Verified full-graph Nix dry-run evaluation (`nix build --dry-run`).
-- [ ] Apply live system generation switch (`nh os switch`).
-- [ ] Verify `r2modman` and clean `kscreen-doctor` logs on running desktop.
+- [x] Deployed and activated via `nh os switch` (Generation 195).
+- [x] Verified `r2modman` in system PATH and confirmed elimination of `kscreen-doctor` poll storm.
 
 ---
 
