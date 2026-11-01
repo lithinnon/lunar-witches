@@ -10,6 +10,7 @@
 - **AskPass Runner:** In non-login subshells or automation, prefix switch with `NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches`.
 - **Secrets & Spirit World Boundary:** All private infrastructure, personal SSH aliases, campus credentials, and SOPS encrypted tokens reside in the private companion repository / submodule `spirit-world` (`secrets/secrets.yaml`). Public `lunar-witches` contains zero secrets or raw tokens.
 - **Submodule Workflow:** Commit and push changes inside `spirit-world/` first, then stage the updated pointer in `lunar-witches/`. Ensure GPG commit signing is preserved across both repositories.
+- **Retrospects Worktree:** Documentation, ADRs, and session ledgers reside on branch `retrospects`, mounted at `./retrospects` via `git worktree add retrospects retrospects`. Commit and sign documentation changes within `./retrospects` on branch `retrospects`.
 - **Terminal Sandbox Boundary:** Antigravity IDE runs in a `bwrap` FHS container (`NoNewPrivs: 1`). Never run `nh os switch`, `test`, or `sudo` directly in its integrated terminal (kernel blocks setuid). Use an external host terminal or escape via `systemd-run --user --pty --same-dir nh os switch ...`.
 - **Zero Backward-Compatibility Aliases:** Never preserve or create legacy aliases, shims, or compatibility bindings. Refactor all call sites directly and keep only canonical definitions.
 
