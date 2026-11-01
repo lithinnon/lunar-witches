@@ -55,7 +55,7 @@ let
     inputs.chaotic.nixosModules.default
 
     # 9. Host-Specific Overrides & Arbitrary Parameters
-    ({ pkgs, ... }: {
+    ({ config, pkgs, ... }: {
       networking.hostName = "lunar-qualia";
 
       # Optimized CachyOS Zen 4 Kernel with Clang ThinLTO via Chaotic Nyx
@@ -78,21 +78,12 @@ let
         rocmArch = "gfx1151";
       };
 
-      # Resume from S0i3 hangs in rtsx_pci unless the driver was absent for the first real S0i3
-      # of the boot; later sleeps resume fine with it loaded. Root cause unknown (ADR 0018).
-      powerManagement.powerDownCommands = ''
-        if [ ! -e /run/rtsx-s0i3-done ]; then
-          ${pkgs.systemd}/bin/systemctl stop run-media-nnon-Tera.automount run-media-nnon-Tera.mount || true
-          ${pkgs.kmod}/bin/modprobe -r rtsx_pci_sdmmc rtsx_pci || true
-        fi
-      '';
-      powerManagement.resumeCommands = ''
-        if [ ! -e /run/rtsx-s0i3-done ]; then
-          [ "$(cat /sys/power/suspend_stats/last_hw_sleep)" -gt 0 ] && touch /run/rtsx-s0i3-done
-          ${pkgs.kmod}/bin/modprobe rtsx_pci || true
-          ${pkgs.systemd}/bin/systemctl start run-media-nnon-Tera.automount || true
-        fi
-      '';
+      # Firmware loses the SD reader's subsystem IDs in S0i3; pciehp would remove the reader and
+      # hang resume on a mounted card. Cache the post-S0i3 IDs at boot (ADR 0018).
+      boot.extraModulePackages = [
+        (config.boot.kernelPackages.callPackage ../../pkgs/rtsx-subsystem-ids { })
+      ];
+      boot.kernelModules = [ "rtsx_subsystem_ids" ];
 
       hardware.amdgpu.development.enable = true;
 
