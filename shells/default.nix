@@ -19,8 +19,13 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             nixd
-            nixfmt
+            nixfmt-tree
           ];
+          shellHook = ''
+            if [ -d .githooks ]; then
+              git config core.hooksPath .githooks 2>/dev/null || true
+            fi
+          '';
         };
       };
   };

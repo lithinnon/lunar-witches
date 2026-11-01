@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "==> [pre-commit] Enforcing handover and agent line limits..."
+if [ -f HANDOFF.md ]; then
+  handoff_lines=$(wc -l < HANDOFF.md)
+  if [ "$handoff_lines" -gt 45 ]; then
+    echo "==> [pre-commit] ERROR: HANDOFF.md has $handoff_lines lines (exceeds strictly <= 45 lines). Graduate older milestones." >&2
+    exit 1
+  fi
+fi
+
+if [ -f AGENTS.md ]; then
+  agents_lines=$(wc -l < AGENTS.md)
+  if [ "$agents_lines" -gt 50 ]; then
+    echo "==> [pre-commit] ERROR: AGENTS.md has $agents_lines lines (exceeds strictly <= 50 lines). Keep agent rules concise." >&2
+    exit 1
+  fi
+fi
+
 echo "==> [pre-commit] Formatting repository with nix fmt..."
 nix fmt
 git update-index --again

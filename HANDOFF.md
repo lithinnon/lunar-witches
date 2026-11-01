@@ -36,4 +36,4 @@
     - Integrated private submodule `spirit-world` (`lithinnon/spirit-world`); purged secrets and personal SSH/wifi.
     - Socket-activated Open WebUI on port 11111 with 10m idle auto-stop (`systemd-socket-proxyd`) and secret injection.
     - Migrated private in-tree package derivation and overlay to `spirit-world` (`home.packages`).
-    - Wired pre-commit dual-target convergence hook (`nixfmt-tree` & `lunar-qualia` + standalone fallback).
+    - Wired pre-commit dual convergence hook, bootstrap automation, and CLAUDE.md link.
