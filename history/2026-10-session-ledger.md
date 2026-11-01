@@ -293,5 +293,10 @@
     - Refactored `sync-power-state` into a pure hardware trait helper toggling ASUS LCD panel overdrive (`panel_od`).
     - Stripped redundant `set_platform_profile`, `throttle_thermal_policy`, and `set_cpu_boost` overrides, eliminating dual-master profile fights with PowerDevil.
     - Dropped `kdePackages.libkscreen` runtime closure dependency from `pkgs/sync-power-state/default.nix`.
+93. **Powertop Auto-Tune & Idle-Class Syncthing Scheduling (`7be93a5`):**
+    - Enabled `powerManagement.powertop.enable = true` in `modules/roles/laptop.nix` (auto-tuning 21 idle PCIe endpoints to `power/control = auto`).
+    - Configured `CPUSchedulingPolicy = "idle"`, `IOSchedulingClass = "idle"`, and `Nice = 19` on `syncthing.service` in `modules/features/syncthing.nix`.
+    - Validated full-graph convergence dry run (`nixosConfigurations.lunar-qualia`).
+
 
 
