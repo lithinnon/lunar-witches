@@ -6,26 +6,25 @@
 
 ## 1. Active State
 
-- **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-01 15:08 +07:00
+- **Last Active Agent:** Claude Code (Opus 5.5)
+- **Timestamp:** 2026-11-01 21:40 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `HEAD`
-- **Live Generation:** Generation 206
+- **Active Git Commit:** `e53f928`
+- **Live Generation:** Generation 219 running; Generation 220 (drops `efi_pstore`) set for next boot
 
 ---
 
 ## 2. In-Flight Focus
 
-- [ ] Empirically verify s2idle sleep/wake with DC IPS active.
+- [ ] Watch the s2idle workaround in daily use, including long sleeps (6 good sleeps so far). Root cause unknown; patch target `rtsx_pci_resume`, `drivers/misc/cardreader/rtsx_pcr.c`. SD busy on first sleep can still hang. After a hang, full power cycle and check touchpad `ASCF1206`.
+- [ ] Measure the VRR battery gain: fresh boot, no sleeps, compare `power_now` Always vs Never (11.7 W idle awake with Never; IPS RCG entries stay 0 with Always). Never toggle VRR after a sleep: it froze the display (`Pageflip timed out`; kernel alive).
+- [ ] Unexplained, non-blocking: one instant `EBUSY` (`-16`) per lid sleep before a successful retry, source unknown; occasional shallow sleeps with 0% residency.
+- [ ] Test tools: `~/s2idle-test/run.sh` (self-timed) and `watch.sh` (lid); run as root in system slice via `systemd-run`; logs in `~/s2idle-test/logs/`. `amd-s2idle` bypasses logind, so no hook or lock.
 
 ---
 
 ## 3. Recent Milestones
 
-94. **Open WebUI On-Demand, Zero-Polling & PyTorch Bypass (`7be93a5`):**
-    - Throttled scheduler/timer poll intervals to 86400s and disabled automations (0.0% idle CPU).
-    - Set `RAG_EMBEDDING_ENGINE = "openai"`, preventing PyTorch loading (memory ~298 MiB cgroup).
-    - Converted to on-demand execution (`wantedBy = []`) with `Nice = 19` batch scheduling.
 95. **Gamedev Suite, Privacy Isolation & Spirit World Integration (`eb77839`):**
     - Added `godot_4` and `gdtoolkit_4`; isolated `retrospects` into dedicated branch and worktree.
     - Integrated companion submodule `spirit-world` (`lithinnon/spirit-world`); purged secrets.
@@ -34,3 +33,7 @@
     - Audited fixed hashes across all in-tree packages (`rocm-therock`, `xrt-amdxdna`, `hrx-runtime`, `hrx-loom`, `radeon-developer-tool-suite`, `digital-egro`); verified all up-to-date.
     - Bump spirit world.
     - Verified dual-closure full-graph system convergence (`lunar-qualia` and `lunar-qualia-standalone`).
+97. **S2idle Resume Hang Workaround with IPS On (`e53f928`, ADR 0018):**
+    - Traced the wake freeze to `rtsx_pci` via `pm_trace`; hook keeps the driver out of the first real S0i3 of each boot.
+    - Removed `disableDcIps` (`0x800` never reached S0i3); flashed BIOS 308. T17 and T18 (lid): 3/3 each with 10-33s S0i3.
+    - Post-sleep stutter gone with VRR Never on `eDP-1`, persisted in `~/.config/kwinoutputconfig.json`, not in repo.
