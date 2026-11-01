@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-01 13:30 +07:00
+- **Timestamp:** 2026-11-01 13:42 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `ee72fa7`
+- **Active Git Commit:** `6f004d5`
 - **Live Generation:** Generation 206
 
 ---
@@ -36,4 +36,4 @@
     - Integrated private submodule `spirit-world` (`lithinnon/spirit-world`); purged secrets and personal SSH/wifi.
     - Socket-activated Open WebUI on port 11111 with 10m idle auto-stop (`systemd-socket-proxyd`) and secret injection.
     - Migrated private in-tree package derivation and overlay to `spirit-world` (`home.packages`).
-    - Built closures successfully with spirit-world (`kshw1h1vns51k2q3gh20grczfs14dfas`) and fallback (`nyksarspg7p2pf5nk0vdfsfb3axhqril`).
+    - Wired pre-commit dual-target convergence hook (`nixfmt-tree` & `lunar-qualia` + standalone fallback).
