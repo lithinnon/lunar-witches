@@ -17,7 +17,7 @@ Linux configurations often accumulate obsolete kernel parameters, redundant driv
    - The obsolete environment variable `RADV_EXPERIMENTAL = "bfloat16"` was removed to prevent driver divergence.
 2. **Kernel Parameter Hygiene:**
    - Removed aggressive `amdgpu.gpu_recovery=1` from baseline GPU traits.
-3. **AMD Display Core IPS Sleep Quirk (`amdgpu.dcdebugmask=0x800`):**
+3. **AMD Display Core IPS Sleep Quirk (`amdgpu.dcdebugmask=0x800`, superseded by [ADR 0018](./0018-s2idle-resume-hang-and-display-idle.md)):**
    - Modern AMD APUs (Strix Halo/Point) can hang during sleep/suspend transitions when entering Display Core Idle Power States (IPS 1/2) with internal eDP panels.
    - Parameterized as `hardware.amdgpu.integrated.disableDcIps = true;` and applied selectively to `lunar-qualia` without forcing it on external desktop cards.
 4. **Computer Use Agent (CUA) Wayland Driver Boundary:**
