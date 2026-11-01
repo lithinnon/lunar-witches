@@ -61,18 +61,18 @@ Connecting to Chulalongkorn University's campus enterprise Wi-Fi (`ChulaWiFi` / 
 ### Thematic Domain 2: Container Decommissioning & In-Tree Binary Packaging
 
 - **Origin Session:** Pi Session (`01a10a7f-7d9a-753c-9b68-372aa214bb10`), Turns 716–830.
-- **Architectural Scope:** `pkgs/app`, `modules/suites/desktop/apps.nix`, [`AGENTS.md`](../../AGENTS.md#1-system-identity--core-invariants).
+- **Architectural Scope:** `modules/suites/desktop/apps.nix`, [`AGENTS.md`](../../AGENTS.md#1-system-identity--core-invariants).
 
 #### Context & Problem
-During the Fedora-to-NixOS migration, legacy workflows relied on Podman, Distrobox, and containerized tools for third-party software (such as third-party's app tool). The user requested setting up Distrobox on NixOS to run Ubuntu-based containers.
+During the Fedora-to-NixOS migration, legacy workflows relied on Podman, Distrobox, and containerized tools for custom desktop software. The user requested setting up Distrobox on NixOS to run Ubuntu-based containers.
 
 #### Technical Evolution & Key Discoveries
 1. **Container Tooling Pitfalls on NixOS:**  
    Testing Distrobox on NixOS encountered image short-name resolution failures (`ubuntu:26.04` failing due to missing unqualified-search registries in `/etc/containers/registries.conf`) and storage driver friction on BTRFS subvolumes.
 2. **The "Zero-Container Invariant" Established:**  
    The user and Pi decided to abandon Distrobox and Podman entirely. Containers introduce opaque layers, storage bloat, and mutable states that counteract NixOS's reproducibility. The system-level container modules were completely purged.
-3. **In-Tree Packaging Strategy (`pkgs/app`):**  
-   Rather than wrapping software in a container or relying on unmanaged AppImages, app was packaged declaratively as an in-tree Nix derivation in `pkgs/app`, exposed via `flake.overlays.default` and installed via `home.packages`.
+3. **In-Tree Packaging Strategy:**  
+   Rather than wrapping software in a container or relying on unmanaged AppImages, standalone applications are packaged declaratively as native in-tree Nix derivations, exposed via overlays and installed declaratively via `home.packages`.
 4. **Plain AppImage Fallback:**  
    For other ad-hoc single-file executables, a minimal `appimage-run` was provisioned in `modules/suites/desktop/apps.nix` with an `application/vnd.appimage` desktop double-click MIME handler—deliberately configured without extra FHS packages (no webkit chain) to prevent closure bloat.
 
