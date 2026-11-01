@@ -62,6 +62,7 @@ Immutable records capturing the **Context**, **Decision**, and **Consequences** 
 | [`0014`](./adr/0014-declarative-home-and-plasma-manager.md) | Declarative User Environment & KDE Plasma Management via `plasma-manager` | 2026-10-06 | User Profile & Desktop |
 | [`0015`](./adr/0015-rocm-therock-and-devshell-isolation.md) | In-Tree ROCm 10.1 (TheRock) Packaging & Strict DevShell Compiler Isolation | 2026-10-09 | AI & Compilers |
 | [`0016`](./adr/0016-unlimited-memlock-for-hardware-accelerators.md) | Unlimited Locked Memory (`memlock`) for Hardware Accelerators | 2026-10-09 | Kernel Limits & DMA |
+| [`0017`](./adr/0017-spirit-world-private-submodule-isolation.md) | Spirit World Private Submodule Isolation & Graceful Fallback | 2026-11-01 | Privacy & Submodules |
 
 ---
 
