@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-01 14:35 +07:00
+- **Timestamp:** 2026-11-01 15:08 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `eb77839`
+- **Active Git Commit:** `HEAD`
 - **Live Generation:** Generation 206
 
 ---
@@ -22,18 +22,15 @@
 
 ## 3. Recent Milestones
 
-93. **Powertop Auto-Tune & Idle-Class Syncthing Scheduling (`HEAD`):**
-    - Enabled `powerManagement.powertop.enable = true` in `modules/roles/laptop.nix` (auto-tuning 21 idle PCIe endpoints to `power/control = auto`).
-    - Configured `CPUSchedulingPolicy = "idle"`, `IOSchedulingClass = "idle"`, and `Nice = 19` on `syncthing.service` in `modules/features/syncthing.nix`.
-    - Validated full-graph convergence dry run (`nixosConfigurations.lunar-qualia`).
-94. **Open WebUI On-Demand, Zero-Polling & PyTorch Bypass (`HEAD`):**
-    - Throttled scheduler/timer poll intervals to 86400s and disabled automations, eliminating 1s SQLite wakeups (0.0% idle CPU).
-    - Set `RAG_EMBEDDING_ENGINE = "openai"` and bypassed retrieval, preventing in-process PyTorch loading (memory dropped from 983 MiB to ~298 MiB cgroup / 376 MiB RSS).
+94. **Open WebUI On-Demand, Zero-Polling & PyTorch Bypass (`7be93a5`):**
+    - Throttled scheduler/timer poll intervals to 86400s and disabled automations (0.0% idle CPU).
+    - Set `RAG_EMBEDDING_ENGINE = "openai"`, preventing PyTorch loading (memory ~298 MiB cgroup).
     - Converted to on-demand execution (`wantedBy = []`) with `Nice = 19` batch scheduling.
-95. **Gamedev Suite, Privacy Isolation & Spirit World Integration (`HEAD`):**
-    - Created `modules/suites/development/gamedev.nix` (`suite-development-gamedev`) with `godot_4` and `gdtoolkit_4`.
-    - Isolated `retrospects` into dedicated branch and worktree; added MIT license.
-    - Integrated private submodule `spirit-world` (`lithinnon/spirit-world`); purged secrets and personal SSH/wifi.
-    - Socket-activated Open WebUI on port 11111 with 10m idle auto-stop (`systemd-socket-proxyd`) and secret injection.
-    - Migrated private in-tree package derivation and overlay to `spirit-world` (`home.packages`).
-    - Wired pre-commit dual convergence hook, bootstrap automation, and CLAUDE.md link.
+95. **Gamedev Suite, Privacy Isolation & Spirit World Integration (`eb77839`):**
+    - Added `godot_4` and `gdtoolkit_4`; isolated `retrospects` into dedicated branch and worktree.
+    - Integrated companion submodule `spirit-world` (`lithinnon/spirit-world`); purged secrets.
+    - Socket-activated Open WebUI on port 11111 with 10m idle auto-stop; added dual-closure pre-commit.
+96. **Package Hash Upstream Audit & Submodule Sync (`HEAD`):**
+    - Audited fixed hashes across all in-tree packages (`rocm-therock`, `xrt-amdxdna`, `hrx-runtime`, `hrx-loom`, `radeon-developer-tool-suite`, `digital-egro`); verified all up-to-date.
+    - Bump spirit world.
+    - Verified dual-closure full-graph system convergence (`lunar-qualia` and `lunar-qualia-standalone`).
