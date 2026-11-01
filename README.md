@@ -18,7 +18,7 @@ lunar-witches/
 │   ├── features/   # Opt-in services (sops, syncthing, chulawifi)
 │   ├── suites/     # Software suites (plasma, apps, gaming, ai, development)
 │   └── users/      # Declarative Home Manager user profiles
-├── pkgs/           # In-tree derivations (mem-ttm, app, hrx-runtime)
+├── pkgs/           # In-tree derivations (mem-ttm, triellama, hrx-runtime)
 ├── shells/         # Flake devShells (default, amd-dev, amd-runtime)
 └── retrospects/    # Indexed knowledge base (ADRs, manuals, proofs, postmortems)
 ```

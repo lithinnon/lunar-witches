@@ -1,0 +1,4 @@
+[submodule "spirit-world"]
+	path = spirit-world
+	url = git@github.com:lithinnon/spirit-world.git
+	branch = master

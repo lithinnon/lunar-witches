@@ -114,7 +114,7 @@
                       "@modelcontextprotocol/server-brave-search"
                     ];
                     environment = {
-                      BRAVE_API_KEY = "{file:/run/secrets/brave_api_key}";
+                      BRAVE_API_KEY = "{file:/run/secrets/brave_search_api_key}";
                     };
                     enabled = true;
                     codemode = false;

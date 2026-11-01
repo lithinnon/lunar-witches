@@ -17,5 +17,6 @@
     ./ai/prose.nix
     ./ai/open-webui.nix
     ./development/default.nix
+    ./development/gamedev.nix
   ];
 }

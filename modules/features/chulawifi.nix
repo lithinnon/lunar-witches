@@ -15,7 +15,6 @@
       imports = [ inputs.chula.nixosModules.wifi ];
 
       networking.networkmanager.enable = lib.mkDefault true;
-      chula.wifi.enable = lib.mkDefault true;
 
       # Quirk 1: wpa_supplicant disables TLS 1.0 in phase 1 by default, but
       # Chula's RADIUS requires it (0x20 = tls-1-0-enable).

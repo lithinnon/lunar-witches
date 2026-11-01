@@ -2,6 +2,7 @@
   description = "Essence of the Lunar Witches, their Spirit World, where the sisters resides.";
 
   inputs = {
+    self.submodules = true;
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";

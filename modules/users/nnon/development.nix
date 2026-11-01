@@ -21,6 +21,8 @@
         "terminal.integrated.enableMultiLinePasteWarning" = "never";
         "chat.disableAIFeatures" = true;
         "workbench.settings.showAISearchToggle" = false;
+        "godotTools.lsp.serverPort" = 6005;
+        "godotTools.editorPath.godot4" = "${pkgs.godot_4}/bin/godot";
       };
       extensions = with pkgs.vscode-extensions; [
         arrterian.nix-env-selector
@@ -31,6 +33,7 @@
         ms-vscode.cpptools
         llvm-vs-code-extensions.vscode-clangd
         myriad-dreamin.tinymist
+        geequlim.godot-tools
       ];
     };
   };
@@ -38,17 +41,12 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
+    includes = [
+      "~/.ssh/config.d/*"
+    ];
     settings = {
       "*" = {
         AddKeysToAgent = "yes";
-      };
-      "white" = {
-        HostName = "10.10.0.7";
-        IdentityFile = "~/.ssh/other-keys/DESKTOP-E3G9LEN/id_ed25519";
-      };
-      "i2cedt-2" = {
-        HostName = "ec2-3-94-117-168.compute-1.amazonaws.com";
-        User = "ubuntu";
       };
     };
   };

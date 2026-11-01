@@ -49,4 +49,5 @@ secrets/*.tmp
 .user_setup_prompt.md
 result
 
-# Upstream reference checkouts kept for reading only (never packaged)
+# Retrospects & internal agent notes (managed on dedicated 'retrospects' branch / worktree)
+/retrospects/

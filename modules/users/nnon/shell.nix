@@ -56,8 +56,9 @@
       if test -f /run/secrets/hf_token
         set -gx HF_TOKEN (cat /run/secrets/hf_token)
       end
-      if test -f /run/secrets/brave_api_key
-        set -gx BRAVE_API_KEY (cat /run/secrets/brave_api_key)
+      if test -f /run/secrets/brave_search_api_key
+        set -gx BRAVE_SEARCH_API_KEY (cat /run/secrets/brave_search_api_key)
+        set -gx BRAVE_API_KEY $BRAVE_SEARCH_API_KEY
       end
     '';
     interactiveShellInit = ''
@@ -72,8 +73,9 @@
       if [ -f /run/secrets/hf_token ]; then
         export HF_TOKEN="$(cat /run/secrets/hf_token)"
       fi
-      if [ -f /run/secrets/brave_api_key ]; then
-        export BRAVE_API_KEY="$(cat /run/secrets/brave_api_key)"
+      if [ -f /run/secrets/brave_search_api_key ]; then
+        export BRAVE_SEARCH_API_KEY="$(cat /run/secrets/brave_search_api_key)"
+        export BRAVE_API_KEY="$BRAVE_SEARCH_API_KEY"
       fi
     '';
   };

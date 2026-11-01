@@ -48,6 +48,7 @@
       self.nixosModules.suite-ai-local
       self.nixosModules.suite-ai-prose
       self.nixosModules.suite-development
+      self.nixosModules.suite-development-gamedev
 
       # 7. User Profile
       inputs.home-manager.nixosModules.home-manager
@@ -85,24 +86,16 @@
 
         services.syncthing.enable = true;
 
-        chula.wifi.environmentFile = "/home/nnon/.config/chula/environment";
-
         suites.ai.rocm = {
           enable = true;
           gfx = "gfx1151";
         };
 
         suites.desktop.plasma.sddm.background = ./assets/sddm-wallpaper.png;
-        sops.defaultSopsFile = ../../secrets/secrets.yaml;
-        sops.secrets."hf_token" = {
-          owner = "nnon";
-          mode = "0400";
-        };
-        sops.secrets."brave_api_key" = {
-          owner = "nnon";
-          mode = "0400";
-        };
       })
+
+      # 10. Spirit World Overlay (conditionally manifested if submodule present)
+      (if (builtins.pathExists ../../spirit-world/default.nix) then ../../spirit-world/default.nix else {})
     ];
   };
 }
