@@ -1,3 +1,22 @@
+# ⚠️ Retrospects, Exploratory Proofs & AI Pair-Programming Notes
+
+> [!CAUTION]
+> ## 🚨 CRITICAL NOTICE FOR OUTSIDE OBSERVERS
+>
+> **1. HIGHLY EXAGGERATED, ONE-SIDED & SPECULATIVE CLAIMS:**  
+> The documents in this branch (`adr/`, `proofs/`, `postmortems/`, `history/`, `manuals/`, and `troubleshooting/`) are **internal exploratory scratchpads** produced during experimental pair-programming sessions with autonomous AI coding agents (Antigravity, Pi, Claude). Many benchmark numbers, silicon execution claims, and architectural narratives reflect **developer-side hypotheses, synthetic stress-tests, and unverified AI chain-of-thought summaries**. They may contain technical inaccuracies, exaggerations, or agentic hallucinations.
+>
+> **2. NOT OFFICIAL RESEARCH OR BENCHMARKS:**  
+> Nothing in this branch represents peer-reviewed research, verified engineering benchmarks, or formal performance metrics. Do NOT cite or treat these files as authoritative benchmarks or documentation.
+>
+> **3. NO VENDOR AFFILIATION OR ENDORSEMENT:**  
+> Mentions of AMD, ASUS, Linux kernel subsystems, ROCm, XDNA NPU, or Strix Halo hardware are purely experimental personal notes. They are NOT affiliated with, verified by, or endorsed by AMD, ASUS, or any upstream project.
+>
+> **4. PURPOSE OF THIS BRANCH:**  
+> This branch exists solely as a persistent memory and context store for local AI agents across working sessions.
+
+---
+
 # Technical Retrospects & Architecture Records (`lunar-witches`)
 
 > **Repository:** `lunar-witches`  

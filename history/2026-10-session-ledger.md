@@ -289,4 +289,9 @@
 91. **Closure Size Optimization & OpenJDK Deduplication (`HEAD`):**
     - Purged leaked build-time `env-vars` from `pkgs/rocm-therock/default.nix`, severing runtime reference to 1.90 GiB upstream source tarball.
     - Bound `digital-egro.inputs.nixpkgs.follows = "nixpkgs"` in `flake.nix`, overrode `mvnHash` in `modules/suites/desktop/apps.nix` for maven dependency convergence, and eliminated duplicate OpenJDK 21 (~568 MiB reclaimed).
+92. **Seamless PowerDevil + ASUSD Platform Authority (`HEAD`):**
+    - Refactored `sync-power-state` into a pure hardware trait helper toggling ASUS LCD panel overdrive (`panel_od`).
+    - Stripped redundant `set_platform_profile`, `throttle_thermal_policy`, and `set_cpu_boost` overrides, eliminating dual-master profile fights with PowerDevil.
+    - Dropped `kdePackages.libkscreen` runtime closure dependency from `pkgs/sync-power-state/default.nix`.
+
 
