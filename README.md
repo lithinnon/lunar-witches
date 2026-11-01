@@ -20,8 +20,11 @@ lunar-witches/
 │   └── users/      # Declarative Home Manager user profiles
 ├── pkgs/           # In-tree derivations (mem-ttm, triellama, hrx-runtime)
 ├── shells/         # Flake devShells (default, amd-dev, amd-runtime)
+├── spirit-world/   # (Private submodule) Encrypted SOPS secrets, overlays & credentials
 └── retrospects/    # Indexed knowledge base (ADRs, manuals, proofs, postmortems)
 ```
+
+> **Public / Private Boundary:** `lunar-witches` evaluates and builds cleanly as a public baseline. Personal tokens, internal SSH aliases, campus Wi-Fi, and private overlays manifest automatically when `spirit-world` is checked out.
 
 ---
 
