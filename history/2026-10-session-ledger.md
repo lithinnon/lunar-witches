@@ -297,6 +297,10 @@
     - Enabled `powerManagement.powertop.enable = true` in `modules/roles/laptop.nix` (auto-tuning 21 idle PCIe endpoints to `power/control = auto`).
     - Configured `CPUSchedulingPolicy = "idle"`, `IOSchedulingClass = "idle"`, and `Nice = 19` on `syncthing.service` in `modules/features/syncthing.nix`.
     - Validated full-graph convergence dry run (`nixosConfigurations.lunar-qualia`).
+94. **Open WebUI On-Demand, Zero-Polling & PyTorch Bypass (`7be93a5`):**
+    - Throttled scheduler/timer poll intervals to 86400s and disabled automations (0.0% idle CPU).
+    - Set `RAG_EMBEDDING_ENGINE = "openai"`, preventing PyTorch loading (memory ~298 MiB cgroup).
+    - Converted to on-demand execution (`wantedBy = []`) with `Nice = 19` batch scheduling.
 
 
 
