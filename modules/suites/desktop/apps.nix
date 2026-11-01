@@ -82,30 +82,34 @@
         ''} $out/share/applications/digital.desktop
       '')
       # Digital++ — digital-egro
-      (let
-        digitalEgroPkg = inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideMavenAttrs (_: {
-          mvnHash = "sha256-g6gev7ZVhQSzPgUj496E/QjQnQ3rIcBq4o8a/r5x8FA=";
-        });
-      in
-      pkgs.runCommand "digital-egro" { } ''
-        mkdir -p $out/bin $out/share/applications $out/share
-        ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital-egro
-        ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital++
-        cp -r ${digitalEgroPkg}/share/icons $out/share/ 2>/dev/null || true
-        install -Dm644 ${pkgs.writeText "digital-egro.desktop" ''
-          [Desktop Entry]
-          Categories=Education;Electronics;
-          Comment=Digital logic circuits (digital-egro)
-          Exec=digital-egro %F
-          Icon=digital
-          Keywords=digital;egro;circuit;
-          MimeType=application/x-digital;text/x-digital;application/x-digital-testcase;
-          Name=Digital++
-          Terminal=false
-          Type=Application
-          Version=1.5
-        ''} $out/share/applications/digital-egro.desktop
-      '')
+      (
+        let
+          digitalEgroPkg =
+            inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideMavenAttrs
+              (_: {
+                mvnHash = "sha256-g6gev7ZVhQSzPgUj496E/QjQnQ3rIcBq4o8a/r5x8FA=";
+              });
+        in
+        pkgs.runCommand "digital-egro" { } ''
+          mkdir -p $out/bin $out/share/applications $out/share
+          ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital-egro
+          ln -s ${digitalEgroPkg}/bin/digital $out/bin/digital++
+          cp -r ${digitalEgroPkg}/share/icons $out/share/ 2>/dev/null || true
+          install -Dm644 ${pkgs.writeText "digital-egro.desktop" ''
+            [Desktop Entry]
+            Categories=Education;Electronics;
+            Comment=Digital logic circuits (digital-egro)
+            Exec=digital-egro %F
+            Icon=digital
+            Keywords=digital;egro;circuit;
+            MimeType=application/x-digital;text/x-digital;application/x-digital-testcase;
+            Name=Digital++
+            Terminal=false
+            Type=Application
+            Version=1.5
+          ''} $out/share/applications/digital-egro.desktop
+        ''
+      )
       # AppImage double-click support: shared-mime-info has no AppImage type,
       # so register *.AppImage by glob (weight 90 beats the generic ELF magic)
       # and ship a handler desktop entry — the one bundled with appimage-run

@@ -17,11 +17,9 @@ in
   perSystem =
     { pkgs, ... }:
     {
-      packages =
-        (builtins.mapAttrs (_name: path: pkgs.callPackage path { }) inTreePackages)
-        // {
-          rocm-therock-gfx1151 = pkgs.callPackage ./rocm-therock { gfx = "gfx1151"; };
-        };
+      packages = (builtins.mapAttrs (_name: path: pkgs.callPackage path { }) inTreePackages) // {
+        rocm-therock-gfx1151 = pkgs.callPackage ./rocm-therock { gfx = "gfx1151"; };
+      };
     };
 
   flake.overlays.default =

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "==> [pre-commit] Formatting repository with nix fmt..."
+nix fmt
+git update-index --again
+
+echo "==> [pre-commit] Verifying system convergence (dual closure check)..."
+nix build \
+  .#nixosConfigurations.lunar-qualia.config.system.build.toplevel \
+  .#nixosConfigurations.lunar-qualia-standalone.config.system.build.toplevel \
+  --dry-run --quiet
+
+echo "==> [pre-commit] All invariants verified successfully."

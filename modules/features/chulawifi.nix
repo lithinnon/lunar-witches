@@ -18,13 +18,11 @@
 
       # Quirk 1: wpa_supplicant disables TLS 1.0 in phase 1 by default, but
       # Chula's RADIUS requires it (0x20 = tls-1-0-enable).
-      networking.networkmanager.ensureProfiles.profiles =
-        lib.mkIf config.chula.wifi.enable (
-          lib.genAttrs [ "chula-wifi" "chula-eduroam" ]
-            (_: {
-              "802-1x".phase1-auth-flags = 32;
-            })
-        );
+      networking.networkmanager.ensureProfiles.profiles = lib.mkIf config.chula.wifi.enable (
+        lib.genAttrs [ "chula-wifi" "chula-eduroam" ] (_: {
+          "802-1x".phase1-auth-flags = 32;
+        })
+      );
 
       # Quirk 2: NM keyfiles require backslashes in values to be escaped as
       # '\\', but envsubst writes the password raw — NM then rejects it

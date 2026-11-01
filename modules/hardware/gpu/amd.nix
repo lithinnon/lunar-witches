@@ -62,7 +62,8 @@
 
         environment.systemPackages = [
           amdgpuResetPkg
-        ] ++ lib.optional devCfg.enable pkgs.radeon-developer-tool-suite;
+        ]
+        ++ lib.optional devCfg.enable pkgs.radeon-developer-tool-suite;
 
         environment.sessionVariables = lib.mkIf devCfg.enable {
           MESA_VK_TRACE_TRIGGER = "/tmp/mesa_vk_trace_trigger";

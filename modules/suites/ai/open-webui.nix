@@ -3,12 +3,19 @@
 
 {
   flake.nixosModules.suite-ai-open-webui =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       services.open-webui = {
         enable = true;
         port = 11112; # Internal backend port proxied from socket 11111
-        environmentFile = lib.mkIf (config.sops.secrets ? "brave_search_api_key") config.sops.templates."open-webui.env".path;
+        environmentFile = lib.mkIf (
+          config.sops.secrets ? "brave_search_api_key"
+        ) config.sops.templates."open-webui.env".path;
         environment = {
           # Bypass local RAG / SentenceTransformers / PyTorch preloading
           RAG_EMBEDDING_MODEL_AUTO_UPDATE = "False";
@@ -25,11 +32,13 @@
         };
       };
 
-      sops.templates."open-webui.env" = lib.mkIf (config.services.open-webui.enable && config.sops.secrets ? "brave_search_api_key") {
-        content = ''
-          BRAVE_SEARCH_API_KEY=${config.sops.placeholder.brave_search_api_key}
-        '';
-      };
+      sops.templates."open-webui.env" =
+        lib.mkIf (config.services.open-webui.enable && config.sops.secrets ? "brave_search_api_key")
+          {
+            content = ''
+              BRAVE_SEARCH_API_KEY=${config.sops.placeholder.brave_search_api_key}
+            '';
+          };
 
       # Socket activation on port 11111 with 10-minute idle auto-shutdown
       systemd.sockets.open-webui-proxy = {

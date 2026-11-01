@@ -1,12 +1,13 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, fetchurl
-, cmake
-, ninja
-, python3
-, pkg-config
-, autoPatchelfHook
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchurl,
+  cmake,
+  ninja,
+  python3,
+  pkg-config,
+  autoPatchelfHook,
 }:
 
 let
@@ -161,4 +162,3 @@ stdenv.mkDerivation {
     platforms = [ "x86_64-linux" ];
   };
 }
-

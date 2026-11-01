@@ -1,14 +1,15 @@
-{ lib
-, stdenv
-, fetchurl
-, autoPatchelfHook
-, zstd
-, makeBinaryWrapper
-, util-linux
-, libdrm
-, elfutils
-, zlib
-, gcc-unwrapped
+{
+  lib,
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+  zstd,
+  makeBinaryWrapper,
+  util-linux,
+  libdrm,
+  elfutils,
+  zlib,
+  gcc-unwrapped,
 }:
 
 stdenv.mkDerivation rec {
@@ -51,22 +52,22 @@ stdenv.mkDerivation rec {
   ];
 
   installPhase = ''
-    runHook preInstall
+        runHook preInstall
 
-    mkdir -p $out
-    tar --zstd -C $out -xf ${srcXrt} usr/ --strip-components=1
-    tar --zstd -C $out -xf ${srcPlugin} usr/ --strip-components=1
-    tar --zstd -C $out -xf ${srcBoost} usr/lib/ --strip-components=1
+        mkdir -p $out
+        tar --zstd -C $out -xf ${srcXrt} usr/ --strip-components=1
+        tar --zstd -C $out -xf ${srcPlugin} usr/ --strip-components=1
+        tar --zstd -C $out -xf ${srcBoost} usr/lib/ --strip-components=1
 
-    # Python auto-init: automatically configure XILINX_XRT when importing in Python
-    mkdir -p $out/lib/python3.14/site-packages
-    cat << EOF > $out/lib/python3.14/site-packages/xrt_init.py
-import os
-os.environ.setdefault("XILINX_XRT", "$out")
-EOF
-    echo "import xrt_init" > $out/lib/python3.14/site-packages/xrt_init.pth
+        # Python auto-init: automatically configure XILINX_XRT when importing in Python
+        mkdir -p $out/lib/python3.14/site-packages
+        cat << EOF > $out/lib/python3.14/site-packages/xrt_init.py
+    import os
+    os.environ.setdefault("XILINX_XRT", "$out")
+    EOF
+        echo "import xrt_init" > $out/lib/python3.14/site-packages/xrt_init.pth
 
-    runHook postInstall
+        runHook postInstall
   '';
 
   postFixup = ''

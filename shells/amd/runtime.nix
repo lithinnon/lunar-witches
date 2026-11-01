@@ -9,7 +9,9 @@ let
       pkgs,
       gfx ? throw "mkAmdRuntimeShell: 'gfx' must be explicitly specified (e.g. 'gfx1151', 'gfx1100', 'gfx1201', 'gfx942').",
       version ? "10.1.0",
-      rocmPkg ? (pkgs.rocm-therock or (pkgs.callPackage ../../pkgs/rocm-therock)) { inherit gfx version; },
+      rocmPkg ? (pkgs.rocm-therock or (pkgs.callPackage ../../pkgs/rocm-therock)) {
+        inherit gfx version;
+      },
       xrtPkg ? pkgs.xrt-amdxdna or (pkgs.callPackage ../../pkgs/xrt-amdxdna { }),
       hrxRuntimePkg ? pkgs.hrx-runtime or (pkgs.callPackage ../../pkgs/hrx-runtime { }),
     }:
