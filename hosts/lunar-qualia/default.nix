@@ -76,8 +76,23 @@ let
         ttmPagesLimit = 5862940;
         overrideGfxVersion = "11.5.1";
         rocmArch = "gfx1151";
-        disableDcIps = false; # Allow AMD Display Core Idle Power States (IPS1/IPS2) for low idle power
       };
+
+      # Resume from S0i3 hangs in rtsx_pci unless the driver was absent for the first real S0i3
+      # of the boot; later sleeps resume fine with it loaded. Root cause unknown (ADR 0018).
+      powerManagement.powerDownCommands = ''
+        if [ ! -e /run/rtsx-s0i3-done ]; then
+          ${pkgs.systemd}/bin/systemctl stop run-media-nnon-Tera.automount run-media-nnon-Tera.mount || true
+          ${pkgs.kmod}/bin/modprobe -r rtsx_pci_sdmmc rtsx_pci || true
+        fi
+      '';
+      powerManagement.resumeCommands = ''
+        if [ ! -e /run/rtsx-s0i3-done ]; then
+          [ "$(cat /sys/power/suspend_stats/last_hw_sleep)" -gt 0 ] && touch /run/rtsx-s0i3-done
+          ${pkgs.kmod}/bin/modprobe rtsx_pci || true
+          ${pkgs.systemd}/bin/systemctl start run-media-nnon-Tera.automount || true
+        fi
+      '';
 
       hardware.amdgpu.development.enable = true;
 

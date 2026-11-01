@@ -40,17 +40,9 @@
           example = "gfx1151";
           description = "Target ROCm GPU architecture for PyTorch.";
         };
-
-        disableDcIps = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Disable AMD Display Core Idle Power States (IPS) via amdgpu.dcdebugmask=0x800 to fix sleep/suspend hangs on newer APU display engines.";
-        };
       };
 
       config = lib.mkIf cfg.enable {
-        boot.kernelParams = lib.optional cfg.disableDcIps "amdgpu.dcdebugmask=0x800";
-
         boot.extraModprobeConfig = lib.optionalString (cfg.ttmPagesLimit != null) ''
           options ttm pages_limit=${toString cfg.ttmPagesLimit}
         '';
