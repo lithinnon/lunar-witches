@@ -36,6 +36,7 @@
     environment.systemPackages = with pkgs; [
       gpu-screen-recorder-gtk
       mpv
+      yt-dlp
       qbittorrent
       btop
       brave
