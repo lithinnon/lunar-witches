@@ -17,6 +17,7 @@
     ./ai/local.nix
     ./ai/prose.nix
     ./ai/open-webui.nix
+    ./ai/hermes.nix
     ./development/default.nix
     ./development/gamedev.nix
   ];
