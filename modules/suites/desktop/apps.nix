@@ -40,7 +40,10 @@
       qbittorrent
       btop
       brave
-      digital
+      # Headless build sandbox lacks fontmanager libraries, failing SVG/GUI font tests
+      (digital.overrideAttrs (old: {
+        buildPhase = builtins.replaceStrings [ "mvn package" ] [ "mvn package -DskipTests" ] old.buildPhase;
+      }))
       (pkgs.runCommand "digital-mime" { } ''
         install -Dm644 ${pkgs.writeText "digital.xml" ''
           <?xml version="1.0" encoding="UTF-8"?>
@@ -88,7 +91,8 @@
           digitalEgroPkg =
             inputs.digital-egro.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideMavenAttrs
               (_: {
-                mvnHash = "sha256-g6gev7ZVhQSzPgUj496E/QjQnQ3rIcBq4o8a/r5x8FA=";
+                doCheck = false;
+                mvnHash = "sha256-cWm1gdIwc7HSZqvXBUbrdicN9JZusppRdGjr2PptgLQ=";
               });
         in
         pkgs.runCommand "digital-egro" { } ''

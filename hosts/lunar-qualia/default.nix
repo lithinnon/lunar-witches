@@ -36,6 +36,7 @@ let
     # 6. Workload Suites
     self.nixosModules.suite-desktop-plasma
     self.nixosModules.suite-desktop-apps
+    self.nixosModules.suite-education-kafae
     self.nixosModules.suite-gaming
     self.nixosModules.suite-ai-rocm
     self.nixosModules.suite-ai-claude

@@ -11,6 +11,17 @@
   flake.nixosModules.suite-ai-opencode =
     { ... }:
     {
+      # Fix upstream nixpkgs hash mismatch for opencode-node_modules-2.2.5
+      nixpkgs.overlays = [
+        (final: prev: {
+          opencode = prev.opencode.overrideAttrs (old: {
+            node_modules = old.node_modules.overrideAttrs (_: {
+              outputHash = "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
+            });
+          });
+        })
+      ];
+
       home-manager.sharedModules = [
         (
           {

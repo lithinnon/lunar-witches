@@ -8,6 +8,7 @@
     ./desktop/fonts.nix
     ./desktop/apps.nix
     ./desktop/service-deck.nix
+    ./education/kafae.nix
     ./gaming/default.nix
     ./ai/rocm.nix
     ./ai/claude.nix
