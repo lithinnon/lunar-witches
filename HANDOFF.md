@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-05 16:08 +07:00
+- **Timestamp:** 2026-11-05 16:15 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `0e96738`
+- **Active Git Commit:** `db082af`
 - **Live Generation:** Generation 230
 
 ---
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-98. **S2idle Root Cause Fixed Without Workaround (`347e27c`, ADR 0018):**
-    - Firmware loses the SD reader's subsystem IDs in S0i3; `pciehp` removes it as replaced and blocks syncing the mounted card.
-    - Added `pkgs/rtsx-subsystem-ids` to cache the post-S0i3 IDs at boot; removed the hook. Confirmed by T19 (card unmounted) and T20.
-    - T20 (Tera mounted, no hook): 3/3 with 27-29s S0i3, no `pciehp` events, no remount.
 99. **Add yt-dlp to Desktop Applications Suite (`1198798`):**
     - Declared `yt-dlp` in `modules/suites/desktop/apps.nix` (`suite-desktop-apps`).
     - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
@@ -36,3 +32,8 @@
     - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
     - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
     - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
+101. **Add Hermes Agent Suite with TokenMe Custom Endpoint (`db082af`):**
+    - Declared `suite-ai-hermes` for Nous Research Hermes Agent (`programs.hermes-agent` and `services.hermes-agent`).
+    - Configured custom OpenAI-compatible provider `tokenme` (`api = "https://api.tokenme.limited/api/v1/"`) for model `deepseek-ai/deepseek-v4-flash-0731`.
+    - Isolated `TOKENME_API_KEY` in `spirit-world` secrets, bridged into Home Manager via `sops.templates."hermes.env"`.
+    - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
