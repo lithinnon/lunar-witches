@@ -36,6 +36,9 @@
                 mode = "dashboard";
                 host = "127.0.0.1";
                 port = 9119;
+                sessionTokenFile = lib.mkIf (osConfig.sops.secrets ? "hermes_desktop_token") (
+                  osConfig.sops.secrets."hermes_desktop_token".path
+                );
               };
 
               environmentFiles = lib.optional (osConfig.sops.secrets ? "tokenme_api_key") (
@@ -58,8 +61,6 @@
                   host = "127.0.0.1";
                   port = 9120;
                 };
-
-                toolsets = [ "hermes-cli" ];
 
                 terminal = {
                   backend = "local";

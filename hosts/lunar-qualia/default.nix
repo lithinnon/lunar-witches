@@ -60,6 +60,8 @@ let
     ({ config, pkgs, ... }: {
       networking.hostName = "lunar-qualia";
 
+      users.users.nnon.linger = true;
+
       # Optimized CachyOS Zen 4 Kernel with Clang ThinLTO via Chaotic Nyx
       boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
