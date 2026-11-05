@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-02 10:55 +07:00
+- **Timestamp:** 2026-11-05 16:08 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `1198798`
-- **Live Generation:** Generation 221
+- **Active Git Commit:** `0e96738`
+- **Live Generation:** Generation 230
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-97. **S2idle Resume Hang Workaround with IPS On (`e53f928`, ADR 0018):**
-    - Traced the wake freeze to `rtsx_pci` via `pm_trace`; hook kept the driver out of the first real S0i3 of each boot.
-    - Removed `disableDcIps` (`0x800` never reached S0i3); flashed BIOS 308. T17 and T18 (lid): 3/3 each with 10-33s S0i3.
-    - Post-sleep stutter gone with VRR Never on `eDP-1`, persisted in `~/.config/kwinoutputconfig.json`, not in repo.
 98. **S2idle Root Cause Fixed Without Workaround (`347e27c`, ADR 0018):**
     - Firmware loses the SD reader's subsystem IDs in S0i3; `pciehp` removes it as replaced and blocks syncing the mounted card.
     - Added `pkgs/rtsx-subsystem-ids` to cache the post-S0i3 IDs at boot; removed the hook. Confirmed by T19 (card unmounted) and T20.
@@ -36,3 +32,7 @@
 99. **Add yt-dlp to Desktop Applications Suite (`1198798`):**
     - Declared `yt-dlp` in `modules/suites/desktop/apps.nix` (`suite-desktop-apps`).
     - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
+100. **Add Kafae Suite, Update Flake Inputs & Fix Derivations (`fb6d736`):**
+    - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
+    - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
+    - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
