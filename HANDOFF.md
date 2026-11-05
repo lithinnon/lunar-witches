@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-05 16:15 +07:00
+- **Timestamp:** 2026-11-05 17:35 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `db082af`
+- **Active Git Commit:** `938dfdd`
 - **Live Generation:** Generation 230
 
 ---
@@ -32,8 +32,7 @@
     - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
     - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
     - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
-101. **Add Hermes Agent Suite with TokenMe Custom Endpoint (`db082af`):**
-    - Declared `suite-ai-hermes` for Nous Research Hermes Agent (`programs.hermes-agent` and `services.hermes-agent`).
-    - Configured custom OpenAI-compatible provider `tokenme` (`api = "https://api.tokenme.limited/api/v1/"`) for model `deepseek-ai/deepseek-v4-flash-0731`.
-    - Isolated `TOKENME_API_KEY` in `spirit-world` secrets, bridged into Home Manager via `sops.templates."hermes.env"`.
-    - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
+101. **Add Hermes Agent Suite with TokenMe Custom Endpoint (`938dfdd`):**
+    - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
+    - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
+    - Enabled user linger (`nnon`), broadened default toolsets, and validated with `nh os build`.
