@@ -14,3 +14,7 @@
     - Audited fixed hashes across all in-tree packages (`rocm-therock`, `xrt-amdxdna`, `hrx-runtime`, `hrx-loom`, `radeon-developer-tool-suite`, `digital-egro`); verified all up-to-date.
     - Bump spirit world.
     - Verified dual-closure full-graph system convergence (`lunar-qualia` and `lunar-qualia-standalone`).
+97. **S2idle Resume Hang Workaround with IPS On (`e53f928`, ADR 0018):**
+    - Traced the wake freeze to `rtsx_pci` via `pm_trace`; hook kept the driver out of the first real S0i3 of each boot.
+    - Removed `disableDcIps` (`0x800` never reached S0i3); flashed BIOS 308. T17 and T18 (lid): 3/3 each with 10-33s S0i3.
+    - Post-sleep stutter gone with VRR Never on `eDP-1`, persisted in `~/.config/kwinoutputconfig.json`, not in repo.
