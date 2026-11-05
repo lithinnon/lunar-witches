@@ -82,7 +82,12 @@
                   show_reasoning = true;
                   reasoning_style = "code";
                   inline_diffs = true;
+                  skin = "lunar-witch";
                 };
+              };
+
+              hermesHomeFiles = {
+                "skins/lunar-witch.yaml" = ./skins/lunar-witch.yaml;
               };
 
               extraPackages = with pkgs; [
