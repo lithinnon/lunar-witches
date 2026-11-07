@@ -43,7 +43,6 @@ let
     self.nixosModules.suite-ai-antigravity
     self.nixosModules.suite-ai-hermes
     self.nixosModules.suite-ai-open-webui
-    self.nixosModules.suite-ai-opencode
     self.nixosModules.suite-ai-local
     self.nixosModules.suite-ai-prose
     self.nixosModules.suite-development

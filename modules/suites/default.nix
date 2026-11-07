@@ -13,7 +13,6 @@
     ./ai/rocm.nix
     ./ai/claude.nix
     ./ai/antigravity.nix
-    ./ai/opencode.nix
     ./ai/local.nix
     ./ai/prose.nix
     ./ai/open-webui.nix

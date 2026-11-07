@@ -44,9 +44,6 @@
     mv = "mv -i";
     gq = "ghq get --update -p --look --parallel";
     setup-optiscaler = "chmod +x ./setup_linux.sh && ./setup_linux.sh";
-    nix-agent-opencode = "cd ~/lunar-witches; opencode";
-    nix-agent = "cd ~/lunar-witches; opencode";
-    nix-agent-agy = "cd ~/lunar-witches;agy --conversation=f73d4a6a-84c7-4614-9114-d72055951b42";
   };
 
   programs.fish = {
