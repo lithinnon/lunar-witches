@@ -53,8 +53,9 @@ let
     inputs.home-manager.nixosModules.home-manager
     self.nixosModules.user-nnon
 
-    # 8. External Infrastructure (Chaotic Nyx)
+    # 8. External Infrastructure (Chaotic Nyx, Brave Browser)
     inputs.chaotic.nixosModules.default
+    inputs.brave-browser.nixosModules.default
 
     # 9. Host-Specific Overrides & Arbitrary Parameters
     ({ config, pkgs, ... }: {

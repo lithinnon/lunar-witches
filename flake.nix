@@ -65,6 +65,11 @@
       url = "github:NousResearch/hermes-agent";
     };
 
+    brave-browser = {
+      url = "git+https://codeberg.org/buckley310/brave-browser-nix.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     mattpocock-skills = {
       url = "github:mattpocock/skills";
       flake = false;
