@@ -22,3 +22,6 @@
     - Firmware loses the SD reader's subsystem IDs in S0i3; `pciehp` removes it as replaced and blocks syncing the mounted card.
     - Added `pkgs/rtsx-subsystem-ids` to cache the post-S0i3 IDs at boot; removed the hook. Confirmed by T19 (card unmounted) and T20.
     - T20 (Tera mounted, no hook): 3/3 with 27-29s S0i3, no `pciehp` events, no remount.
+99. **Add yt-dlp to Desktop Applications Suite (`1198798`):**
+    - Declared `yt-dlp` in `modules/suites/desktop/apps.nix` (`suite-desktop-apps`).
+    - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
