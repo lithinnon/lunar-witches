@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-07 12:15 +07:00
+- **Timestamp:** 2026-11-07 22:28 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `db548d0`
-- **Live Generation:** Generation 234
+- **Active Git Commit:** `8d4712b`
+- **Live Generation:** Generation 238
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-100. **Add Kafae Suite, Update Flake Inputs & Fix Derivations (`fb6d736`):**
-    - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
-    - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
-    - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
 101. **Add Hermes Agent Suite with TokenMe & Lunar-Witch Skin (`0527abb`):**
     - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
     - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
@@ -37,3 +33,7 @@
     - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
     - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
     - Decommissioned `suite-ai-opencode` and removed OpenCode shell aliases; bumped spirit world.
+103. **Flake Inputs Optimization, Brave Migration & AAGL Caching (`8d4712b`):**
+    - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
+    - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
+    - Added anime-game-launcher alongside honkers-launcher in suite-gaming; switched to Generation 238.
