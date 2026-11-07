@@ -38,7 +38,6 @@
             "render"
             "audio"
             "input"
-            "kvm"
           ];
           shell = pkgs.fish;
         };

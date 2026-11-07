@@ -20,6 +20,5 @@
     ./ai/hermes.nix
     ./development/default.nix
     ./development/gamedev.nix
-    ./virtualisation/default.nix
   ];
 }
