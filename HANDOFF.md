@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-05 18:05 +07:00
+- **Timestamp:** 2026-11-07 12:15 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `0527abb`
+- **Active Git Commit:** `db548d0`
 - **Live Generation:** Generation 234
 
 ---
@@ -25,9 +25,6 @@
 
 ## 3. Recent Milestones
 
-99. **Add yt-dlp to Desktop Applications Suite (`1198798`):**
-    - Declared `yt-dlp` in `modules/suites/desktop/apps.nix` (`suite-desktop-apps`).
-    - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
 100. **Add Kafae Suite, Update Flake Inputs & Fix Derivations (`fb6d736`):**
     - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
     - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
@@ -36,3 +33,7 @@
     - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
     - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
     - Enabled user linger (`nnon`), installed `lunar-witch` skin, and switched to Gen 234.
+102. **Integrate Matt Pocock Skills & Decommission OpenCode (`db548d0`):**
+    - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
+    - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
+    - Decommissioned `suite-ai-opencode` and removed OpenCode shell aliases; bumped spirit world.
