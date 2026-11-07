@@ -16,6 +16,7 @@
     ./ai/local.nix
     ./ai/prose.nix
     ./ai/open-webui.nix
+    ./ai/mattpocock-skills.nix
     ./ai/hermes.nix
     ./development/default.nix
     ./development/gamedev.nix

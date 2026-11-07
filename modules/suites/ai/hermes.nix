@@ -46,6 +46,8 @@
               );
 
               settings = {
+                skills.external_dirs = [ osConfig.services.mattpocock-skills.pool ];
+
                 model = {
                   default = "deepseek-ai/deepseek-v4-flash-0731";
                   provider = "custom:tokenme";

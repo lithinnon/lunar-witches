@@ -65,6 +65,11 @@
       url = "github:NousResearch/hermes-agent";
     };
 
+    mattpocock-skills = {
+      url = "github:mattpocock/skills";
+      flake = false;
+    };
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -118,6 +123,10 @@
         { pkgs, ... }:
         {
           formatter = pkgs.nixfmt-tree;
+
+          packages.mattpocock-skills = pkgs.callPackage ./pkgs/mattpocock-skills {
+            src = inputs.mattpocock-skills;
+          };
         };
     };
 }
