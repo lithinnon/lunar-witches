@@ -16,6 +16,7 @@
 
     # AAGL (Anime Game Launcher on Nix)
     nix.settings = inputs.aagl.nixConfig;
+    programs.anime-game-launcher.enable = true;
     programs.honkers-launcher.enable = true;
 
     environment.systemPackages = with pkgs; [

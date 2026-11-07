@@ -11,6 +11,7 @@
 
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      inputs.home-manager.follows = "home-manager";
     };
 
     antigravity-nix = {
@@ -24,11 +25,7 @@
 
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-        rust-overlay.follows = "rust-overlay";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     bullvpn = {
@@ -63,6 +60,10 @@
 
     hermes-agent = {
       url = "github:NousResearch/hermes-agent";
+      inputs = {
+        home-manager.follows = "home-manager";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     brave-browser = {
