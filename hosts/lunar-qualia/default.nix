@@ -48,6 +48,7 @@ let
     self.nixosModules.suite-ai-prose
     self.nixosModules.suite-development
     self.nixosModules.suite-development-gamedev
+    self.nixosModules.suite-virtualisation
 
     # 7. User Profile
     inputs.home-manager.nixosModules.home-manager
