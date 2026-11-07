@@ -187,17 +187,6 @@
         ];
       }
     ];
-    ungrouped = {
-      name = "Ungrouped";
-      icon = "package-x-generic";
-      services = [
-        {
-          id = "kde-baloo.service";
-          name = "Baloo File Indexer";
-          scope = "user";
-        }
-      ];
-    };
   };
 
   home.file.".digital.cfg".text = ''

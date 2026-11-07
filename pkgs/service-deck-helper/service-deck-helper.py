@@ -52,9 +52,7 @@ def load_config():
         "ungrouped": {
             "name": "Ungrouped",
             "icon": "package-x-generic",
-            "services": [
-                {"id": "kde-baloo.service", "name": "Baloo File Indexer", "scope": "user"}
-            ]
+            "services": []
         }
     }
     active_path = get_config_path()
@@ -225,18 +223,19 @@ def get_all_status():
     total_active += u_active
     total_services += len(ungrouped_services)
     
-    result_groups.append({
-        "id": "ungrouped",
-        "name": ungrouped.get("name", "Ungrouped"),
-        "icon": ungrouped.get("icon", "package-x-generic"),
-        "services": ungrouped_services,
-        "active_count": u_active,
-        "enabled_count": u_enabled,
-        "total_count": len(ungrouped_services),
-        "all_active": (u_active == len(ungrouped_services) and len(ungrouped_services) > 0),
-        "all_enabled": (u_enabled == len(ungrouped_services) and len(ungrouped_services) > 0),
-        "is_ungrouped": True
-    })
+    if ungrouped_services:
+        result_groups.append({
+            "id": "ungrouped",
+            "name": ungrouped.get("name", "Ungrouped"),
+            "icon": ungrouped.get("icon", "package-x-generic"),
+            "services": ungrouped_services,
+            "active_count": u_active,
+            "enabled_count": u_enabled,
+            "total_count": len(ungrouped_services),
+            "all_active": (u_active == len(ungrouped_services) and len(ungrouped_services) > 0),
+            "all_enabled": (u_enabled == len(ungrouped_services) and len(ungrouped_services) > 0),
+            "is_ungrouped": True
+        })
     
     return {
         "groups": result_groups,
