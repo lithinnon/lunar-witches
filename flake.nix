@@ -18,10 +18,6 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
@@ -103,10 +99,6 @@
     };
 
     # Libraries / Dependencies
-    flake-compat = {
-      url = "github:NixOS/flake-compat";
-      flake = false;
-    };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
