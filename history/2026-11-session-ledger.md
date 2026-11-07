@@ -25,3 +25,7 @@
 99. **Add yt-dlp to Desktop Applications Suite (`1198798`):**
     - Declared `yt-dlp` in `modules/suites/desktop/apps.nix` (`suite-desktop-apps`).
     - Verified dual-closure full-graph convergence (`lunar-qualia` and `lunar-qualia-standalone`).
+100. **Add Kafae Suite, Update Flake Inputs & Fix Derivations (`fb6d736`):**
+    - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
+    - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
+    - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
