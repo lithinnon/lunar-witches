@@ -54,14 +54,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent";
-      inputs = {
-        home-manager.follows = "home-manager";
-        flake-parts.follows = "flake-parts";
-      };
-    };
-
     brave-browser = {
       url = "git+https://codeberg.org/buckley310/brave-browser-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";

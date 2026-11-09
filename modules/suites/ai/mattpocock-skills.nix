@@ -1,5 +1,5 @@
 # Shared wiring: expose the mattpocock skill pool on the NixOS config so every
-# AI suite (hermes, claude, antigravity) can point at the same read-only store
+# AI suite (pi, claude, antigravity) can point at the same read-only store
 # path instead of each maintaining its own copy or symlink farm.
 { inputs, ... }:
 

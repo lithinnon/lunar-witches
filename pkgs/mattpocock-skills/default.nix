@@ -8,7 +8,7 @@
 #   $out/skills/<name>/SKILL.md
 #
 # Producing a flattened pool here is the whole trick: Claude Code, Antigravity
-# and Hermes all scan `skills/<name>/SKILL.md` one level deep and would see
+# and Pi all scan `skills/<name>/SKILL.md` one level deep and would see
 # `engineering/` as a fake skill if pointed at the bucketed source. `cp -rL`
 # dereferences any repo-internal symlinks so the store copy is self-contained.
 { pkgs, src }:

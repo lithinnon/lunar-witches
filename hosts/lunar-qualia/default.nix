@@ -42,7 +42,8 @@ let
     self.nixosModules.suite-ai-claude
     self.nixosModules.suite-ai-antigravity
     self.nixosModules.suite-ai-mattpocock-skills
-    self.nixosModules.suite-ai-hermes
+    self.nixosModules.suite-ai-pi
+    self.nixosModules.suite-ai-deepseek-harness
     self.nixosModules.suite-ai-open-webui
     self.nixosModules.suite-ai-local
     self.nixosModules.suite-ai-prose

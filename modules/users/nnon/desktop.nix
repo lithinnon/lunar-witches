@@ -184,6 +184,11 @@
             name = "Open WebUI";
             scope = "system";
           }
+          {
+            id = "deepseek-harness.service";
+            name = "DeepSeek Harness";
+            scope = "user";
+          }
         ];
       }
     ];

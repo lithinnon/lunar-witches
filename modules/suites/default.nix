@@ -17,7 +17,8 @@
     ./ai/prose.nix
     ./ai/open-webui.nix
     ./ai/mattpocock-skills.nix
-    ./ai/hermes.nix
+    ./ai/pi.nix
+    ./ai/deepseek-harness.nix
     ./development/default.nix
     ./development/gamedev.nix
   ];
