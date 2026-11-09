@@ -59,6 +59,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     mattpocock-skills = {
       url = "github:mattpocock/skills";
       flake = false;

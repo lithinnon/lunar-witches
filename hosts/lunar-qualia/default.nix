@@ -68,7 +68,10 @@ let
       boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
 
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [ self.overlays.default ];
+      nixpkgs.overlays = [
+        self.overlays.default
+        inputs.nix-vscode-extensions.overlays.default
+      ];
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;

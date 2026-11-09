@@ -34,6 +34,7 @@
         llvm-vs-code-extensions.vscode-clangd
         myriad-dreamin.tinymist
         geequlim.godot-tools
+        pkgs.vscode-marketplace.badvoic3.cedt-grader-submit
       ];
     };
   };

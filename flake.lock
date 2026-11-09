@@ -350,6 +350,26 @@
         "type": "github"
       }
     },
+    "nix-vscode-extensions": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794202607,
+        "narHash": "sha256-foUWdIx5HTEopoOHXzTy7uhbZYYl1BdjZKPQpkR+pgg=",
+        "owner": "nix-community",
+        "repo": "nix-vscode-extensions",
+        "rev": "934620178cf8eed2058484c24b5db62dbf4f08b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-vscode-extensions",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1793726008,
@@ -419,6 +439,7 @@
         "kafae": "kafae",
         "mattpocock-skills": "mattpocock-skills",
         "nix-craftapps": "nix-craftapps",
+        "nix-vscode-extensions": "nix-vscode-extensions",
         "nixpkgs": "nixpkgs_2",
         "plasma-manager": "plasma-manager",
         "sops-nix": "sops-nix"
