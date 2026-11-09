@@ -23,6 +23,8 @@
         "workbench.settings.showAISearchToggle" = false;
         "godotTools.lsp.serverPort" = 6005;
         "godotTools.editorPath.godot4" = "${pkgs.godot_4}/bin/godot";
+        "cedtGrader.baseUrl" = "https://cedt-grader.nattee.net";
+        "cedtGrader.username" = "6933200721";
       };
       extensions = with pkgs.vscode-extensions; [
         arrterian.nix-env-selector
