@@ -29,3 +29,7 @@
     - Declared `suite-education-kafae` for CEDT Grader CLI (`kafae`).
     - Bumped flake inputs; patched upstream `opencode-node_modules` hash mismatch.
     - Resolved headless font test failures in `digital` and `digital-egro` by skipping tests.
+101. **Add Hermes Agent Suite with TokenMe & Lunar-Witch Skin (`0527abb`):**
+    - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
+    - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
+    - Enabled user linger (`nnon`), installed `lunar-witch` skin, and switched to Gen 234.
