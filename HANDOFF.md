@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-07 22:28 +07:00
+- **Timestamp:** 2026-11-09 15:40 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `5a47bf7`
-- **Live Generation:** Generation 238
+- **Active Git Commit:** `e017582`
+- **Live Generation:** Generation 254
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-101. **Add Hermes Agent Suite with TokenMe & Lunar-Witch Skin (`0527abb`):**
-    - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
-    - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
-    - Enabled user linger (`nnon`), installed `lunar-witch` skin, and switched to Gen 234.
 102. **Integrate Matt Pocock Skills & Decommission OpenCode (`db548d0`):**
     - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
     - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
@@ -37,3 +33,7 @@
     - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
     - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
     - Added anime-game-launcher alongside honkers-launcher in suite-gaming; switched to Generation 238.
+104. **Pi Suite Migration, DeepSeek Harness & Rust Hook Fixes (`e017582`):**
+    - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
+    - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
+    - Authorized automatic switch in `AGENTS.md`; bumped spirit world; switched to Generation 254.
