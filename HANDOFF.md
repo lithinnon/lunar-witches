@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-09 20:23 +07:00
+- **Timestamp:** 2026-11-11 09:53 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `4c98ad0`
-- **Live Generation:** Generation 257
+- **Active Git Commit:** `3a957ad`
+- **Live Generation:** Generation 258
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-102. **Integrate Matt Pocock Skills & Decommission OpenCode (`db548d0`):**
-    - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
-    - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
-    - Decommissioned `suite-ai-opencode` and removed OpenCode shell aliases; bumped spirit world.
 103. **Flake Inputs Optimization, Brave Migration & AAGL Caching (`8d4712b`):**
     - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
     - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
@@ -37,3 +33,8 @@
     - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
     - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
     - Authorized automatic switch in `AGENTS.md`; bumped spirit world; switched to Generation 254.
+105. **YubiKey PAM U2F Sudo Integration (`3a957ad`):**
+    - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
+    - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
+    - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.
+
