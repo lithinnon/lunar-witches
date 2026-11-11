@@ -37,3 +37,7 @@
     - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
     - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
     - Decommissioned `suite-ai-opencode` and removed OpenCode shell aliases; bumped spirit world.
+103. **Flake Inputs Optimization, Brave Migration & AAGL Caching (`8d4712b`):**
+    - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
+    - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
+    - Added anime-game-launcher alongside honkers-launcher in suite-gaming; switched to Generation 238.
