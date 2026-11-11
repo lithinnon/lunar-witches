@@ -30,12 +30,16 @@
     security.pam.services.sudo.u2f.enable = lib.mkDefault true;
     security.pam.services.polkit-1.u2f.enable = lib.mkDefault true;
 
-    # Polkit 127 sandboxes polkit-agent-helper@ with PrivateDevices=yes and DevicePolicy=strict,
-    # blocking pam_u2f from /dev/urandom (challenge generation) and /dev/hidraw* (YubiKey USB HID).
+    # Polkit 127 sandboxes polkit-agent-helper@ with PrivateDevices=yes, DevicePolicy=strict,
+    # and DeviceAllow=/dev/null rw, blocking pam_u2f from /dev/urandom and /dev/hidraw* (YubiKey USB HID).
     systemd.services."polkit-agent-helper@" = {
       serviceConfig = {
         PrivateDevices = false;
         DevicePolicy = "auto";
+        DeviceAllow = [
+          ""
+          "char-* rw"
+        ];
         ProtectHome = false;
       };
     };
