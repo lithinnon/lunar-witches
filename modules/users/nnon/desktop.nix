@@ -1,5 +1,6 @@
 # User desktop integration: XDG user dirs, MIME apps, packages, Service Deck, Digital
 {
+  config,
   lib,
   pkgs,
   inputs,
@@ -118,8 +119,9 @@
       "video/quicktime" = "mpv.desktop";
       "video/avi" = "mpv.desktop";
       "x-scheme-handler/antigravity" = "antigravity-ide.desktop";
+      "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
       "x-scheme-handler/curseforge" = "org.prismlauncher.PrismLauncher.desktop";
-      "x-scheme-handler/discord" = "vesktop.desktop";
+      "x-scheme-handler/discord" = "equibop.desktop";
       "x-scheme-handler/lemonade" = "lemonade-app-handler.desktop";
       "x-scheme-handler/mongodb" = "mongodb-compass.desktop";
       "x-scheme-handler/mongodb+srv" = "mongodb-compass.desktop";
@@ -191,6 +193,19 @@
           }
         ];
       }
+    ];
+  };
+
+  home.file."CU".source = config.lib.file.mkOutOfStoreSymlink "/home/nnon/Projects/CU";
+
+  programs.mpv.enable = true;
+
+  programs.brave = {
+    enable = true;
+    package = null;
+    nativeMessagingHosts = [
+      pkgs.kdePackages.plasma-browser-integration
+      pkgs.keepassxc
     ];
   };
 

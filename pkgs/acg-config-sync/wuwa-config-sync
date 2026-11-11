@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""
+WuWa Config Sync Tool
+Thin wrapper using acg_config_sync core engine.
+"""
+
+from pathlib import Path
+from acg_config_sync import ACGConfigEngine
+
+WUWA_GAME_DIR = Path.home() / ".local/share/Steam/steamapps/common/Wuthering Waves"
+WUWA_CONFIG_DIR = WUWA_GAME_DIR / "Client/Saved/Config/WindowsNoEditor"
+WUWA_CACHE_DIR = Path.home() / ".cache/wuwa-configs"
+WUWA_REPO_URL = "https://github.com/AlteriaX/WuWa-Configs.git"
+WUWA_LEGACY_CLEANUP = [WUWA_GAME_DIR / "Client/Config/UserEngine.ini"]
+
+def main():
+    engine = ACGConfigEngine(
+        game_name="Wuthering Waves",
+        repo_url=WUWA_REPO_URL,
+        default_config_dir=WUWA_CONFIG_DIR,
+        default_cache_dir=WUWA_CACHE_DIR,
+        default_preset="Config 2",
+        common_files=["DeviceProfiles.ini", "Input.ini"],
+        read_only=False,
+        legacy_cleanup_files=WUWA_LEGACY_CLEANUP,
+    )
+    engine.run_cli()
+
+if __name__ == "__main__":
+    main()

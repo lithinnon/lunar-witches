@@ -5,6 +5,8 @@
   flake.nixosModules.suite-desktop-apps = { pkgs, ... }: {
     imports = [
       inputs.nix-craftapps.nixosModules.default
+      inputs.nix-flatpak.nixosModules.nix-flatpak
+      inputs.brave-browser.nixosModules.default
     ];
 
     programs.craftapps = {
@@ -14,16 +16,43 @@
       apps.pdfcraft.enable = true;
     };
 
-    services.flatpak.enable = true;
+    services.flatpak = {
+      enable = true;
+      uninstallUnmanaged = true;
+      update.auto.enable = true;
 
-    # Expose /nix/store to Flatpak containers so font symlinks in /run/host/fonts resolve properly
-    systemd.tmpfiles.rules = [
-      "d /var/lib/flatpak/overrides 0755 root root -"
-      "L+ /var/lib/flatpak/overrides/global - - - - ${pkgs.writeText "flatpak-global-override" ''
-        [Context]
-        filesystems=/nix/store:ro;
-      ''}"
-    ];
+      remotes = [
+        {
+          name = "flathub";
+          location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+        }
+      ];
+
+      packages = [
+        {
+          appId = "net.waterfox.waterfox";
+          origin = "flathub";
+        }
+      ];
+
+      # Expose /nix/store so font symlinks resolve and grant Waterfox Plasma browser integration
+      overrides.settings = {
+        global.Context.filesystems = [ "/nix/store:ro" ];
+        "net.waterfox.waterfox"."Session Bus Policy"."org.kde.plasma.browser.integration" = "talk";
+      };
+    };
+
+    programs.brave = {
+      enable = true;
+      policy = {
+        BraveRewardsDisabled = true;
+        BraveWalletDisabled = true;
+        BraveVPNDisabled = true;
+        BraveNewsDisabled = true;
+        BraveAIChatEnabled = true;
+        TorDisabled = false;
+      };
+    };
 
     programs.localsend = {
       enable = true;
@@ -35,7 +64,6 @@
 
     environment.systemPackages = with pkgs; [
       gpu-screen-recorder-gtk
-      mpv
       yt-dlp
       qbittorrent
       btop
@@ -179,5 +207,23 @@
         "application/epub+zip" = "com.github.johnfactotum.Foliate.desktop";
       };
     };
+
+    home-manager.sharedModules = [
+      {
+        xdg.configFile."autostart/equibop.desktop" = {
+          force = true;
+          text = ''
+            [Desktop Entry]
+            Type=Application
+            Name=Equibop
+            Comment=Equibop autostart script
+            Exec=equibop --start-minimized
+            StartupNotify=false
+            Terminal=false
+            Icon=equibop
+          '';
+        };
+      }
+    ];
   };
 }

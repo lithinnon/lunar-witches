@@ -3,7 +3,6 @@
 
 {
   home.sessionPath = [
-    "$HOME/.local/bin"
     "${config.xdg.dataHome}/cargo/bin"
   ];
 
@@ -83,7 +82,7 @@
       "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json";
       logo = {
         type = "auto";
-        source = "/home/nnon/Documents/Stella Glow/Marie-Eve Assets/LINE Stickers/Marie/4x/Neutral.png";
+        source = "${./assets/fastfetch-logo.png}";
         width = 32;
       };
       modules = [

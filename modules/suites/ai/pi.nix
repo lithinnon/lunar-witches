@@ -4,6 +4,9 @@
 {
   flake.nixosModules.suite-ai-pi =
     { lib, pkgs, ... }:
+    let
+      piExtensions = pkgs.callPackage ./pi-extensions { };
+    in
     {
       home-manager.sharedModules = [
         (
@@ -28,15 +31,21 @@
                 pkgs.bun
                 pkgs.curl
                 pkgs.git
+                pkgs.keyutils
+                pkgs.ffmpeg
+                pkgs.yt-dlp
+                pkgs.sqlite
+                pkgs.xdg-utils
               ];
               configDir = "${config.xdg.configHome}/pi/agent";
-              mutableSettings = true;
+              mutableSettings = false;
               settings = {
+                extensions = [ "-builtin:mcp" ];
                 packages = [
-                  "npm:pi-mcp-adapter"
-                  "npm:pi-web-access"
-                  "npm:pi-subagents"
-                  "npm:pi-context-mode"
+                  "${piExtensions}/lib/node_modules/pi-extensions/node_modules/pi-mcp-adapter"
+                  "${piExtensions}/lib/node_modules/pi-extensions/node_modules/pi-web-access"
+                  "${piExtensions}/lib/node_modules/pi-extensions/node_modules/pi-subagents"
+                  "${piExtensions}/lib/node_modules/pi-extensions/node_modules/pi-context-mode"
                 ];
               };
             };
@@ -44,6 +53,7 @@
             home.sessionVariables = {
               PI_CODING_AGENT_SESSION_DIR = "${config.xdg.stateHome}/pi/sessions";
               CONTEXT_MODE_DIR = "${config.xdg.stateHome}/context-mode";
+              PI_OFFLINE = "1";
             };
 
             # Global Pi skills live in <configDir>/skills/

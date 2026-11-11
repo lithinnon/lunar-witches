@@ -3,43 +3,22 @@
 
 {
   flake.nixosModules.suite-development = { pkgs, ... }: {
-    # nix-ld: Run unpatched dynamic binaries (VS Code extensions, Node, Python wheels)
+    # nix-ld: Run unpatched dynamic binaries (CLI toolchains, VS Code extensions, uv wheels)
     programs.nix-ld = {
       enable = true;
       libraries = with pkgs; [
         stdenv.cc.cc
         zlib
-        fuse3
-        icu
         zstd
+        xz
         openssl
         curl
         glib
-        gtk3
-        pango
-        cairo
-        gdk-pixbuf
-        atk
-        at-spi2-atk
-        at-spi2-core
-        dbus
+        icu
         libdrm
-        libGL
-        libxkbcommon
-        mesa
-        nspr
-        nss
-        alsa-lib
-        cups
         expat
         systemd
-        libx11
-        libxcomposite
-        libxdamage
-        libxext
-        libxfixes
-        libxrandr
-        libxcb
+        fuse3
       ];
     };
 

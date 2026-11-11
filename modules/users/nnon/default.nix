@@ -7,6 +7,7 @@
       config,
       pkgs,
       lib,
+      options,
       ...
     }:
     {
@@ -21,9 +22,16 @@
       };
 
       config = {
+        users.mutableUsers = lib.mkIf (options ? sops && config.sops.secrets ? "nnon_password_hash") (
+          lib.mkDefault false
+        );
+
         users.users.nnon = {
           isNormalUser = true;
           description = "nnon";
+          hashedPasswordFile = lib.mkIf (
+            options ? sops && config.sops.secrets ? "nnon_password_hash"
+          ) config.sops.secrets."nnon_password_hash".path;
           openssh.authorizedKeys.keys = config.users.nnon.authorizedKeys;
           extraGroups = [
             "wheel"

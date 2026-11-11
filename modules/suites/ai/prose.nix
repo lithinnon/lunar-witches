@@ -53,6 +53,12 @@
           description = "Whether to open the firewall port for SillyTavern.";
         };
 
+        extensions = lib.mkOption {
+          type = lib.types.attrsOf lib.types.package;
+          default = { };
+          description = "Declarative third-party SillyTavern extensions keyed by folder name.";
+        };
+
         configFile = lib.mkOption {
           type = lib.types.path;
           default = pkgs.runCommand "sillytavern-config.yaml" { } ''
@@ -100,13 +106,16 @@
                 ExecStart = "${pkgs.sillytavern}/bin/sillytavern --port=${toString cfg.port}${lib.optionalString cfg.listen " --listen"}";
                 Restart = "always";
                 RestartSec = 2;
-                # SillyTavern extension manager requires gitMinimal
                 Environment = [
-                  "PATH=${lib.makeBinPath [ pkgs.gitMinimal ]}:/run/current-system/sw/bin"
+                  "PATH=/run/current-system/sw/bin"
                 ];
-                # Third-party extensions directory bind-mounted into SillyTavern package path
-                BindPaths = [
-                  "-%h/.local/share/SillyTavern/extensions:${pkgs.sillytavern}/lib/node_modules/sillytavern/public/scripts/extensions/third-party"
+                # Third-party extensions directory bind-mounted read-only from Nix store
+                BindReadOnlyPaths = [
+                  "${
+                    pkgs.linkFarm "sillytavern-extensions" (
+                      lib.mapAttrsToList (name: path: { inherit name path; }) cfg.extensions
+                    )
+                  }:${pkgs.sillytavern}/lib/node_modules/sillytavern/public/scripts/extensions/third-party"
                 ];
               };
               Install = {

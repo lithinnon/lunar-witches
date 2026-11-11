@@ -2,6 +2,7 @@
 
 let
   inTreePackages = {
+    acg-config-sync = ./acg-config-sync;
     mem-ttm = ./mem-ttm;
     sync-power-state = ./sync-power-state;
     service-deck-helper = ./service-deck-helper;

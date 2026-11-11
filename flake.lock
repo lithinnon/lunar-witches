@@ -294,6 +294,26 @@
         "type": "github"
       }
     },
+    "hytale-launcher": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793131380,
+        "narHash": "sha256-tfYbdYm06B/rmvcO/BMulrOzoSXsiJnVEiKi62rZVpI=",
+        "owner": "JPyke3",
+        "repo": "hytale-launcher-nix",
+        "rev": "6109ad9860b00cea42d26cdd908725688fbdb54b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "JPyke3",
+        "repo": "hytale-launcher-nix",
+        "type": "github"
+      }
+    },
     "kafae": {
       "inputs": {
         "nixpkgs": [
@@ -347,6 +367,21 @@
       "original": {
         "owner": "olafkfreund",
         "repo": "nix-craftapps",
+        "type": "github"
+      }
+    },
+    "nix-flatpak": {
+      "locked": {
+        "lastModified": 1791644268,
+        "narHash": "sha256-f7Z4PmfnRxf7+37NN48ep+KsQauGtL5REE99pJtMNp8=",
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "rev": "02656785ab214fa1c9655f1beaaf0269eeeec2ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
         "type": "github"
       }
     },
@@ -436,9 +471,11 @@
         "disko": "disko",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
+        "hytale-launcher": "hytale-launcher",
         "kafae": "kafae",
         "mattpocock-skills": "mattpocock-skills",
         "nix-craftapps": "nix-craftapps",
+        "nix-flatpak": "nix-flatpak",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixpkgs": "nixpkgs_2",
         "plasma-manager": "plasma-manager",

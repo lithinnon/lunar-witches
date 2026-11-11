@@ -7,6 +7,7 @@
       config,
       pkgs,
       lib,
+      options,
       ...
     }:
     {
@@ -67,7 +68,10 @@
 
         programs.fish.enable = true;
         programs.ssh.startAgent = true;
-        environment.localBinInPath = true;
+
+        users.users.root.hashedPasswordFile = lib.mkIf (
+          options ? sops && config.sops.secrets ? "root_password_hash"
+        ) config.sops.secrets."root_password_hash".path;
 
         # Graphical AskPass passthrough for KDE ksshaskpass
         security.sudo.extraConfig = ''

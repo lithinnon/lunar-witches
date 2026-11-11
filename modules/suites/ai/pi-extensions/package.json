@@ -1,0 +1,10 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "pi-context-mode": "^1.0.170",
+    "pi-mcp-adapter": "^7.0.1",
+    "pi-subagents": "^0.87.0",
+    "pi-web-access": "^0.47.0"
+  }
+}

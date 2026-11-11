@@ -54,15 +54,17 @@ let
     inputs.home-manager.nixosModules.home-manager
     self.nixosModules.user-nnon
 
-    # 8. External Infrastructure (Chaotic Nyx, Brave Browser)
+    # 8. External Infrastructure (Chaotic Nyx)
     inputs.chaotic.nixosModules.default
-    inputs.brave-browser.nixosModules.default
 
     # 9. Host-Specific Overrides & Arbitrary Parameters
     ({ config, pkgs, ... }: {
       networking.hostName = "lunar-qualia";
 
       users.users.nnon.linger = true;
+
+      # Compile th_TH.UTF-8 alongside default locales for KDE regional formats (~/.config/plasma-localerc)
+      i18n.extraLocales = [ "th_TH.UTF-8/UTF-8" ];
 
       # Optimized CachyOS Zen 4 Kernel with Clang ThinLTO via Chaotic Nyx
       boot.kernelPackages = pkgs.linuxPackages_cachyos-lto-znver4;
@@ -97,6 +99,17 @@ let
       hardware.amdgpu.development.enable = true;
 
       services.syncthing.enable = true;
+
+      services.asusd = {
+        asusdConfig.source = ./asusd/asusd.ron;
+        auraConfigs.tuf.source = ./asusd/aura_tuf.ron;
+        fanCurvesConfig.source = ./asusd/fan_curves.ron;
+      };
+      systemd.services.asusd.restartTriggers = [
+        ./asusd/asusd.ron
+        ./asusd/aura_tuf.ron
+        ./asusd/fan_curves.ron
+      ];
 
       suites.ai.rocm = {
         enable = true;

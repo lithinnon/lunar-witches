@@ -29,7 +29,7 @@
     overrideConfig = false;
 
     input.keyboard = {
-      numlockOnStartup = "off";
+      numlockOnStartup = "on";
       repeatDelay = 288;
       repeatRate = 40.0;
     };

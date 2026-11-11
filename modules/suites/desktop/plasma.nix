@@ -29,6 +29,7 @@
       config = {
         services.displayManager.sddm = {
           enable = true;
+          autoNumlock = lib.mkDefault true;
           wayland.enable = true;
           extraPackages = with pkgs.kdePackages; [
             qtimageformats
@@ -36,6 +37,28 @@
         };
         services.desktopManager.plasma6.enable = true;
         programs.kde-pim.enable = false;
+
+        # Ensure KDE Wayland logout tears down graphical-session.target even with linger = true
+        # so D-Bus portal activations during logout cannot leave it active across relogins.
+        systemd.user.services."plasma-kwin_wayland" = {
+          overrideStrategy = "asDropin";
+          restartIfChanged = false;
+          enableDefaultPath = false;
+          serviceConfig.ExecStopPost = [
+            "-${config.systemd.package}/bin/systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY"
+            "-${config.systemd.package}/bin/systemctl --user stop --no-block graphical-session.target"
+          ];
+        };
+
+        # Belt-and-suspenders guard: keep XDG autostart apps ordered after plasma-workspace.target
+        # rather than racing compositor readiness if graphical-session.target is already active.
+        systemd.user.units."app-.service" = {
+          overrideStrategy = "asDropin";
+          text = ''
+            [Unit]
+            After=plasma-workspace.target
+          '';
+        };
 
         # KDE Wallet Integration (Seamless Chromium/Brave password decryption)
         security.pam.services.sddm.kwallet = {
