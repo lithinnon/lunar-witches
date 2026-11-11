@@ -6,29 +6,25 @@
 
 ## 1. Active State
 
-- **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-11 12:47 +07:00
+- **Last Active Agent:** Antigravity (Gemini 3.1 Pro)
+- **Timestamp:** 2026-11-11 21:21 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `b3b9921`
-- **Live Generation:** Generation 265
+- **Active Git Commit:** `c8c5476`
+- **Live Generation:** Generation 266
 
 ---
 
 ## 2. In-Flight Focus
 
-- [ ] Watch the s2idle fix in daily use, including lid closes and long sleeps (T20: 3/3 at 30s, `systemctl suspend`). After a BIOS update check `cached subsystem IDs` in the boot log; the hang can return if the IDs change. After a hang, full power cycle and check touchpad `ASCF1206`. Upstream patches not in master 7.3. BIOS 308 image audited: no safe firmware fix, keep the module.
-- [ ] VRR, culprit unproven. Suspect: resume commit `WARN_ON` in `amdgpu_dm_handle_vrr_transition` (vblank ref not taken, wakes 1 and 3 of T17) leaves VRR active with vblank able to re-enable, giving bogus pageflip timestamps per the driver comment. Against: wake 2 had no warning, RCG stayed 0. Plan: T21 fresh boot, Automatic on `eDP-1` before first sleep, check RCG, sleeps, a game. T22 Always with `drm.debug=0x2` and KWin perf CSV for a measured stutter. Also compare `power_now`. Never toggle VRR after a sleep: it froze the display (`Pageflip timed out`; kernel alive).
-- [ ] Unexplained, non-blocking: one instant `EBUSY` (`-16`) per lid sleep before a successful retry (T18), source unknown; occasional shallow sleeps with 0% residency.
-- [ ] Test tools: `~/s2idle-test/run.sh` (self-timed) and `watch.sh` (lid); run as root in system slice via `systemd-run`; logs in `~/s2idle-test/logs/`. `amd-s2idle` bypasses logind, so no lock.
+- [ ] Watch s2idle fix (`~/s2idle-test/{run,watch}.sh` via root `systemd-run`); check `cached subsystem IDs` after BIOS updates and occasional `EBUSY` (`-16`) / 0% shallow sleeps.
+- [ ] VRR culprit unproven: T21 fresh boot `Automatic` on `eDP-1` before sleep (check RCG, sleeps, game); T22 `drm.debug=0x2` + KWin CSV. Never toggle VRR after sleep.
+- [ ] Run `nh os switch` for `c8c5476` (`result`: `plasma-kwin_wayland` drop-ins, `th_TH.UTF-8`, `protonplus.timer`), complete Step D cleanup, and uncheck KeePassXC startup NMH overwrite.
+- [ ] Phase 2 Impermanence (`feat/impermanence`): confirm rollout scope (Stage A `@` first vs Full), `.config` persistence, large caches (`uv`/`triellama.cpp`/`ProtonPlus`), and initrd `emergencyAccess`.
 
 ---
 
 ## 3. Recent Milestones
 
-105. **YubiKey PAM U2F Sudo Integration (`3a957ad`):**
-    - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
-    - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
-    - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.
 106. **SSH Git Signing, Retired GPG & Polkit U2F (`aefeaac`):**
     - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
     - Prioritized hardware key in SSH client settings; retired obsolete GPG options and disabled `gpg-agent`.
@@ -37,5 +33,7 @@
     - Switched `google-antigravity` and `google-antigravity-ide` to non-FHS variants (`autoPatchelfHook`).
     - Removed `bwrap` container and `NoNewPrivs` terminal restrictions from `AGENTS.md` and quirks doc.
     - Switched system to Generation 265 via `nh os switch`; cleaned store (7.6 GiB freed) via `nh clean all`.
-
-
+108. **Phase 1 Declarative Suites, Host Configs & Relog Fixes (`c8c5476`):**
+    - Declarative `asusd`, `th_TH.UTF-8`, `mutableUsers` password guards, `nix-flatpak`, `brave` policies, `hytale-launcher`, `acg-config-sync`, `equibop` autostart, and `protonplus` timer.
+    - Hardened `pi` (`PI_OFFLINE=1` + offline `pi-extensions`), `claude-code` HM config, RO `sillytavern` extensions, and `plasma-kwin_wayland` / `app-.service` relog drop-ins.
+    - Bumped spirit world; Generation 266 live and `c8c5476` built cleanly via `nh os build`.
