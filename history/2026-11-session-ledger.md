@@ -45,3 +45,7 @@
     - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
     - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
     - Authorized automatic switch in `AGENTS.md`; bumped spirit world; switched to Generation 254.
+105. **YubiKey PAM U2F Sudo Integration (`3a957ad`):**
+    - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
+    - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
+    - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.

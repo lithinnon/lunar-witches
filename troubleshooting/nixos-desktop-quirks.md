@@ -215,6 +215,25 @@ During the migration and post-install configuration, several notable edge cases 
     nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run
     ```
 
+---
+
+## 16. Plasma Wayland Relog Crash with `linger = true` & XDG Autostart Race
+- **Symptom:** Logging out and back into Plasma 6 Wayland triggered DrKonqi crashes in `.plasma-fallback-session-restore-wrapped`, `.kdeconnectd-wrapped`, and `.DiscoverNotifier-wrapped`. Journal logs showed `graphical-session.target` stayed active for hours (`linger = true`) across logins, `xdg-desktop-portal-kde` restarted on logout, and XDG autostart services (`app-*@autostart.service`) started before `plasma-workspace.target`.
+- **Cause:**
+  1. `plasma-kwin_wayland.service` has `BindsTo=graphical-session.target` instead of `PartOf`, and with `users.users.nnon.linger = true`, `user@1000.service` stays running after logout. Any portal/D-Bus activation during logout keeps `graphical-session.target` alive across relogins, causing immediate next-login autostart launches to race compositor startup.
+  2. Additionally, missing `th_TH.UTF-8` locale compilation (`Detected locale "C"`) caused Qt fallback locale warnings when `~/.config/plasma-localerc` requested Thai regional formats.
+- **Resolution:**
+  - Added `plasma-kwin_wayland` drop-in (`overrideStrategy = "asDropin"`, `restartIfChanged = false`, `enableDefaultPath = false`) in [`modules/suites/desktop/plasma.nix`](../../modules/suites/desktop/plasma.nix) to unset `WAYLAND_DISPLAY`/`DISPLAY` and run `systemctl --user stop --no-block graphical-session.target` in `ExecStopPost`.
+  - Added `app-.service` drop-in ordering XDG autostart apps `After=plasma-workspace.target`.
+  - Added `i18n.extraLocales = [ "th_TH.UTF-8/UTF-8" ];` in [`hosts/lunar-qualia/default.nix`](../../hosts/lunar-qualia/default.nix).
+
+---
+
+## 17. KeePassXC `Browser Plugin Failure` with Declarative `nativeMessagingHosts`
+- **Symptom:** KeePassXC pops up `Could not save the native messaging script file for brave.` on launch when `programs.brave.nativeMessagingHosts` includes `pkgs.keepassxc`.
+- **Cause:** Home Manager symlinks `~/.config/BraveSoftware/Brave-Browser/NativeMessagingHosts/org.keepassxc.keepassxc_browser.json` into `/nix/store`. With `[Browser] Enabled=true`, KeePassXC defaults `UpdateBinaryPath=true` and attempts to overwrite the read-only symlink at startup. (`programs.keepassxc.settings` is avoided because symlinking `keepassxc.ini` into `/nix/store` blocks KeePassXC UI state saves.)
+- **Resolution:** In KeePassXC, uncheck **Tools -> Settings -> Browser Integration -> Advanced -> Update native messaging manifest files at startup** (`UpdateBinaryPath=false` in `~/.config/keepassxc/keepassxc.ini`).
+
 
 
 
