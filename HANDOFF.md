@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-11 10:11 +07:00
+- **Timestamp:** 2026-11-11 10:38 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `ef42575`
-- **Live Generation:** Generation 263
+- **Active Git Commit:** `aefeaac`
+- **Live Generation:** Generation 264
 
 ---
 
@@ -33,9 +33,9 @@
     - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
     - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
     - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.
-106. **SSH Git Signing, Polkit Integration & GPG Retirement:**
+106. **SSH Git Signing, Retired GPG & Polkit U2F (`aefeaac`):**
     - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
-    - Prioritized hardware key in SSH client settings; disabled `gpg-agent` and retired obsolete GPG options.
-    - Enabled `security.pam.services.polkit-1.u2f` for KeePassXC quick unlock tap; switched to Gen 261.
+    - Prioritized hardware key in SSH client settings; retired obsolete GPG options and disabled `gpg-agent`.
+    - Configured system `/etc/u2f_keys` and character device access in `polkit-agent-helper@`; switched to Gen 264.
 
 
