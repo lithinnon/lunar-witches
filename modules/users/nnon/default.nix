@@ -11,12 +11,6 @@
     }:
     {
       options.users.nnon = {
-        gitSigningKey = lib.mkOption {
-          type = lib.types.str;
-          default = "9106CA7732D04633";
-          description = "GPG signing key ID for user nnon.";
-        };
-
         authorizedKeys = lib.mkOption {
           type = lib.types.listOf lib.types.str;
           default = [

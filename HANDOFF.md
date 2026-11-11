@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-11 09:53 +07:00
+- **Timestamp:** 2026-11-11 10:11 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `3a957ad`
-- **Live Generation:** Generation 258
+- **Active Git Commit:** `ef42575`
+- **Live Generation:** Generation 261
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-103. **Flake Inputs Optimization, Brave Migration & AAGL Caching (`8d4712b`):**
-    - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
-    - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
-    - Added anime-game-launcher alongside honkers-launcher in suite-gaming; switched to Generation 238.
 104. **Pi Suite Migration, DeepSeek Harness & Rust Hook Fixes (`e017582`):**
     - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
     - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
@@ -37,4 +33,9 @@
     - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
     - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
     - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.
+106. **SSH Git Signing, Polkit Integration & GPG Retirement:**
+    - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
+    - Prioritized hardware key in SSH client settings; disabled `gpg-agent` and retired obsolete GPG options.
+    - Enabled `security.pam.services.polkit-1.u2f` for KeePassXC quick unlock tap; switched to Gen 261.
+
 

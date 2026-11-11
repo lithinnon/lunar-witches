@@ -21,5 +21,6 @@
     };
 
     security.pam.services.sudo.u2f.enable = lib.mkDefault true;
+    security.pam.services.polkit-1.u2f.enable = lib.mkDefault true;
   };
 }

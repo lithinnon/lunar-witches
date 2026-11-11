@@ -50,6 +50,10 @@
     settings = {
       "*" = {
         AddKeysToAgent = "yes";
+        IdentityFile = [
+          "~/.ssh/id_ed25519_sk"
+          "~/.ssh/id_ed25519"
+        ];
       };
     };
   };
@@ -58,13 +62,17 @@
     enable = true;
     lfs.enable = true;
     signing = {
-      key = osConfig.users.nnon.gitSigningKey;
+      format = "ssh";
+      key = "~/.ssh/id_ed25519_sk.pub";
       signByDefault = true;
     };
     settings = {
       user = {
         name = "lithinnon";
         email = "49898465+lithinnon@users.noreply.github.com";
+      };
+      gpg.ssh = {
+        allowedSignersFile = "~/.ssh/allowed_signers";
       };
       init.defaultBranch = "master";
       safe.directory = "*";
@@ -87,39 +95,7 @@
     };
   };
 
-  programs.gpg = {
-    enable = true;
-    mutableKeys = true;
-    mutableTrust = true;
-    settings = {
-      personal-cipher-preferences = "AES256 AES192 AES";
-      personal-digest-preferences = "SHA512 SHA384 SHA256";
-      personal-compress-preferences = "ZLIB BZIP2 ZIP Uncompressed";
-      default-preference-list = "SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB BZIP2 ZIP Uncompressed";
-      cert-digest-algo = "SHA512";
-      s2k-digest-algo = "SHA512";
-      s2k-cipher-algo = "AES256";
-      charset = "utf-8";
-      no-comments = true;
-      no-emit-version = true;
-      no-greeting = true;
-      keyid-format = "0xlong";
-      with-fingerprint = true;
-      list-options = "show-uid-validity";
-      verify-options = "show-uid-validity";
-      use-agent = true;
-    };
-  };
-
-  services.gpg-agent = {
-    enable = true;
-    enableFishIntegration = true;
-    enableBashIntegration = true;
-    enableScDaemon = true;
-    pinentry.package = pkgs.pinentry-qt;
-    defaultCacheTtl = 3600;
-    maxCacheTtl = 86400;
-  };
+  services.gpg-agent.enable = false;
 
   # Cross-harness agent-skills CLI (SKILL.md installer) — nixpkgs `skills`
   # (vercel-labs/skills): `skills add owner/repo`, `skills use`, `skills init`.
