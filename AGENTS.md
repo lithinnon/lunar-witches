@@ -11,8 +11,7 @@
 - **Secrets & Spirit World Boundary:** All private infrastructure, personal SSH aliases, campus credentials, private packages, and SOPS encrypted tokens reside in `spirit-world` (`secrets/secrets.yaml`). Public `lunar-witches` contains zero secrets or raw tokens.
 - **Submodule Workflow & Redaction:** Commit and push changes inside `spirit-world/` first, then stage pointer in `lunar-witches/` preserving GPG signing. Publicly from the main repo (commits, logs, `HANDOFF.md`), any changes in `spirit-world` must be strictly redacted—report only as `"bump spirit world"` with zero internal package names, hashes, or details exposed.
 - **Retrospects Worktree:** Documentation, ADRs, and session ledgers reside on branch `retrospects`, mounted at `./retrospects` via `git worktree add retrospects retrospects`. Commit and sign documentation changes within `./retrospects` on branch `retrospects`.
-- **Terminal Sandbox Boundary:** Antigravity IDE runs in a `bwrap` FHS container (`NoNewPrivs: 1`). Never run `nh os switch`, `test`, or `sudo` directly in its integrated terminal (kernel blocks setuid). Use an external host terminal or escape via `systemd-run --user --pty --same-dir nh os switch ...`.
-- **Automated Switch Execution:** The agent is authorized to execute system switches automatically without manual user confirmation once builds pass, using `systemd-run --user --pty --same-dir env NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches` (triggers graphical `ksshaskpass`).
+- **Automated Switch Execution:** The agent is authorized to execute system switches automatically without manual user confirmation once builds pass, using `env NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches` (triggers graphical `ksshaskpass`).
 - **Zero Backward-Compatibility Aliases:** Never preserve or create legacy aliases, shims, or compatibility bindings. Refactor all call sites directly and keep only canonical definitions.
 
 ---
@@ -22,7 +21,7 @@
 - **Windows Emulation:** Productivity tools (`bottles`) belong in `suites/desktop/apps.nix`; games (`steam`, `gamescope`) belong in `suites/gaming/`.
 - **Hardware Limits:** Declare typed `lib.mkOption` in `modules/hardware/`; assign concrete values in `hosts/<host>/default.nix`.
 - **Native Modules:** Configure upstream options directly using `lib.mkDefault` rather than wrapping them in custom options.
-- **Full-Graph Convergence:** Verify changes across definition, aggregator, and consumer tiers with `nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run`.
+- **Full-Graph Convergence:** Verify changes across definition, aggregator, and consumer tiers with `nh os switch --dry` or `nh os build`.
 - **Safe Editing:** Always use structured edit tools with unique surrounding anchors (no `sed`, `awk`, or line arithmetic).
 
 ---

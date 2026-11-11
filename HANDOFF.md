@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-11 10:38 +07:00
+- **Timestamp:** 2026-11-11 12:47 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `aefeaac`
-- **Live Generation:** Generation 264
+- **Active Git Commit:** `b3b9921`
+- **Live Generation:** Generation 265
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-104. **Pi Suite Migration, DeepSeek Harness & Rust Hook Fixes (`e017582`):**
-    - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
-    - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
-    - Authorized automatic switch in `AGENTS.md`; bumped spirit world; switched to Generation 254.
 105. **YubiKey PAM U2F Sudo Integration (`3a957ad`):**
     - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
     - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
@@ -37,5 +33,9 @@
     - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
     - Prioritized hardware key in SSH client settings; retired obsolete GPG options and disabled `gpg-agent`.
     - Configured system `/etc/u2f_keys` and character device access in `polkit-agent-helper@`; switched to Gen 264.
+107. **Antigravity Non-FHS Migration & nh Workflow Adoption (`b3b9921`):**
+    - Switched `google-antigravity` and `google-antigravity-ide` to non-FHS variants (`autoPatchelfHook`).
+    - Removed `bwrap` container and `NoNewPrivs` terminal restrictions from `AGENTS.md` and quirks doc.
+    - Switched system to Generation 265 via `nh os switch`; cleaned store (7.6 GiB freed) via `nh clean all`.
 
 

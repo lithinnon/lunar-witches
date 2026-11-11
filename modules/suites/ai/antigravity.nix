@@ -26,13 +26,13 @@
       antigravityPkgs = inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system};
 
       google-antigravity = wrapWithKeyringBypass {
-        pkg = antigravityPkgs.google-antigravity;
+        pkg = antigravityPkgs.google-antigravity-no-fhs;
         binName = "antigravity";
         extraArgs = ''--add-flags "--password-store=basic"'';
       };
 
       google-antigravity-ide = wrapWithKeyringBypass {
-        pkg = antigravityPkgs.google-antigravity-ide;
+        pkg = antigravityPkgs.google-antigravity-ide-no-fhs;
         binName = "antigravity-ide";
         extraArgs = ''--add-flags "--password-store=basic"'';
       };
