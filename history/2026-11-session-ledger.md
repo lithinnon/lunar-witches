@@ -33,3 +33,7 @@
     - Declared `suite-ai-hermes` with custom `tokenme` provider (`https://api.tokenme.limited/api/v1/`).
     - Wired `TOKENME_API_KEY` and Desktop `sessionTokenFile` via `spirit-world` SOPS secrets.
     - Enabled user linger (`nnon`), installed `lunar-witch` skin, and switched to Gen 234.
+102. **Integrate Matt Pocock Skills & Decommission OpenCode (`db548d0`):**
+    - Packaged flattened `mattpocock-skills` derivation and wired shared module across AI suites.
+    - Wrapped Antigravity packages with basic password-store and `SSH_TTY=/dev/null` keyring bypass.
+    - Decommissioned `suite-ai-opencode` and removed OpenCode shell aliases; bumped spirit world.
