@@ -198,14 +198,16 @@ During the migration and post-install configuration, several notable edge cases 
   4. While Nix evaluation and package builds succeed without root privileges, the configuration activation phase (`switch-to-configuration`) executes `sudo`.
   5. The Linux kernel strictly prevents setuid binaries from escalating privileges when `NoNewPrivs` is set, causing `sudo` to immediately terminate.
 - **Resolution:**
-  - **Preferred (External Host Terminal):** Run `nh os switch` or `nh os test` from a standalone host terminal emulator (Konsole, Ghostty, Ptyxis, Alacritty) launched by Plasma (`NoNewPrivs: 0`):
+  - **Permanent Fix (Non-FHS Package):** Use the `no-fhs` variant (`google-antigravity-ide-no-fhs` via `autoPatchelfHook`) in `suite-ai-antigravity`. This eliminates the Bubblewrap container and `NoNewPrivs` flag entirely, allowing `sudo` and `nh os switch` to run natively in the integrated terminal:
     ```bash
     NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches
     ```
-  - **IDE Terminal Escape (`systemd-run`):** When executing from inside the Antigravity IDE terminal without switching windows, escape the Bubblewrap user namespace by dispatching through the user systemd instance:
-    ```bash
-    systemd-run --user --pty --same-dir nh os switch /home/nnon/lunar-witches
-    ```
+  - **Legacy FHS Workarounds (if using buildFHSEnv):**
+    - **External Host Terminal:** Run from a standalone terminal (Konsole, Ghostty) where `NoNewPrivs: 0`.
+    - **IDE Terminal Escape (`systemd-run`):** Escape the Bubblewrap user namespace by dispatching through systemd:
+      ```bash
+      systemd-run --user --pty --same-dir nh os switch /home/nnon/lunar-witches
+      ```
   - **Dry-Run / Build Only:** For configuration syntax and build verification without activation:
     ```bash
     nh os build /home/nnon/lunar-witches

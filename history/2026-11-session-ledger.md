@@ -41,3 +41,7 @@
     - Updated inputs, migrated Brave to Buckley310 flake, deduplicated home-manager and flake-parts trees.
     - Set up system-wide ezkea Cachix substituter and keys; dropped aagl rust-overlay follow to achieve 100% cache hits.
     - Added anime-game-launcher alongside honkers-launcher in suite-gaming; switched to Generation 238.
+104. **Pi Suite Migration, DeepSeek Harness & Rust Hook Fixes (`e017582`):**
+    - Replaced Hermes suite with `suite-ai-pi` and `suite-ai-deepseek-harness`; wired mattpocock skills.
+    - Patched nixpkgs cargo-setup-hook missing buildInputs for codex, primp, and chromadb.
+    - Authorized automatic switch in `AGENTS.md`; bumped spirit world; switched to Generation 254.
