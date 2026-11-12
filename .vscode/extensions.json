@@ -1,6 +1,5 @@
 {
     "recommendations": [
         "jnoortheen.nix-ide",
-        "arrterian.nix-env-selector"
     ]
 }

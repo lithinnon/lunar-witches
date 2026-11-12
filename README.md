@@ -40,7 +40,7 @@ lunar-witches/
 
 ```bash
 nix fmt                                                                             # Format syntax
-nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run  # Dry evaluation
+nh os build /home/nnon/lunar-witches --dry                                          # Dry evaluation
 nh os build /home/nnon/lunar-witches                                                # Build generation
 nh os switch /home/nnon/lunar-witches                                               # Activate generation
 nh clean all --keep 3                                                               # Prune old generations

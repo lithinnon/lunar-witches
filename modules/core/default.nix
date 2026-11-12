@@ -75,7 +75,7 @@
           options ? sops && config.sops.secrets ? "root_password_hash"
         ) config.sops.secrets."root_password_hash".path;
 
-        # Graphical AskPass passthrough for KDE ksshaskpass
+        # Graphical AskPass passthrough for conduct
         security.sudo.extraConfig = ''
           Defaults passprompt_override,env_keep+="SUDO_ASKPASS"
         '';

@@ -1,5 +1,5 @@
 # Capability suite: KDE Plasma 6 Desktop Environment, SDDM, Wayland
-{ self, ... }:
+{ self, inputs, ... }:
 
 {
   flake.nixosModules.suite-desktop-plasma =
@@ -14,6 +14,7 @@
         self.nixosModules.suite-desktop-audio
         self.nixosModules.suite-desktop-fonts
         self.nixosModules.suite-desktop-service-deck
+        inputs.conduct.nixosModules.default
       ];
 
       options.suites.desktop.plasma = {
@@ -60,14 +61,14 @@
           '';
         };
 
-        programs.ssh = {
-          enableAskPassword = true;
-          askPassword = "/run/current-system/sw/bin/ksshaskpass";
+        programs.conduct = {
+          enable = true;
+          enableSudoAskpass = true;
+          enableSshAskpass = true;
         };
 
         environment.sessionVariables = {
-          SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
-          NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+          NH_SUDO_ASKPASS = "/run/current-system/sw/bin/conduct";
           SSH_ASKPASS_REQUIRE = "prefer";
           NIXOS_OZONE_WL = "1";
 

@@ -1,6 +1,31 @@
-# User developer tools: VS Code, Git, GPG, SSH, MCP servers
-{ pkgs, osConfig, ... }:
+# User developer tools: VS Code, Antigravity IDE, Git, GPG, SSH, MCP servers
+{
+  pkgs,
+  osConfig,
+  config,
+  lib,
+  ...
+}:
 
+let
+  # Shared configuration between VS Code and Antigravity IDE (Code-OSS derivative)
+  commonEditorSettings = {
+    "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font Mono'";
+    "terminal.integrated.fontSize" = 13;
+    "terminal.integrated.cursorBlinking" = true;
+    "terminal.integrated.enableImages" = true;
+    "terminal.integrated.mouseWheelZoom" = true;
+    "terminal.integrated.smoothScrolling" = true;
+    "terminal.integrated.gpuAcceleration" = "off";
+    "terminal.integrated.enableMultiLinePasteWarning" = "never";
+    "editor.mouseWheelZoom" = true;
+    "editor.formatOnSave" = true;
+    "workbench.iconTheme" = "vscode-icons";
+    "redhat.telemetry.enabled" = false;
+    "cedtGrader.baseUrl" = "https://cedt-grader.nattee.net";
+    "claudeCode.hideOnboarding" = true;
+  };
+in
 {
   programs.vscode = {
     enable = true;
@@ -9,26 +34,12 @@
       "password-store" = "gnome-libsecret";
     };
     profiles.default = {
-      userSettings = {
+      userSettings = commonEditorSettings // {
         "files.autoSave" = "afterDelay";
-        "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font Mono'";
-        "terminal.integrated.cursorBlinking" = true;
-        "terminal.integrated.enableImages" = true;
-        "terminal.integrated.mouseWheelZoom" = true;
-        "terminal.integrated.smoothScrolling" = true;
-        "editor.mouseWheelZoom" = true;
-        "workbench.iconTheme" = "vscode-icons";
-        "terminal.integrated.gpuAcceleration" = "off";
-        "redhat.telemetry.enabled" = false;
-        "terminal.integrated.fontSize" = 13;
-        "editor.formatOnSave" = true;
-        "terminal.integrated.enableMultiLinePasteWarning" = "never";
         "chat.disableAIFeatures" = true;
         "workbench.settings.showAISearchToggle" = false;
         "godotTools.lsp.serverPort" = 6005;
         "godotTools.editorPath.godot4" = "${pkgs.godot_4}/bin/godot";
-        "cedtGrader.baseUrl" = "https://cedt-grader.nattee.net";
-        "cedtGrader.username" = "6933200721";
       };
       extensions = with pkgs.vscode-extensions; [
         mkhl.direnv
@@ -129,4 +140,20 @@
       nixos.command = "mcp-nixos";
     };
   };
+
+  # Antigravity IDE declarative settings & shared extensions symlink
+  home.file.".antigravity-ide/User/settings.json".text = builtins.toJSON (
+    commonEditorSettings
+    // (lib.optionalAttrs (config.programs.vscode.profiles.default.userSettings ? "cedtGrader.username")
+      {
+        "cedtGrader.username" = config.programs.vscode.profiles.default.userSettings."cedtGrader.username";
+      }
+    )
+    // {
+      "files.autoSave" = "off";
+    }
+  );
+
+  home.file.".antigravity-ide/extensions".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.vscode/extensions";
 }

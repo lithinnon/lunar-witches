@@ -29,6 +29,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    conduct = {
+      url = "github:lithinnon/conduct";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     bedrock-on-linux = {
       url = "github:Wyze3306/BedrockOnLinux";
       inputs.nixpkgs.follows = "nixpkgs";

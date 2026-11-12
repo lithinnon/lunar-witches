@@ -166,6 +166,26 @@
         "type": "github"
       }
     },
+    "conduct": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794479247,
+        "narHash": "sha256-PAbCWvDtV3z5vcgwirZsmm/lftOwjTNUeSLbQE4QdYc=",
+        "owner": "lithinnon",
+        "repo": "conduct",
+        "rev": "4f44f23250ebad9e6d3c7e9702edee6a1c53b5d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lithinnon",
+        "repo": "conduct",
+        "type": "github"
+      }
+    },
     "digital-egro": {
       "inputs": {
         "nixpkgs": [
@@ -467,6 +487,7 @@
         "chaotic": "chaotic",
         "chula": "chula",
         "claude-desktop": "claude-desktop",
+        "conduct": "conduct",
         "digital-egro": "digital-egro",
         "disko": "disko",
         "flake-parts": "flake-parts",

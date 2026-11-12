@@ -7,8 +7,8 @@
   ];
 
   home.sessionVariables = {
-    NH_SUDO_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
-    SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";
+    NH_SUDO_ASKPASS = "/run/current-system/sw/bin/conduct";
+    SSH_ASKPASS = "/run/current-system/sw/bin/conduct";
     SSH_ASKPASS_REQUIRE = "prefer";
 
     # XDG Base Directory conformances
