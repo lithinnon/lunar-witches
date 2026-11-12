@@ -1,6 +1,6 @@
 # Feature: Chulalongkorn University WiFi (ChulaWiFi & eduroam) 802.1x
 # Thin trait over github:MiniHarinn/chula-flake — importing this module is the
-# opt-in; the leaf manifest supplies `chula.wifi.environmentFile`.
+# opt-in; the leaf manifest enables `chula.wifi.sops.enable` or supplies `chula.wifi.environmentFile`.
 { inputs, ... }:
 
 {
