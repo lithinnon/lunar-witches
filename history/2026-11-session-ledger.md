@@ -49,3 +49,7 @@
     - Configured `security.pam.u2f` with `sufficient` control and `cue = true` in `hw-peripheral-yubikey`.
     - Scoped PAM U2F specifically to `security.pam.services.sudo` to avoid interfering with SDDM/KWallet.
     - Switched system to Generation 258; installed `pam_u2f` package providing `pamu2fcfg`.
+106. **SSH Git Signing, Retired GPG & Polkit U2F (`aefeaac`):**
+    - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
+    - Prioritized hardware key in SSH client settings; retired obsolete GPG options and disabled `gpg-agent`.
+    - Configured system `/etc/u2f_keys` and character device access in `polkit-agent-helper@`; switched to Gen 264.

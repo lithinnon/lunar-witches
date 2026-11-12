@@ -19,6 +19,7 @@ Chulalongkorn University's enterprise Wi-Fi networks (`ChulaWiFi`, `eduroam`) ut
 
 1. **Adoption of Upstream `chula-flake`:**
    - Profile generation is delegated to `inputs.chula.nixosModules.wifi`, which supplies pinned RADIUS CA certificates, declarative profiles, and `ensureProfiles.environmentFiles` credential substitution.
+   - Credential templating is managed via upstream `chula.wifi.sops.enable = true` with keys mapped to existing SOPS secrets (`cunet_identity` and `cunet_password`).
 2. **Bare Import-Time Trait (`feature-chulawifi`):**
    - `modules/features/chulawifi.nix` layers the remaining essential quirks:
      - `phase1-auth-flags = 32` on outer PEAP authentication.
