@@ -65,3 +65,8 @@
     - Replaced manual template generation with native upstream `chula.wifi.sops.enable = true`.
     - Remapped `chula-wifi/{identity,password}` secret keys to preserve existing encrypted credentials.
     - Bumped spirit world; switched system to Generation 268 via `nh os switch`.
+110. **ASUS Power State Coordinator & SD Card Runtime PM Fix (`b804b66`):**
+    - Refactored `sync-power-state` into `pkgs/asus-power-sync` and wired native systemd/udev trigger in `hw-oem-asus-laptop`.
+    - Added dynamic Realtek RTS525A PCIe runtime PM coordination (`on` on AC, `auto` on battery) to stop `-110` resume timeouts.
+    - Purged PowerDevil `RunScript` ProfileLoadCommand hooks and dropped world-writable `0666` sysfs tmpfiles; Generation 272 live.
+
