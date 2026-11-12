@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-13 00:55 +07:00
+- **Timestamp:** 2026-11-13 01:48 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `eb6a5f0`
-- **Live Generation:** Generation 277 (`g4j9z4`)
+- **Active Git Commit:** `37e078b`
+- **Live Generation:** Generation 283 (`ffwxpij`)
 
 ---
 
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-111. **KeePassXC Secret Service Integration for Antigravity & VS Code (`5fa813a`):**
-    - Routed `google-antigravity`, `google-antigravity-ide`, and VS Code (`argvSettings`) to `--password-store=gnome-libsecret`.
-    - Purged non-functional KWallet PAM services on KDE Plasma in favor of native KeePassXC `FdoSecrets` D-Bus integration.
-    - Enabled `direnv` in Home Manager; switched to Generation 273 via `nh os switch`.
 112. **Bespoke Conduct Privilege Orchestration & Zero-Wakeup Touch Daemon (`a22fb2c`):**
     - Authored ADR 0019; engineered zero-wakeup Touch Coordinator in `conduct watch` (<1MB RSS, 0.00 Hz idle).
     - Added CTAPHID keepalive debouncing and HID report descriptor filtering to eliminate notification flapping.
@@ -37,3 +33,8 @@
 113. **Lunar Witches Direnv & Shell Hook Integration (`eb6a5f0`):**
     - Added `.envrc` (`use flake`), ignored `.direnv/`, and added `mkhl.direnv` to `.vscode/extensions.json`.
     - Verified `nix-direnv` devShell caching, binary availability (`nixd`, `treefmt`), and auto-hooking (`core.hooksPath`).
+114. **Declarative Equibop arRPC Data Wrapper & Game Fixes (`37e078b`):**
+    - Engineered `pkgs/equibop/default.nix` wrapping `equibop` to export `ARRPC_DATA_DIR` defaulting to `${XDG_CONFIG_HOME:-$HOME/.config}/equibop`.
+    - Exposed standalone `packages.equibop` and overlay in `pkgs/default.nix`.
+    - Declared `xdg.configFile."equibop/detectable_fixes.json"` in `modules/suites/desktop/apps.nix` with Stella Sora App ID (`1440138512451244063`) and executables (`stellasora.exe`, `StellaSora.exe`).
+    - Switched system to Generation 283 (`ffwxpij`) via `nh os switch`.
