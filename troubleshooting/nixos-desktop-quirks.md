@@ -137,8 +137,8 @@ During the migration and post-install configuration, several notable edge cases 
      ```
   4. When combined with `SSH_ASKPASS_REQUIRE="prefer"`, OpenSSH inspects `getenv("SSH_ASKPASS")`. Because the variable exists with length 0, it calls `execve("", ...)`, failing immediately with `ENOENT` (`ssh_askpass: exec(): No such file or directory`) before a passphrase can be entered for encrypted keys.
 - **Resolution:**
-  - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/ksshaskpass";` in [`modules/suites/desktop/plasma.nix`](../../modules/suites/desktop/plasma.nix).
-  - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/ksshaskpass";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](../../modules/users/nnon/shell.nix).
+  - Set `programs.ssh.enableAskPassword = true;` and `programs.ssh.askPassword = "/run/current-system/sw/bin/conduct";` in [`modules/suites/desktop/plasma.nix`](../../modules/suites/desktop/plasma.nix).
+  - Explicitly export `SSH_ASKPASS = "/run/current-system/sw/bin/conduct";` in `home.sessionVariables` in [`modules/users/nnon/shell.nix`](../../modules/users/nnon/shell.nix).
 
 ---
 
@@ -200,7 +200,7 @@ During the migration and post-install configuration, several notable edge cases 
 - **Resolution:**
   - **Permanent Fix (Non-FHS Package):** Use the `no-fhs` variant (`google-antigravity-ide-no-fhs` via `autoPatchelfHook`) in `suite-ai-antigravity`. This eliminates the Bubblewrap container and `NoNewPrivs` flag entirely, allowing `sudo` and `nh os switch` to run natively in the integrated terminal:
     ```bash
-    NH_SUDO_ASKPASS=/run/current-system/sw/bin/ksshaskpass nh os switch /home/nnon/lunar-witches
+    NH_SUDO_ASKPASS=/run/current-system/sw/bin/conduct nh os switch /home/nnon/lunar-witches
     ```
   - **Legacy FHS Workarounds (if using buildFHSEnv):**
     - **External Host Terminal:** Run from a standalone terminal (Konsole, Ghostty) where `NoNewPrivs: 0`.
@@ -210,9 +210,9 @@ During the migration and post-install configuration, several notable edge cases 
       ```
   - **Dry-Run / Build Only:** For configuration syntax and build verification without activation:
     ```bash
+    nh os build /home/nnon/lunar-witches --dry --json # (structured JSON output for automated agents)
+    # or build the generation:
     nh os build /home/nnon/lunar-witches
-    # or
-    nix build .#nixosConfigurations.lunar-qualia.config.system.build.toplevel --dry-run
     ```
 
 ---

@@ -61,3 +61,7 @@
     - Declarative `asusd`, `th_TH.UTF-8`, `mutableUsers` password guards, `nix-flatpak`, `brave` policies, `hytale-launcher`, `acg-config-sync`, `equibop` autostart, and `protonplus` timer.
     - Hardened `pi` (`PI_OFFLINE=1` + offline `pi-extensions`), `claude-code` HM config, RO `sillytavern` extensions, and `plasma-kwin_wayland` / `app-.service` relog drop-ins.
     - Bumped spirit world; Generation 266 live and `c8c5476` built cleanly via `nh os build`.
+109. **Chula Flake Native SOPS Integration (`f789732`):**
+    - Replaced manual template generation with native upstream `chula.wifi.sops.enable = true`.
+    - Remapped `chula-wifi/{identity,password}` secret keys to preserve existing encrypted credentials.
+    - Bumped spirit world; switched system to Generation 268 via `nh os switch`.
