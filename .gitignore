@@ -48,6 +48,7 @@ secrets/*.tmp
 /tmp/**
 .user_setup_prompt.md
 result
+.direnv/
 
 # Retrospects & internal agent notes (managed on dedicated 'retrospects' branch / worktree)
 /retrospects/
