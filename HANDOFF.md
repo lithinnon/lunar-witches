@@ -7,9 +7,9 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-12 18:07 +07:00
+- **Timestamp:** 2026-11-13 00:55 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `a22fb2c`
+- **Active Git Commit:** `eb6a5f0`
 - **Live Generation:** Generation 277 (`g4j9z4`)
 
 ---
@@ -25,10 +25,6 @@
 
 ## 3. Recent Milestones
 
-110. **ASUS Power State Coordinator & SD Card Runtime PM Fix (`b804b66`):**
-    - Refactored `sync-power-state` into `pkgs/asus-power-sync` and wired native systemd/udev trigger in `hw-oem-asus-laptop`.
-    - Added dynamic Realtek RTS525A PCIe runtime PM coordination (`on` on AC, `auto` on battery) to stop `-110` resume timeouts.
-    - Purged PowerDevil `RunScript` ProfileLoadCommand hooks and dropped world-writable `0666` sysfs tmpfiles; Generation 272 live.
 111. **KeePassXC Secret Service Integration for Antigravity & VS Code (`5fa813a`):**
     - Routed `google-antigravity`, `google-antigravity-ide`, and VS Code (`argvSettings`) to `--password-store=gnome-libsecret`.
     - Purged non-functional KWallet PAM services on KDE Plasma in favor of native KeePassXC `FdoSecrets` D-Bus integration.
@@ -38,3 +34,6 @@
     - Added CTAPHID keepalive debouncing and HID report descriptor filtering to eliminate notification flapping.
     - Wired canonical system askpass paths natively into NixOS `programs.ssh` and `SUDO_ASKPASS`.
     - Bump spirit world; switched system to Generation 277 via `nh os switch`.
+113. **Lunar Witches Direnv & Shell Hook Integration (`eb6a5f0`):**
+    - Added `.envrc` (`use flake`), ignored `.direnv/`, and added `mkhl.direnv` to `.vscode/extensions.json`.
+    - Verified `nix-direnv` devShell caching, binary availability (`nixd`, `treefmt`), and auto-hooking (`core.hooksPath`).
