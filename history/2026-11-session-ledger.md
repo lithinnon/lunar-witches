@@ -53,3 +53,7 @@
     - Migrated Git signing from GPG to native SSH via `id_ed25519_sk.pub` and configured `allowed_signers`.
     - Prioritized hardware key in SSH client settings; retired obsolete GPG options and disabled `gpg-agent`.
     - Configured system `/etc/u2f_keys` and character device access in `polkit-agent-helper@`; switched to Gen 264.
+107. **Antigravity Non-FHS Migration & nh Workflow Adoption (`b3b9921`):**
+    - Switched `google-antigravity` and `google-antigravity-ide` to non-FHS variants (`autoPatchelfHook`).
+    - Removed `bwrap` container and `NoNewPrivs` terminal restrictions from `AGENTS.md` and quirks doc.
+    - Switched system to Generation 265 via `nh os switch`; cleaned store (7.6 GiB freed) via `nh clean all`.
