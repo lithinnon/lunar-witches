@@ -4,6 +4,10 @@
 {
   programs.vscode = {
     enable = true;
+    mutableExtensionsDir = false;
+    argvSettings = {
+      "password-store" = "gnome-libsecret";
+    };
     profiles.default = {
       userSettings = {
         "files.autoSave" = "afterDelay";
@@ -27,16 +31,19 @@
         "cedtGrader.username" = "6933200721";
       };
       extensions = with pkgs.vscode-extensions; [
-        arrterian.nix-env-selector
+        mkhl.direnv
         divyanshuagrawal.competitive-programming-helper
         jnoortheen.nix-ide
         vscode-icons-team.vscode-icons
         usernamehw.errorlens
-        ms-vscode.cpptools
         llvm-vs-code-extensions.vscode-clangd
+        tamasfe.even-better-toml
+        fill-labs.dependi
+        rust-lang.rust-analyzer
         myriad-dreamin.tinymist
         geequlim.godot-tools
         pkgs.vscode-marketplace.badvoic3.cedt-grader-submit
+        pkgs.vscode-marketplace.anthropic.claude-code
       ];
     };
   };
@@ -61,6 +68,9 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+    ignores = [
+      ".direnv"
+    ];
     signing = {
       format = "ssh";
       key = "~/.ssh/id_ed25519_sk.pub";
@@ -93,6 +103,11 @@
       git_protocol = "ssh";
       prompt = "enabled";
     };
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
   };
 
   services.gpg-agent.enable = false;

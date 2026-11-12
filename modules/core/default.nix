@@ -38,6 +38,8 @@
               "flakes"
             ];
             auto-optimise-store = true;
+            keep-outputs = true;
+            keep-derivations = true;
             trusted-users = [
               "root"
               "@wheel"

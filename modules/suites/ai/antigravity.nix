@@ -28,13 +28,13 @@
       google-antigravity = wrapWithKeyringBypass {
         pkg = antigravityPkgs.google-antigravity-no-fhs;
         binName = "antigravity";
-        extraArgs = ''--add-flags "--password-store=basic"'';
+        extraArgs = ''--add-flags "--password-store=gnome-libsecret"'';
       };
 
       google-antigravity-ide = wrapWithKeyringBypass {
         pkg = antigravityPkgs.google-antigravity-ide-no-fhs;
         binName = "antigravity-ide";
-        extraArgs = ''--add-flags "--password-store=basic"'';
+        extraArgs = ''--add-flags "--password-store=gnome-libsecret"'';
       };
 
       google-antigravity-cli = wrapWithKeyringBypass {

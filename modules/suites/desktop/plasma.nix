@@ -60,13 +60,6 @@
           '';
         };
 
-        # KDE Wallet Integration (Seamless Chromium/Brave password decryption)
-        security.pam.services.sddm.kwallet = {
-          enable = true;
-          forceRun = true;
-        };
-        security.pam.services.login.kwallet.enable = true;
-
         programs.ssh = {
           enableAskPassword = true;
           askPassword = "/run/current-system/sw/bin/ksshaskpass";
