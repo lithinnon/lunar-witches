@@ -20,6 +20,7 @@ in
     {
       packages = (builtins.mapAttrs (_name: path: pkgs.callPackage path { }) inTreePackages) // {
         rocm-therock-gfx1151 = pkgs.callPackage ./rocm-therock { gfx = "gfx1151"; };
+        equibop = pkgs.callPackage ./equibop { };
       };
     };
 
@@ -29,6 +30,7 @@ in
     // {
       rocm-therock = final.callPackage ./rocm-therock;
       rocm-therock-gfx1151 = final.callPackage ./rocm-therock { gfx = "gfx1151"; };
+      equibop = final.callPackage ./equibop { equibop = prev.equibop; };
 
       # codex vendored crates require system libraries under nixpkgs cargo-setup-hook defaults:
       # aws-lc (AWS_LC_SYS_USE_SYSTEM=1), zstd (ZSTD_SYS_USE_PKG_CONFIG=1), sqlite (LIBSQLITE3_SYS_USE_PKG_CONFIG=1),

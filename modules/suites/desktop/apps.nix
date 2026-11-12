@@ -223,6 +223,28 @@
             Icon=equibop
           '';
         };
+
+        xdg.configFile."equibop/detectable_fixes.json" = {
+          force = true;
+          text = builtins.toJSON [
+            {
+              id = "1440138512451244063";
+              name = "Stella Sora";
+              executables = [
+                {
+                  name = "stellasora.exe";
+                  is_launcher = false;
+                  os = "win32";
+                }
+                {
+                  name = "StellaSora.exe";
+                  is_launcher = false;
+                  os = "win32";
+                }
+              ];
+            }
+          ];
+        };
       }
     ];
   };
