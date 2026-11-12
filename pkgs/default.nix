@@ -4,7 +4,7 @@ let
   inTreePackages = {
     acg-config-sync = ./acg-config-sync;
     mem-ttm = ./mem-ttm;
-    sync-power-state = ./sync-power-state;
+    asus-power-sync = ./asus-power-sync;
     service-deck-helper = ./service-deck-helper;
     plasma-widget-servicedeck = ./plasma-widget-servicedeck;
     xrt-amdxdna = ./xrt-amdxdna;

@@ -90,10 +90,8 @@
       };
       "powerdevilrc" = {
         "AC/Performance".PowerProfile = "performance";
-        "AC/RunScript".ProfileLoadCommand = "/run/current-system/sw/bin/sync-power-state ac";
         "AC/SuspendAndShutdown".LidAction = 0;
         "Battery/Performance".PowerProfile = "balanced";
-        "Battery/RunScript".ProfileLoadCommand = "/run/current-system/sw/bin/sync-power-state battery";
         "LowBattery/Performance".PowerProfile = "power-saver";
         "LowBattery/SuspendAndShutdown".InhibitLidActionWhenExternalMonitorPresent = false;
       };

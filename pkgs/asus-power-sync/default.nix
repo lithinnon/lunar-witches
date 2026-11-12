@@ -8,7 +8,7 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "sync-power-state";
+  pname = "asus-power-sync";
   version = "1.0.0";
   src = ./.;
 
@@ -18,9 +18,9 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    cp sync-power-state.sh $out/bin/sync-power-state
-    chmod +x $out/bin/sync-power-state
-    wrapProgram $out/bin/sync-power-state \
+    cp asus-power-sync.sh $out/bin/asus-power-sync
+    chmod +x $out/bin/asus-power-sync
+    wrapProgram $out/bin/asus-power-sync \
       --prefix PATH : ${
         lib.makeBinPath [
           bash
@@ -31,8 +31,8 @@ stdenv.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "Seamless AC vs Battery display and platform state switcher";
+    description = "Unified ASUS laptop hardware power state coordinator (Panel Overdrive & SD Card PCIe PM)";
     platforms = platforms.linux;
-    mainProgram = "sync-power-state";
+    mainProgram = "asus-power-sync";
   };
 }
