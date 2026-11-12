@@ -57,3 +57,7 @@
     - Switched `google-antigravity` and `google-antigravity-ide` to non-FHS variants (`autoPatchelfHook`).
     - Removed `bwrap` container and `NoNewPrivs` terminal restrictions from `AGENTS.md` and quirks doc.
     - Switched system to Generation 265 via `nh os switch`; cleaned store (7.6 GiB freed) via `nh clean all`.
+108. **Phase 1 Declarative Suites, Host Configs & Relog Fixes (`c8c5476`):**
+    - Declarative `asusd`, `th_TH.UTF-8`, `mutableUsers` password guards, `nix-flatpak`, `brave` policies, `hytale-launcher`, `acg-config-sync`, `equibop` autostart, and `protonplus` timer.
+    - Hardened `pi` (`PI_OFFLINE=1` + offline `pi-extensions`), `claude-code` HM config, RO `sillytavern` extensions, and `plasma-kwin_wayland` / `app-.service` relog drop-ins.
+    - Bumped spirit world; Generation 266 live and `c8c5476` built cleanly via `nh os build`.
