@@ -78,5 +78,9 @@
     - Added CTAPHID keepalive debouncing and HID report descriptor filtering to eliminate notification flapping.
     - Wired canonical system askpass paths natively into NixOS `programs.ssh` and `SUDO_ASKPASS`.
     - Bump spirit world; switched system to Generation 277 via `nh os switch`.
+113. **Lunar Witches Direnv & Shell Hook Integration (`eb6a5f0`):**
+    - Added `.envrc` (`use flake`), ignored `.direnv/`, and added `mkhl.direnv` to `.vscode/extensions.json`.
+    - Verified `nix-direnv` devShell caching, binary availability (`nixd`, `treefmt`), and auto-hooking (`core.hooksPath`).
+
 
 
