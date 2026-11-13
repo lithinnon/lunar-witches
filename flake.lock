@@ -173,11 +173,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794479247,
-        "narHash": "sha256-PAbCWvDtV3z5vcgwirZsmm/lftOwjTNUeSLbQE4QdYc=",
+        "lastModified": 1794542273,
+        "narHash": "sha256-Hjr+0yM1y8E7XHCv4lfSkDeUWu/e2E+xsceIW0rUNPE=",
         "owner": "lithinnon",
         "repo": "conduct",
-        "rev": "4f44f23250ebad9e6d3c7e9702edee6a1c53b5d7",
+        "rev": "3f899a36f463fcd7b6fd3c2ec64340c5dee55790",
         "type": "github"
       },
       "original": {
