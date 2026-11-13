@@ -7,10 +7,10 @@
 ## 1. Active State
 
 - **Last Active Agent:** Antigravity (Gemini 3.8 Flash)
-- **Timestamp:** 2026-11-13 10:46 +07:00
+- **Timestamp:** 2026-11-13 11:05 +07:00
 - **Host Target:** `lunar-qualia`
-- **Active Git Commit:** `022df5d`
-- **Live Generation:** Generation 284 (`zg9jyw`)
+- **Active Git Commit:** `ba98d4b`
+- **Live Generation:** Generation 285 (`xv30xwm`)
 
 ---
 
@@ -25,9 +25,6 @@
 
 ## 3. Recent Milestones
 
-113. **Lunar Witches Direnv & Shell Hook Integration (`eb6a5f0`):**
-    - Added `.envrc` (`use flake`), ignored `.direnv/`, and added `mkhl.direnv` to `.vscode/extensions.json`.
-    - Verified `nix-direnv` devShell caching, binary availability (`nixd`, `treefmt`), and auto-hooking (`core.hooksPath`).
 114. **Declarative Equibop arRPC Data Wrapper & Game Fixes (`37e078b`):**
     - Engineered `pkgs/equibop` data wrapper to export `ARRPC_DATA_DIR` defaulting to `${XDG_CONFIG_HOME}/equibop`.
     - Declared `xdg.configFile."equibop/detectable_fixes.json"` in `suite-desktop-apps` for Stella Sora Discord RPC.
@@ -36,3 +33,7 @@
     - Removed `debug` setting from `security.pam.u2f` in `hw-peripheral-yubikey`.
     - Eliminated low-level libfido2 USB/CBOR stderr trace dumps across `sudo` and `polkit-1`.
     - Switched system to Generation 284 (`zg9jyw`) via `nh os switch`.
+116. **Conduct Touch Coordinator Lifecycle & Keepalive Fix (`ba98d4b`):**
+    - Added `ActiveNotification::disarm` to stop in-place notification updates from sending `CloseNotification` on drop.
+    - Filtered `CTAPHID_KEEPALIVE` packets in `watch_hidraw_device` to prevent premature 250ms holdoff dismissals.
+    - Bumped `conduct` flake input; verified solid notification persistence across `nh os switch`; Gen 285 live.
