@@ -18,7 +18,6 @@
       settings = {
         cue = lib.mkDefault true;
         authfile = lib.mkDefault "/etc/u2f_keys";
-        debug = lib.mkDefault true;
       };
     };
 
