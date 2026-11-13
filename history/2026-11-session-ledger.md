@@ -73,4 +73,10 @@
     - Routed `google-antigravity`, `google-antigravity-ide`, and VS Code (`argvSettings`) to `--password-store=gnome-libsecret`.
     - Purged non-functional KWallet PAM services on KDE Plasma in favor of native KeePassXC `FdoSecrets` D-Bus integration.
     - Enabled `direnv` in Home Manager; switched to Generation 273 via `nh os switch`.
+112. **Bespoke Conduct Privilege Orchestration & Zero-Wakeup Touch Daemon (`a22fb2c`):**
+    - Authored ADR 0019; engineered zero-wakeup Touch Coordinator in `conduct watch` (<1MB RSS, 0.00 Hz idle).
+    - Added CTAPHID keepalive debouncing and HID report descriptor filtering to eliminate notification flapping.
+    - Wired canonical system askpass paths natively into NixOS `programs.ssh` and `SUDO_ASKPASS`.
+    - Bump spirit world; switched system to Generation 277 via `nh os switch`.
+
 
